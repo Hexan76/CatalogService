@@ -13,7 +13,7 @@ using Volo.Abp.EntityFrameworkCore;
 namespace CatalogService.Migrations
 {
     [DbContext(typeof(CatalogServiceDbContext))]
-    [Migration("20260525125035_init")]
+    [Migration("20260525125830_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -37,7 +37,6 @@ namespace CatalogService.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("BannerUrl")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -64,7 +63,6 @@ namespace CatalogService.Migrations
                         .HasColumnName("ExtraProperties");
 
                     b.Property<string>("IconUrl")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("IsDisabled")

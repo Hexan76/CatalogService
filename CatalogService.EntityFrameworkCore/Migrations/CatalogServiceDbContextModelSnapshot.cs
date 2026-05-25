@@ -34,7 +34,6 @@ namespace CatalogService.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("BannerUrl")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -61,7 +60,6 @@ namespace CatalogService.Migrations
                         .HasColumnName("ExtraProperties");
 
                     b.Property<string>("IconUrl")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("IsDisabled")
