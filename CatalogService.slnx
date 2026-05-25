@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/BuildingBlock/">
+    <Project Path="../building-block/src/Framework.BuildingBlock.Application.Contracts/Framework.BuildingBlock.Application.Contracts.csproj" />
+    <Project Path="../building-block/src/Framework.BuildingBlock.Application/Framework.BuildingBlock.Application.csproj" />
+    <Project Path="../building-block/src/Framework.BuildingBlock.Domain.Shared/Framework.BuildingBlock.Domain.Shared.csproj" />
+    <Project Path="../building-block/src/Framework.BuildingBlock.Domain/Framework.BuildingBlock.Domain.csproj" />
+    <Project Path="../building-block/src/Framework.BuildingBlock.EntityFrameworkCore/Framework.BuildingBlock.EntityFrameworkCore.csproj" />
+    <Project Path="../building-block/src/Framework.BuildingBlock.HttpApi/Framework.BuildingBlock.HttpApi.csproj" />
+  </Folder>
+  <Project Path="CatalogService.Application.Contracts/CatalogService.Application.Contracts.csproj" />
+  <Project Path="CatalogService.Application/CatalogService.Application.csproj" />
+  <Project Path="CatalogService.Domain.Shared/CatalogService.Domain.Shared.csproj" />
+  <Project Path="CatalogService.Domain/CatalogService.Domain.csproj" />
+  <Project Path="CatalogService.EntityFrameworkCore/CatalogService.EntityFrameworkCore.csproj" />
+  <Project Path="CatalogService.Host/CatalogService.Host.csproj" />
+  <Project Path="CatalogService.HttpApi/CatalogService.HttpApi.csproj" />
+</Solution>
