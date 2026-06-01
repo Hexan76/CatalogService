@@ -1,4 +1,4 @@
-﻿
+
 using Framework.BuildingBlock.Application.Contracts;
 
 namespace CatalogService.Categories;
@@ -11,13 +11,7 @@ public class DeleteCategoryHandler(ICategoryRepository categoryRepository) : IDe
 
         await categoryRepository.DeleteAsync(founded);
 
-        return new ResultApi<BaseResponse>
-        {
-            Result = new BaseResponse
-            {
-                Id = request.Id
-            },
-
-        };
+        return MessageContract<BaseResponse>.Success(new BaseResponse() { Id = request.Id });
+        
     }
 }

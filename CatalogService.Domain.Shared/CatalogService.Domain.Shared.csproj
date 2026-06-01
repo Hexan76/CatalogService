@@ -16,6 +16,7 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\..\building-block\src\Framework.BuildingBlock.Domain.Shared\Framework.BuildingBlock.Domain.Shared.csproj" />
+	  <ProjectReference Include="..\..\HttpClientService\Abstractions\Framework.HttpClient.Abstractions.csproj" />
 	</ItemGroup>
 
 </Project>

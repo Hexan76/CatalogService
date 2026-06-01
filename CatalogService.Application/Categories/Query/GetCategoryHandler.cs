@@ -1,4 +1,4 @@
-﻿using CatalogService.Application;
+using CatalogService.Application;
 using Framework.BuildingBlock.Application.Contracts;
 
 namespace CatalogService.Categories;
@@ -12,9 +12,7 @@ public class GetCategoryHandler(ICategoryRepository categoryRepository) : Catalo
         var response = ObjectMapper.Map<Category, CategoryModel>(founded);
 
 
-        return new ResultApi<CategoryModel>
-        {
-            Result = response
-        };
+        return MessageContract<CategoryModel>.Success(response);
+        
     }
 }

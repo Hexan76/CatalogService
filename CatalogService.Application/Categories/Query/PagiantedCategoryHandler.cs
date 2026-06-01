@@ -1,4 +1,4 @@
-﻿using CatalogService.Application;
+using CatalogService.Application;
 using Framework.BuildingBlock.Application;
 using Framework.BuildingBlock.Application.Contracts;
 
@@ -18,9 +18,6 @@ public class PagiantedCategoryHandler(ICategoryRepository categoryRepository) : 
 
         response.TotalCount = paged.RowCount;
 
-        return new ResultApi<PaginatedCategoryResponse>
-        {
-            Result = response
-        };
+        return MessageContract<PaginatedCategoryResponse>.Success(response);
     }
 }

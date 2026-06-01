@@ -6,6 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\HttpClientService\Framework.HttpClient.Http\Framework.HttpClient.Http.csproj" />
       <ProjectReference Include="..\CatalogService.Domain.Shared\CatalogService.Domain.Shared.csproj" />
 	  <ProjectReference Include="..\..\building-block\src\Framework.BuildingBlock.Domain\Framework.BuildingBlock.Domain.csproj" />
     </ItemGroup>

@@ -7,6 +7,10 @@
     <Project Path="../building-block/src/Framework.BuildingBlock.EntityFrameworkCore/Framework.BuildingBlock.EntityFrameworkCore.csproj" />
     <Project Path="../building-block/src/Framework.BuildingBlock.HttpApi/Framework.BuildingBlock.HttpApi.csproj" />
   </Folder>
+  <Folder Name="/HttpClientService/">
+    <Project Path="../HttpClientService/Abstractions/Framework.HttpClient.Abstractions.csproj" />
+    <Project Path="../HttpClientService/Framework.HttpClient.Http/Framework.HttpClient.Http.csproj" />
+  </Folder>
   <Project Path="CatalogService.Application.Contracts/CatalogService.Application.Contracts.csproj" />
   <Project Path="CatalogService.Application/CatalogService.Application.csproj" />
   <Project Path="CatalogService.Domain.Shared/CatalogService.Domain.Shared.csproj" />

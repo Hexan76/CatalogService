@@ -22,6 +22,5 @@ public class CatalogServiceDomainSharedModule : AbpModule
         {
             options.AddResource<CatalogServiceResource>();
         });
-
     }
 }

@@ -1,20 +1,28 @@
-﻿using FastEndpoints;
-using FastEndpoints.Swagger;
-using Framework.BuildingBlock.HttpApi;
-using MassTransit;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.RequestLocalization;
+using System.Text.Json.Serialization;
+
 using CatalogService.Application;
 using CatalogService.Application.Contracts;
 using CatalogService.Domain;
 using CatalogService.Domain.Shared;
 using CatalogService.EntityFrameworkCore;
 using CatalogService.HttpApi;
+
+using FastEndpoints;
+using FastEndpoints.Swagger;
+
+using Framework.BuildingBlock.HttpApi;
+
+using MassTransit;
+
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.RequestLocalization;
+
 using Template.Service.Domain.Shared;
+
 using Volo.Abp;
 using Volo.Abp.AspNetCore.ExceptionHandling;
 using Volo.Abp.AspNetCore.MultiTenancy;
@@ -122,6 +130,12 @@ public class CatalogServiceHostModule : AbpModule
         var configuration = context.Services.GetConfiguration();
         var hostingEnvironment = context.Services.GetHostingEnvironment();
 
+
+        context.Services.ConfigureHttpJsonOptions(options =>
+        {
+            options.SerializerOptions.Converters.Add(
+                new JsonStringEnumConverter());
+        });
 
         if (!configuration.GetValue<bool>("App:DisablePII"))
         {

@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+using AutoMapper;
+
+using CatalogService.ObjectStorageService;
 
 namespace CatalogService.Application;
 
@@ -6,8 +8,6 @@ public class CatalogServiceApplicationAutoMapperProfile : Profile
 {
     public CatalogServiceApplicationAutoMapperProfile()
     {
-        /* You can configure your AutoMapper mapping configuration here.
-         * Alternatively, you can split your mapping configurations
-         * into multiple profile classes for a better organization. */
+        CreateMap<FinalizeModel, FinalizeRequest>(memberList: MemberList.None);
     }
 }
