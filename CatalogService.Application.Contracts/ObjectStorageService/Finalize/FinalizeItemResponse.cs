@@ -8,6 +8,7 @@ public class FinalizeItemResponse
     public string URL { get; set; } = null!;
 
     public long Size { get; set; }
+    public string Extension { get; set; }
 
     public string MimeType { get; set; } = null!;
     public List<FileVariant> Variants { get; set; } = [];

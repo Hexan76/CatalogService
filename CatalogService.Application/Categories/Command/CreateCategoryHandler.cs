@@ -30,7 +30,16 @@ public class CreateCategoryHandler(ICategoryRepository categoryRepository, IHttp
             if (finalizeResponse != null && finalizeResponse.Files.Any())
             {
                 var file = finalizeResponse.Files.FirstOrDefault();
-                var fileResult = await fileManager.AddRelatedFileWithEntity(file!.Id, result.Id, typeof(Category).Name, file.URL, file.FileName, request.File.Role);
+
+                var fileResult = await fileManager.AddRelatedFileWithEntity(
+                    file!.Id,
+                    result.Id,
+                    typeof(Category).Name,
+                    file.URL,
+                    file.FileName,
+                    file.Size,
+                    file.Extension,
+                    request.File.Role);
 
                 response.ImageUrl = fileResult.Url;
             }
