@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 using CatalogService.Application;
 using CatalogService.ObjectStorageService;
 
@@ -6,16 +8,12 @@ using Framework.HttpClient.Abstractions;
 
 namespace CatalogService.Categories;
 
-public class UpdateCategoryHandler(ICategoryRepository categoryRepository, IHttpClientService httpClientService, FileManager fileManager) : CatalogServiceAppService, IUpdateCategoryHandler
+public class UpdateCategoryHandler(CategoryManager categoryManager, IHttpClientService httpClientService, FileManager fileManager) : CatalogServiceAppService, IUpdateCategoryHandler
 {
     public async Task<MessageContract<CategoryModel>> Handle(UpdateCategoryRequest request, CancellationToken cancellationToken)
     {
 
-        var founded = await categoryRepository.GetAsync(request.Id);
-
-        ObjectMapper.Map(request, founded);
-
-        var result = await categoryRepository.UpdateAsync(founded);
+        var result = await categoryManager.UpdateCategoryAsync(request.Id, request.Name, request.Description);
 
         var response = ObjectMapper.Map<Category, CategoryModel>(result);
 
@@ -58,5 +56,20 @@ public class UpdateCategoryHandler(ICategoryRepository categoryRepository, IHttp
         }
 
         return MessageContract<CategoryModel>.Success(response);
+    }
+    static string GenerateSlug(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+            return string.Empty;
+
+        text = text.Trim();
+
+        text = Regex.Replace(text, @"\s+", "-");
+
+        text = Regex.Replace(text, @"[^a-zA-Z0-9\u0600-\u06FF\-]", "");
+
+        text = Regex.Replace(text, @"-+", "-");
+
+        return text.ToLowerInvariant();
     }
 }

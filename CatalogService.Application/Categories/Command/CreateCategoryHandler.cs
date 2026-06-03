@@ -1,4 +1,6 @@
 
+using System.Text.RegularExpressions;
+
 using CatalogService.Application;
 using CatalogService.ObjectStorageService;
 
@@ -7,14 +9,14 @@ using Framework.HttpClient.Abstractions;
 
 namespace CatalogService.Categories;
 
-public class CreateCategoryHandler(ICategoryRepository categoryRepository, IHttpClientService httpClientService, FileManager fileManager) : CatalogServiceAppService, ICreateCategoryHandler
+public class CreateCategoryHandler(CategoryManager categoryManager, IHttpClientService httpClientService, FileManager fileManager) : CatalogServiceAppService, ICreateCategoryHandler
 {
     public async Task<MessageContract<CategoryModel>> Handle(CreateCategoryRequest request, CancellationToken cancellationToken)
     {
 
         var createItem = ObjectMapper.Map<CreateCategoryRequest, Category>(request);
 
-        var result = await categoryRepository.InsertAsync(createItem);
+        var result = await categoryManager.CreateCategoryAsync(createItem.Name, createItem.Description);
 
         var response = ObjectMapper.Map<Category, CategoryModel>(result);
 
@@ -61,4 +63,5 @@ public class CreateCategoryHandler(ICategoryRepository categoryRepository, IHttp
 
         return MessageContract<CategoryModel>.Success(response);
     }
+
 }
