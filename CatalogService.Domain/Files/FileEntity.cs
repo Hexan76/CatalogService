@@ -14,6 +14,7 @@ public class FileEntity : Entity<Guid>
     public string Extension { get; set; }
     public string EntityType { get; set; }
     public string Role { get; set; }
+    public IDictionary<string, object> Variants { get; set; }
     public Guid EntityId { get; set; }
 
 }

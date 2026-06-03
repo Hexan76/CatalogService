@@ -1,4 +1,4 @@
-﻿using Volo.Abp.Application.Dtos;
+using Volo.Abp.Application.Dtos;
 
 namespace CatalogService.Categories;
 

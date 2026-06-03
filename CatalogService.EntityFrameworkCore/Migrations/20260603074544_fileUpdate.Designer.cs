@@ -13,8 +13,8 @@ using Volo.Abp.EntityFrameworkCore;
 namespace CatalogService.Migrations
 {
     [DbContext(typeof(CatalogServiceDbContext))]
-    [Migration("20260601071334_fileRole")]
-    partial class fileRole
+    [Migration("20260603074544_fileUpdate")]
+    partial class fileUpdate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -104,6 +104,10 @@ namespace CatalogService.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Extension")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("FileName")
                         .IsRequired()
                         .HasColumnType("text");
@@ -115,13 +119,97 @@ namespace CatalogService.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<long>("Size")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("Url")
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Variants")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
                     b.HasKey("Id");
 
                     b.ToTable("FileEntity", (string)null);
+                });
+
+            modelBuilder.Entity("CatalogService.MenuItemCategories.MenuItemCategory", b =>
+                {
+                    b.Property<Guid>("MenuItemId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("MenuItemId", "CategoryId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("MenuItemCategory", (string)null);
+                });
+
+            modelBuilder.Entity("CatalogService.MenuItems.MenuItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("ConcurrencyStamp");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ExtraProperties")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("ExtraProperties");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("VendorId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MenuItem", (string)null);
                 });
 
             modelBuilder.Entity("CatalogService.Categories.Category", b =>
@@ -134,9 +222,35 @@ namespace CatalogService.Migrations
                     b.Navigation("Parent");
                 });
 
+            modelBuilder.Entity("CatalogService.MenuItemCategories.MenuItemCategory", b =>
+                {
+                    b.HasOne("CatalogService.Categories.Category", "Category")
+                        .WithMany("MenuItemCategories")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CatalogService.MenuItems.MenuItem", "MenuItem")
+                        .WithMany("MenuItemCategories")
+                        .HasForeignKey("MenuItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("MenuItem");
+                });
+
             modelBuilder.Entity("CatalogService.Categories.Category", b =>
                 {
                     b.Navigation("Children");
+
+                    b.Navigation("MenuItemCategories");
+                });
+
+            modelBuilder.Entity("CatalogService.MenuItems.MenuItem", b =>
+                {
+                    b.Navigation("MenuItemCategories");
                 });
 #pragma warning restore 612, 618
         }

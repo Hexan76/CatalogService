@@ -10,26 +10,50 @@ public class UpdateCategoryHandler(ICategoryRepository categoryRepository, IHttp
 {
     public async Task<MessageContract<CategoryModel>> Handle(UpdateCategoryRequest request, CancellationToken cancellationToken)
     {
-        var createItem = ObjectMapper.Map<UpdateCategoryRequest, Category>(request);
 
+        var founded = await categoryRepository.GetAsync(request.Id);
 
-        var result = await categoryRepository.UpdateAsync(createItem);
+        ObjectMapper.Map(request, founded);
+
+        var result = await categoryRepository.UpdateAsync(founded);
 
         var response = ObjectMapper.Map<Category, CategoryModel>(result);
 
-        if (request.File is not null)
+        if (request.ImageId is not null)
         {
             var files = new List<FinalizeModel>
             {
-                request.File
+                new FinalizeModel()
+                {
+                    AppType = ObjectStorages.StorageAppType.QasedFood,
+                    FileName = result.Name,
+                    EntityKey = result.Slug,
+                    GenerateThumbnail=true,
+                    Role="default",
+                    StorageEntityType=ObjectStorages.StorageEntityType.Category,
+                }
             };
             var finalizeResponse = await httpClientService.SendAsync<FinalizeFilesResponse>(new FinalizeRequest() { Files = files });
 
             if (finalizeResponse != null && finalizeResponse.Files.Any())
             {
                 var file = finalizeResponse.Files.FirstOrDefault();
-                var fileResult = await fileManager.AddRelatedFileWithEntity(file!.Id, result.Id, typeof(Category).Name, file.URL, file.FileName, request.File.Role);
-                response.ImageUrl = fileResult.Url;
+
+                var fileResult = await fileManager.AddOrUpdateRelatedFile(
+                    result.Id,
+                    typeof(Category).Name,
+                    file.URL,
+                    file.FileName,
+                    file.Size,
+                    file.Extension,
+                    "default",
+                    file.Variants);
+
+                response.Image = new FileUrlModel()
+                {
+                    Role = "default",
+                    Variants = file.Variants
+                };
             }
         }
 

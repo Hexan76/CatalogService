@@ -12,5 +12,6 @@ public class CategoryProfile : Profile
         CreateMap<CategoryModel, Category>(memberList: MemberList.None);
         CreateMap<CreateCategoryRequest, Category>(memberList: MemberList.None);
         CreateMap<UpdateCategoryRequest, Category>(memberList: MemberList.None);
+
     }
 }

@@ -18,11 +18,20 @@ public class CreateCategoryHandler(ICategoryRepository categoryRepository, IHttp
 
         var response = ObjectMapper.Map<Category, CategoryModel>(result);
 
-        if (request.File is not null)
+        if (request.ImageId is not null)
         {
             var files = new List<FinalizeModel>
             {
-                request.File
+                new FinalizeModel()
+                {
+                    Id = request.ImageId??Guid.Empty,
+                    AppType = ObjectStorages.StorageAppType.QasedFood,
+                    FileName = result.Name,
+                    EntityKey = result.Slug,
+                    GenerateThumbnail=true,
+                    Role="default",
+                    StorageEntityType=ObjectStorages.StorageEntityType.Category,
+                }
             };
 
             var finalizeResponse = await httpClientService.SendAsync<FinalizeFilesResponse>(new FinalizeRequest() { Files = files });
@@ -39,9 +48,14 @@ public class CreateCategoryHandler(ICategoryRepository categoryRepository, IHttp
                     file.FileName,
                     file.Size,
                     file.Extension,
-                    request.File.Role);
+                    "default",
+                    file.Variants);
 
-                response.ImageUrl = fileResult.Url;
+                response.Image = new FileUrlModel()
+                {
+                    Role = "default",
+                    Variants = file.Variants
+                };
             }
         }
 

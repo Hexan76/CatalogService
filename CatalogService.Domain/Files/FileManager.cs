@@ -7,7 +7,16 @@ namespace CatalogService.Categories;
 
 public class FileManager(IFileRepository fileRepository) : ITransientDependency
 {
-    public async Task<FileEntity> AddRelatedFileWithEntity(Guid? fileTempId, Guid entityId, string entityType, string url, string fileName, long size, string extension, string role)
+    public async Task<FileEntity> AddRelatedFileWithEntity(
+        Guid? fileTempId,
+        Guid entityId,
+        string entityType,
+        string url,
+        string fileName,
+        long size,
+        string extension,
+        string role,
+        IDictionary<string, object> variants)
     {
         var item = new FileEntity()
         {
@@ -18,8 +27,56 @@ public class FileManager(IFileRepository fileRepository) : ITransientDependency
             EntityId = entityId,
             Url = url,
             Role = role,
+            Variants = variants
         };
         return await fileRepository.InsertAsync(item);
+    }
+    public async Task<FileEntity> AddOrUpdateRelatedFile(
+    Guid entityId,
+    string entityType,
+    string url,
+    string fileName,
+    long size,
+    string extension,
+    string role,
+    IDictionary<string, object> variants)
+    {
+        var existing = await fileRepository.FindAsync(x =>
+            x.EntityId == entityId &&
+            x.EntityType == entityType &&
+            x.Role == role &&
+            x.Url == url);
+
+        if (existing == null)
+        {
+            var file = new FileEntity
+            {
+                EntityId = entityId,
+                EntityType = entityType,
+                Url = url,
+                FileName = fileName,
+                Size = size,
+                Extension = extension,
+                Role = role,
+                Variants = variants
+            };
+
+            return await fileRepository.InsertAsync(file);
+        }
+
+        var changed =
+            existing.FileName != fileName ||
+            existing.Size != size ||
+            existing.Extension != extension;
+
+        if (!changed)
+            return existing;
+
+        existing.FileName = fileName;
+        existing.Size = size;
+        existing.Extension = extension;
+
+        return await fileRepository.UpdateAsync(existing);
     }
     public async Task<FileEntity> SetPriorityFirst(Guid fileId)
     {

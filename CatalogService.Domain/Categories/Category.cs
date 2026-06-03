@@ -1,5 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
+using CatalogService.MenuItemCategories;
+
 using Framework.BuildingBlock.Domain;
 
 using Volo.Abp.Domain.Entities.Auditing;
@@ -17,4 +19,5 @@ public class Category : AuditedAggregateRoot<Guid>, IHasDisabled
     public Guid? ParentId { get; set; }
     public virtual Category? Parent { get; set; }
     public virtual ICollection<Category>? Children { get; set; }
+    public virtual ICollection<MenuItemCategory>? MenuItemCategories { get; set; }
 }
