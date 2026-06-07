@@ -1,33 +1,37 @@
 stages:
   - prepare
   - build
+  - push
   - deploy
 
 default:
   tags:
-    - docker
+    - shell
 
 variables:
   CI_REGISTRY_IMAGE: "$CI_REGISTRY/$CI_PROJECT_PATH"
   BRANCH_TAG: "$CI_COMMIT_REF_SLUG"
   IMAGE_TAG: "$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA"
   BUILDING_BLOCK_BRANCH: "stage"
+  DOCKER_BUILDKIT: "1"
+  BUILDKIT_PROGRESS: "plain"
 
 cache:
   key: "$CI_COMMIT_REF_SLUG"
   paths:
-    - .pnpm-store/
+    - .pnm-store/
+
+before_script:
+  - echo "Running on shell runner"
+  - dotnet --version
+  - docker --version
 
 prepare_context:
   stage: prepare
-  image: alpine:3.20
   only:
     - dev
     - test
     - main
-  before_script:
-    - apk add --no-cache git tar
-    - echo "Preparing build context"
   script:
     - |
       set -e
@@ -48,19 +52,14 @@ prepare_context:
         "$CI_PROJECT_DIR/.docker-context/building-block"
 
       ls -la .docker-context
-      ls -la .docker-context/catalog-service
-      ls -la .docker-context/building-block
 
   artifacts:
     paths:
       - .docker-context
     expire_in: 1 hour
 
-build_and_push:
+build_image:
   stage: build
-  image:
-    name: gcr.io/kaniko-project/executor:v1.23.2-debug
-    entrypoint: [""]
   needs:
     - prepare_context
   only:
@@ -71,22 +70,40 @@ build_and_push:
     - |
       set -e
 
-      mkdir -p /kaniko/.docker
+      echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" --password-stdin
 
-      echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+      docker build \
+        --provenance=false \
+        --build-arg BUILDKIT_INLINE_CACHE=1 \
+        --cache-from="$CI_REGISTRY_IMAGE:cache" \
+        --tag "$CI_REGISTRY_IMAGE:$IMAGE_TAG" \
+        --tag "$CI_REGISTRY_IMAGE:$BRANCH_TAG" \
+        --tag "$CI_REGISTRY_IMAGE:cache" \
+        -f .docker-context/catalog-service/Dockerfile \
+        .docker-context
 
-      /kaniko/executor \
-        --context "$CI_PROJECT_DIR/.docker-context" \
-        --dockerfile "$CI_PROJECT_DIR/.docker-context/catalog-service/Dockerfile" \
-        --destination "$CI_REGISTRY_IMAGE:$IMAGE_TAG" \
-        --destination "$CI_REGISTRY_IMAGE:$BRANCH_TAG" \
-        --destination "$CI_REGISTRY_IMAGE:cache"
+push_image:
+  stage: push
+  needs:
+    - build_image
+  only:
+    - dev
+    - test
+    - main
+  script:
+    - |
+      set -e
+
+      echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" --password-stdin
+
+      docker push "$CI_REGISTRY_IMAGE:$IMAGE_TAG"
+      docker push "$CI_REGISTRY_IMAGE:$BRANCH_TAG"
+      docker push "$CI_REGISTRY_IMAGE:cache"
 
 deploy_coolify:
   stage: deploy
-  image: curlimages/curl:8.10.1
   needs:
-    - build_and_push
+    - push_image
   only:
     - dev
     - test
@@ -105,15 +122,11 @@ deploy_coolify:
       : "${!TOKEN_VAR:?Missing ${TOKEN_VAR}}"
       : "${!APPLICATION_ID_VAR:?Missing ${APPLICATION_ID_VAR}}"
 
-      echo "Updating image tag to: ${BRANCH_TAG}"
-
       curl -f -sS --request PATCH \
         "${!URL_VAR}/applications/${!APPLICATION_ID_VAR}" \
         -H "Authorization: ${!TOKEN_VAR}" \
         -H "Content-Type: application/json" \
         -d "{\"docker_registry_image_tag\":\"${BRANCH_TAG}\"}" > /dev/null
-
-      echo "Triggering deployment..."
 
       curl -f -sS -X POST \
         "${!URL_VAR}/deploy?uuid=${!APPLICATION_ID_VAR}&force=false" \
