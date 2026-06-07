@@ -1,10 +1,12 @@
 stages:
-  - prepare
   - build
   - push
 
+default:
+  tags:
+    - deploy
+
 variables:
-  CI_REGISTRY_IMAGE: "$CI_REGISTRY/$CI_PROJECT_PATH"
   IMAGE_TAG: "dev"
   BUILDING_BLOCK_BRANCH: "dev"
   DOCKER_BUILDKIT: "1"
@@ -12,70 +14,59 @@ variables:
 
 before_script:
   - echo "Running on shell runner"
-  - dotnet --version
   - docker --version
 
-prepare_context:
-  stage: prepare
+build_image:
+  stage: build
   only:
     - main
   script:
     - |
       set -e
 
+      echo "Preparing docker context..."
+
       rm -rf .docker-context
       mkdir -p .docker-context/catalog-service
 
+      echo "Copying current project..."
       tar \
         --exclude=".git" \
         --exclude=".docker-context" \
         -C "$CI_PROJECT_DIR" \
         -cf - . | tar -C "$CI_PROJECT_DIR/.docker-context/catalog-service" -xf -
 
+      echo "Cloning building-block beside catalog-service..."
       git clone --depth 1 \
         -b "$BUILDING_BLOCK_BRANCH" \
         "https://${BUILDING_BLOCK_USERNAME}:${BUILDING_BLOCK_TOKEN}@gitlab.bsla.dev/microservice/dotnet/building-block.git" \
         "$CI_PROJECT_DIR/.docker-context/building-block"
 
-      ls -la .docker-context
-
-  artifacts:
-    paths:
-      - .docker-context
-    expire_in: 1 hour
-
-build_image:
-  stage: build
-  needs:
-    - prepare_context
-  only:
-    - main
-  script:
-    - |
-      set -e
-
+      echo "Login to GitLab Registry..."
       echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" --password-stdin
 
+      echo "Building docker image..."
       docker build \
         --provenance=false \
-        --build-arg BUILDKIT_INLINE_CACHE=1 \
-        --cache-from="$CI_REGISTRY_IMAGE:cache" \
-        --tag "$CI_REGISTRY_IMAGE:$IMAGE_TAG" \
-        --tag "$CI_REGISTRY_IMAGE:cache" \
-        -f .docker-context/catalog-service/Dockerfile \
-        .docker-context
+        -t "$CI_REGISTRY_IMAGE:$IMAGE_TAG" \
+        -f "$CI_PROJECT_DIR/.docker-context/catalog-service/Dockerfile" \
+        "$CI_PROJECT_DIR/.docker-context"
 
 push_image:
   stage: push
-  needs:
-    - build_image
   only:
     - main
+  needs:
+    - build_image
   script:
     - |
       set -e
 
+      echo "Login to GitLab Registry..."
       echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" --password-stdin
 
+      echo "Pushing docker image..."
       docker push "$CI_REGISTRY_IMAGE:$IMAGE_TAG"
-      docker push "$CI_REGISTRY_IMAGE:cache"
+
+      echo "Image pushed successfully:"
+      echo "$CI_REGISTRY_IMAGE:$IMAGE_TAG"
