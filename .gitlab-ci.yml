@@ -18,10 +18,6 @@ variables:
   PORT_NUM_EXPOSED: 44381
   ENVIRONMENT: "Production"
 
-default:
-  tags:
-    - shell
-
 .build-template:
   stage: build
   script:
