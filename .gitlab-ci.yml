@@ -1,23 +1,38 @@
 stages:
-  - dev
+  - build
 
-build:
-  stage: dev
+variables:
+  IMAGE_NAME: $CI_REGISTRY_IMAGE
+  IMAGE_TAG: test
+
+build_only:
+  stage: build
+  image: docker:27
+  services:
+    - docker:27-dind
 
   before_script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
 
   script:
-    - mkdir workspace
+    - echo "Cloning BuildingBlock..."
 
-    - git clone https://oauth2:${BUILDINGBLOCK_TOKEN}@gitlab.bsla.dev/microservice/dotnet/building-block.git workspace/BuildingBlock
+    - git clone https://oauth2:${BUILDINGBLOCK_TOKEN}@gitlab.bsla.dev/microservice/dotnet/building-block.git BuildingBlock
 
-    - cp -R . workspace/CatalogService
+    - echo "Cloning CatalogService..."
 
-    - cd workspace
+    - git clone https://oauth2:${CI_JOB_TOKEN}@gitlab.bsla.dev/microservice/dotnet/catalog-service.git CatalogService
 
-    - docker build -t $CI_REGISTRY_IMAGE:latest -f CatalogService/Dockerfile .
+    - echo "Listing structure..."
+    - ls -la
+    - ls -la BuildingBlock
+    - ls -la CatalogService
 
-    - docker push $CI_REGISTRY_IMAGE:latest
+    - echo "Building Docker image..."
 
-    - curl -X POST "$COOLIFY_WEBHOOK"
+    - docker build \
+        -t $IMAGE_NAME:$IMAGE_TAG \
+        -f CatalogService/Dockerfile \
+        CatalogService
+
+    - echo "Build done"
