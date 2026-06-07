@@ -4,24 +4,26 @@ stages:
 variables:
   IMAGE_NAME: $CI_REGISTRY_IMAGE
   IMAGE_TAG: test
+  DOCKER_TLS_CERTDIR: ""
 
 build_only:
   stage: build
   image: docker:27
   services:
-    - docker:27-dind
+    - name: docker:27-dind
+
+  tags:
+    - docker
 
   before_script:
-    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
+    - echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" --password-stdin
 
   script:
     - echo "Cloning BuildingBlock..."
-
-    - git clone https://oauth2:${BUILDINGBLOCK_TOKEN}@gitlab.bsla.dev/microservice/dotnet/building-block.git BuildingBlock
+    - git clone "https://oauth2:${BUILDINGBLOCK_TOKEN}@gitlab.bsla.dev/microservice/dotnet/building-block.git" BuildingBlock
 
     - echo "Cloning CatalogService..."
-
-    - git clone https://oauth2:${CI_JOB_TOKEN}@gitlab.bsla.dev/microservice/dotnet/catalog-service.git CatalogService
+    - git clone "https://oauth2:${CI_JOB_TOKEN}@gitlab.bsla.dev/microservice/dotnet/catalog-service.git" CatalogService
 
     - echo "Listing structure..."
     - ls -la
@@ -29,10 +31,6 @@ build_only:
     - ls -la CatalogService
 
     - echo "Building Docker image..."
-
-    - docker build \
-        -t $IMAGE_NAME:$IMAGE_TAG \
-        -f CatalogService/Dockerfile \
-        CatalogService
+    - docker build -t "$IMAGE_NAME:$IMAGE_TAG" -f CatalogService/Dockerfile CatalogService
 
     - echo "Build done"
