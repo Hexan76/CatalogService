@@ -58,7 +58,7 @@ prepare_context:
       ls -la .docker-context
       ls -la .docker-context/catalog-service
       ls -la .docker-context/building-block
-      
+
   artifacts:
     paths:
       - .docker-context
@@ -66,17 +66,18 @@ prepare_context:
 
 build_image:
   stage: build
+  image: docker:27
   only:
     - dev
     - test
     - main
   needs:
     - prepare_context
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" --password-stdin
   script:
     - |
       set -e
-
-      mkdir -p .pnpm-store
 
       docker build \
         --provenance=false \
@@ -90,22 +91,23 @@ build_image:
 
 push_image:
   stage: push
+  image: docker:27
   only:
     - dev
     - test
     - main
   needs:
     - build_image
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" --password-stdin
   script:
     - |
       set -e
 
-      echo "image tag: $IMAGE_TAG"
-
       docker push "$CI_REGISTRY_IMAGE:$IMAGE_TAG"
       docker push "$CI_REGISTRY_IMAGE:$BRANCH_TAG"
       docker push "$CI_REGISTRY_IMAGE:cache"
-
+      
 deploy_coolify:
   stage: deploy
   only:
