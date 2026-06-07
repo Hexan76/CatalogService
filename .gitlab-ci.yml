@@ -1,6 +1,6 @@
 stages:
+  - prepare
   - build
-  - push
   - deploy
 
 variables:
@@ -11,81 +11,111 @@ variables:
 
   BUILDING_BLOCK_BRANCH: "stage"
 
-  DOCKER_BUILDKIT: "1"
-  BUILDKIT_PROGRESS: plain
+prepare_context:
+  stage: prepare
+  image: alpine:3.20
 
-before_script:
-  - echo "Running on shell executor"
-  - docker info
-  - echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" --password-stdin
-
-build_image:
-  stage: build
   tags:
     - docker
-  only:
-    - main
+
+  before_script:
+    - apk add --no-cache git
 
   script:
     - set -e
     - echo "Preparing Docker build context..."
 
+    - rm -rf .docker-context
+    - mkdir -p .docker-context/catalog-service
+    - mkdir -p .docker-context/building-block
+
+    - echo "Copying CatalogService..."
     - |
-      CONTEXT_DIR="$CI_PROJECT_DIR/../docker-context-$CI_PIPELINE_ID"
-
-      rm -rf "$CONTEXT_DIR"
-      mkdir -p "$CONTEXT_DIR/catalog-service"
-      mkdir -p "$CONTEXT_DIR/building-block"
-
-      echo "Copying CatalogService..."
       tar \
         --exclude=".git" \
         --exclude=".docker-context" \
         -C "$CI_PROJECT_DIR" \
-        -cf - . | tar -C "$CONTEXT_DIR/catalog-service" -xf -
+        -cf - . | tar -C "$CI_PROJECT_DIR/.docker-context/catalog-service" -xf -
 
-      echo "Cloning BuildingBlock..."
+    - echo "Cloning BuildingBlock..."
+    - |
       git clone --depth 1 \
         -b "$BUILDING_BLOCK_BRANCH" \
         "https://oauth2:${BUILDING_BLOCK_TOKEN}@gitlab.bsla.dev/microservice/dotnet/building-block.git" \
-        "$CONTEXT_DIR/building-block"
+        "$CI_PROJECT_DIR/.docker-context/building-block"
 
-      echo "Building Docker image..."
+    - echo "Build context is ready"
+    - ls -la .docker-context
+    - ls -la .docker-context/catalog-service
+    - ls -la .docker-context/building-block
 
-      docker build \
-        --provenance=false \
-        --build-arg BUILDKIT_INLINE_CACHE=1 \
-        --cache-from="$CI_REGISTRY_IMAGE:cache" \
-        --tag "$CI_REGISTRY_IMAGE:$IMAGE_TAG" \
-        --tag "$CI_REGISTRY_IMAGE:$BRANCH_TAG" \
-        --tag "$CI_REGISTRY_IMAGE:cache" \
-        -f "$CONTEXT_DIR/catalog-service/Dockerfile" \
-        "$CONTEXT_DIR"
+  artifacts:
+    paths:
+      - .docker-context/
+    expire_in: 1 hour
 
-push_image:
-  stage: push
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+
+
+build_and_push_image:
+  stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+
   tags:
     - docker
-  only:
-    - main
-  needs:
-    - build_image
 
-  script: |
-    set -e
-    echo "Image tag: $IMAGE_TAG"
-    docker push "$CI_REGISTRY_IMAGE:$IMAGE_TAG"
-    docker push "$CI_REGISTRY_IMAGE:$BRANCH_TAG"
-    docker push "$CI_REGISTRY_IMAGE:cache"
+  needs:
+    - prepare_context
+
+  script:
+    - set -e
+    - echo "Building and pushing image with Kaniko..."
+
+    - mkdir -p /kaniko/.docker
+
+    - |
+      cat > /kaniko/.docker/config.json <<EOF
+      {
+        "auths": {
+          "$CI_REGISTRY": {
+            "username": "$CI_REGISTRY_USER",
+            "password": "$CI_REGISTRY_PASSWORD"
+          }
+        }
+      }
+      EOF
+
+    - |
+      /kaniko/executor \
+        --context "$CI_PROJECT_DIR/.docker-context" \
+        --dockerfile "$CI_PROJECT_DIR/.docker-context/catalog-service/Dockerfile" \
+        --destination "$CI_REGISTRY_IMAGE:$IMAGE_TAG" \
+        --destination "$CI_REGISTRY_IMAGE:$BRANCH_TAG" \
+        --destination "$CI_REGISTRY_IMAGE:cache" \
+        --cache=true \
+        --cache-repo "$CI_REGISTRY_IMAGE/cache" \
+        --snapshot-mode=redo \
+        --use-new-run
+
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+
 
 deploy_to_coolify:
   stage: deploy
+  image: alpine:3.20
+
   tags:
     - docker
-  only:
-    - main
+
   needs:
-    - push_image
+    - build_and_push_image
+
+  before_script:
+    - apk add --no-cache curl
 
   script:
     - set -e
@@ -94,3 +124,6 @@ deploy_to_coolify:
     - |
       curl --fail --request GET "$COOLIFY_WEBHOOK" \
         --header "Authorization: Bearer $COOLIFY_TOKEN"
+
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
