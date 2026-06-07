@@ -1,30 +1,76 @@
 stages:
   - build
+  - deploy
 
 variables:
-  IMAGE_NAME: $CI_REGISTRY_IMAGE
-  IMAGE_TAG: test
+  DOCKER_DRIVER: overlay2
   DOCKER_TLS_CERTDIR: ""
+  DOCKER_BUILDKIT: "1"
 
-build_only:
+  BUILDING_BLOCK_BRANCH: "stage"
+
+  IMAGE_SHA: "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
+  IMAGE_STAGE: "$CI_REGISTRY_IMAGE:stage"
+
+build_catalog_service_image:
   stage: build
   image: docker:27
+
   services:
     - name: docker:27-dind
+      command: ["--tls=false"]
 
   tags:
     - docker
 
   before_script:
+    - apk add --no-cache git rsync
+    - docker info
+
+    # Login to GitLab Container Registry
     - echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" --password-stdin
 
   script:
-    - echo "Checking BuildingBlock token..."
-    - '[ -n "$BUILDINGBLOCK_TOKEN" ] || (echo "ERROR: BUILDINGBLOCK_TOKEN is empty or not available" && exit 1)'
-    - echo "Token length is ${#BUILDINGBLOCK_TOKEN}"
+    # Clone BuildingBlock beside the current project
+    - rm -rf "$CI_PROJECT_DIR/../building-block"
+    - git clone --depth 1 -b "$BUILDING_BLOCK_BRANCH" "https://oauth2:${BUILDING_BLOCK_TOKEN}@gitlab.bsla.dev/microservice/dotnet/building-block.git" "$CI_PROJECT_DIR/../building-block"
 
-    - echo "Testing access to BuildingBlock..."
-    - git ls-remote "https://oauth2:${BUILDINGBLOCK_TOKEN}@gitlab.bsla.dev/microservice/dotnet/building-block.git" HEAD
+    # Create clean Docker build context
+    - rm -rf "$CI_PROJECT_DIR/.docker-context"
+    - mkdir -p "$CI_PROJECT_DIR/.docker-context/catalog-service"
+    - mkdir -p "$CI_PROJECT_DIR/.docker-context/building-block"
 
-    - echo "Cloning BuildingBlock..."
-    - git clone "https://oauth2:${BUILDINGBLOCK_TOKEN}@gitlab.bsla.dev/microservice/dotnet/building-block.git" BuildingBlock
+    # Copy CatalogService and BuildingBlock into one Docker context
+    - rsync -a --delete --exclude ".git" --exclude ".docker-context" "$CI_PROJECT_DIR/" "$CI_PROJECT_DIR/.docker-context/catalog-service/"
+    - rsync -a --delete --exclude ".git" "$CI_PROJECT_DIR/../building-block/" "$CI_PROJECT_DIR/.docker-context/building-block/"
+
+    # Build image
+    - docker build
+      -f "$CI_PROJECT_DIR/.docker-context/catalog-service/Dockerfile"
+      -t "$IMAGE_SHA"
+      -t "$IMAGE_STAGE"
+      "$CI_PROJECT_DIR/.docker-context"
+
+    # Push image to GitLab Container Registry
+    - docker push "$IMAGE_SHA"
+    - docker push "$IMAGE_STAGE"
+
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+
+
+deploy_to_coolify:
+  stage: deploy
+  image: alpine:3.20
+
+  needs:
+    - build_catalog_service_image
+
+  before_script:
+    - apk add --no-cache curl
+
+  script:
+    - curl --fail --request GET "$COOLIFY_WEBHOOK" --header "Authorization: Bearer $COOLIFY_TOKEN"
+
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
