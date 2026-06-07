@@ -64,50 +64,34 @@ prepare_context:
       - .docker-context
     expire_in: 1 hour
 
-build_image:
+build_and_push:
   stage: build
-  image: docker:27
-  only:
-    - dev
-    - test
-    - main
+  image:
+    name: gcr.io/kaniko-project/executor:v1.23.2-debug
+    entrypoint: [""]
+  tags:
+    - docker
   needs:
     - prepare_context
-  before_script:
-    - echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" --password-stdin
-  script:
-    - |
-      set -e
-
-      docker build \
-        --provenance=false \
-        --build-arg BUILDKIT_INLINE_CACHE=1 \
-        --cache-from="$CI_REGISTRY_IMAGE:cache" \
-        --tag "$CI_REGISTRY_IMAGE:$IMAGE_TAG" \
-        --tag "$CI_REGISTRY_IMAGE:$BRANCH_TAG" \
-        --tag "$CI_REGISTRY_IMAGE:cache" \
-        -f .docker-context/catalog-service/Dockerfile \
-        .docker-context
-
-push_image:
-  stage: push
-  image: docker:27
   only:
     - dev
     - test
     - main
-  needs:
-    - build_image
-  before_script:
-    - echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" --password-stdin
   script:
     - |
       set -e
 
-      docker push "$CI_REGISTRY_IMAGE:$IMAGE_TAG"
-      docker push "$CI_REGISTRY_IMAGE:$BRANCH_TAG"
-      docker push "$CI_REGISTRY_IMAGE:cache"
-      
+      mkdir -p /kaniko/.docker
+
+      echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+
+      /kaniko/executor \
+        --context "$CI_PROJECT_DIR/.docker-context" \
+        --dockerfile "$CI_PROJECT_DIR/.docker-context/catalog-service/Dockerfile" \
+        --destination "$CI_REGISTRY_IMAGE:$IMAGE_TAG" \
+        --destination "$CI_REGISTRY_IMAGE:$BRANCH_TAG" \
+        --destination "$CI_REGISTRY_IMAGE:cache"
+              
 deploy_coolify:
   stage: deploy
   only:
