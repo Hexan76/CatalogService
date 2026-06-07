@@ -1,7 +1,7 @@
-﻿using Framework.BuildingBlock.Application.Contracts;
+using Framework.BuildingBlock.Application.Contracts;
 
 namespace CatalogService.Categories;
 
-public interface IPaginatedCategoryHandler : IFrameworkRequestHandler<PaginatedCategoryRequest, PaginatedCategoryResponse>
+public interface IPaginatedCategoryHandler : IFrameworkRequestHandler<ListCategoryRequest, ListCategoryResponse>
 {
 }

@@ -1,19 +1,19 @@
 using CatalogService.Application;
 using CatalogService.ObjectStorageService;
 
-using Framework.BuildingBlock.Application;
 using Framework.BuildingBlock.Application.Contracts;
 
 namespace CatalogService.Categories;
 
-public class PagiantedCategoryHandler(ICategoryRepository categoryRepository) : CatalogServiceAppService, IPaginatedCategoryHandler
+public class ListCategoryHandler(ICategoryRepository categoryRepository) : CatalogServiceAppService, IPaginatedCategoryHandler
 {
-    public async Task<MessageContract<PaginatedCategoryResponse>> Handle(PaginatedCategoryRequest request, CancellationToken cancellationToken)
+    public async Task<MessageContract<ListCategoryResponse>> Handle(ListCategoryRequest request, CancellationToken cancellationToken)
     {
-        var paged = await categoryRepository.GetPagedWithFilesAsync(request.FilterGroup.ToDomain(), request.Page, request.PageSize);
-        var result = await AsyncExecuter.ToListAsync(paged.Queryable);
+        var query = await categoryRepository.GetListWithFilesAsync(request.ParentId);
 
-        var response = new PaginatedCategoryResponse();
+        var result = await AsyncExecuter.ToListAsync(query.Queryable);
+
+        var response = new ListCategoryResponse();
 
         var mappedList = new List<CategoryModel>();
         foreach (var item in result)
@@ -37,8 +37,6 @@ public class PagiantedCategoryHandler(ICategoryRepository categoryRepository) : 
         }
         response.Items = mappedList;
 
-        response.TotalCount = paged.RowCount;
-
-        return MessageContract<PaginatedCategoryResponse>.Success(response);
+        return MessageContract<ListCategoryResponse>.Success(response);
     }
 }

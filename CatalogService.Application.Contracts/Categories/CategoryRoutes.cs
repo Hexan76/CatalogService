@@ -1,4 +1,4 @@
-﻿using Framework.BuildingBlock.Application.Contracts;
+using Framework.BuildingBlock.Application.Contracts;
 
 namespace CatalogService.Categories;
 
@@ -6,5 +6,7 @@ public class CategoryRoutes : BaseRoutes
 {
     public CategoryRoutes(string Prefix, string routeBase) : base(Prefix, routeBase)
     {
+        List = $"{Default}/list";
     }
+    public readonly string List;
 }

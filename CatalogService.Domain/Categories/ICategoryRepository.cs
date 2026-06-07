@@ -13,4 +13,7 @@ public interface ICategoryRepository : IRepositoryFramework<Category, Guid>
         int page = 1,
         int pageSize = 10,
         string sort = "");
+
+    Task<PagedResult<CategoryWithFilesQueryResult>>
+    GetListWithFilesAsync(Guid? parentId);
 }
