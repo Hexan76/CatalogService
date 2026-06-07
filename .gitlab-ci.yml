@@ -12,6 +12,11 @@ variables:
   DOCKER_BUILDKIT: "1"
   BUILDKIT_PROGRESS: "plain"
 
+
+default:
+  tags:
+    - docker
+    
 cache:
   key: "$CI_COMMIT_REF_SLUG"
   paths:
