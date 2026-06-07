@@ -1,31 +1,43 @@
 stages:
   - prepare
   - build
+  - push
   - deploy
 
 variables:
   CI_REGISTRY_IMAGE: "$CI_REGISTRY/$CI_PROJECT_PATH"
+
+  BRANCH_TAG: "$CI_COMMIT_REF_SLUG"
   IMAGE_TAG: "$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA"
-  STABLE_TAG: "$CI_COMMIT_REF_SLUG"
 
   BUILDING_BLOCK_BRANCH: "stage"
 
+  DOCKER_BUILDKIT: 1
+  BUILDKIT_PROGRESS: plain
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .pnpm-store/
+
+before_script:
+  - echo "Running on shell executor"
+  - echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" --password-stdin
+
 prepare_context:
   stage: prepare
-  image: alpine:3.20
-  tags:
-    - docker
-
+  only:
+    - dev
+    - test
+    - main
   before_script:
-    - apk add --no-cache git
-
+    - echo "Preparing build context"
   script:
     - set -e
     - rm -rf .docker-context
     - mkdir -p .docker-context/catalog-service
     - mkdir -p .docker-context/building-block
 
-    # Copy current project
     - |
       tar \
         --exclude=".git" \
@@ -33,7 +45,6 @@ prepare_context:
         -C "$CI_PROJECT_DIR" \
         -cf - . | tar -C "$CI_PROJECT_DIR/.docker-context/catalog-service" -xf -
 
-    # Clone BuildingBlock beside current project
     - |
       git clone --depth 1 \
         -b "$BUILDING_BLOCK_BRANCH" \
@@ -41,65 +52,86 @@ prepare_context:
         "$CI_PROJECT_DIR/.docker-context/building-block"
 
     - ls -la .docker-context
-    - ls -la .docker-context/building-block/src
+    - ls -la .docker-context/catalog-service
+    - ls -la .docker-context/building-block
 
   artifacts:
     paths:
       - .docker-context
     expire_in: 1 hour
 
-
-build_and_push:
+build_image:
   stage: build
-  image: docker:27
-  services:
-    - docker:27-dind
-  tags:
-    - docker
-
-  variables:
-    DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ""
-
+  only:
+    - dev
+    - test
+    - main
   needs:
     - prepare_context
-
-  before_script:
-    - echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" --password-stdin
-
   script:
-    - set -e
+    - mkdir -p .pnpm-store
 
-    - docker build
+    - >
+      docker build
+      --provenance=false
+      --build-arg BUILDKIT_INLINE_CACHE=1
+      --cache-from="$CI_REGISTRY_IMAGE:cache"
+      --tag "$CI_REGISTRY_IMAGE:$IMAGE_TAG"
+      --tag "$CI_REGISTRY_IMAGE:$BRANCH_TAG"
+      --tag "$CI_REGISTRY_IMAGE:cache"
       -f .docker-context/catalog-service/Dockerfile
-      -t "$CI_REGISTRY_IMAGE:$IMAGE_TAG"
-      -t "$CI_REGISTRY_IMAGE:$STABLE_TAG"
       .docker-context
 
+push_image:
+  stage: push
+  only:
+    - dev
+    - test
+    - main
+  needs:
+    - build_image
+  script:
+    - echo "image tag: $IMAGE_TAG"
     - docker push "$CI_REGISTRY_IMAGE:$IMAGE_TAG"
-    - docker push "$CI_REGISTRY_IMAGE:$STABLE_TAG"
-
-    - echo "IMAGE=$CI_REGISTRY_IMAGE:$STABLE_TAG" > image.env
-
-  artifacts:
-    reports:
-      dotenv: image.env
-
+    - docker push "$CI_REGISTRY_IMAGE:$BRANCH_TAG"
+    - docker push "$CI_REGISTRY_IMAGE:cache"
 
 deploy_coolify:
   stage: deploy
-  image: curlimages/curl:8.10.1
-  tags:
-    - docker
-
+  only:
+    - dev
+    - test
+    - main
   needs:
-    - build_and_push
-
+    - push_image
   script:
     - set -e
-    - echo "Deploying image $IMAGE to Coolify..."
-    - curl -fsSL -X POST "$COOLIFY_WEBHOOK_URL"
+    - echo "🚀 Deploying to Coolify..."
 
-  only:
-    - main
-    - stage
+    - |
+      URL_VAR="COOLIFY_BASE_URL_${CI_COMMIT_BRANCH}"
+      TOKEN_VAR="COOLIFY_TOKEN_${CI_COMMIT_BRANCH}"
+      APPLICATION_ID_VAR="COOLIFY_APPLICATION_ID_${CI_COMMIT_BRANCH}"
+
+      : "${!URL_VAR:?Missing ${URL_VAR}}"
+      : "${!TOKEN_VAR:?Missing ${TOKEN_VAR}}"
+      : "${!APPLICATION_ID_VAR:?Missing ${APPLICATION_ID_VAR}}"
+
+      echo "Updating image tag to: ${BRANCH_TAG}"
+
+      curl -f -sS --request PATCH \
+        "${!URL_VAR}/applications/${!APPLICATION_ID_VAR}" \
+        -H "Authorization: ${!TOKEN_VAR}" \
+        -H "Content-Type: application/json" \
+        -d '{
+          "docker_registry_image_tag": "'"${BRANCH_TAG}"'"
+        }' > /dev/null
+
+      echo "Triggering deployment..."
+
+      curl -f -sS -X POST \
+        "${!URL_VAR}/deploy?uuid=${!APPLICATION_ID_VAR}&force=false" \
+        -H "Authorization: ${!TOKEN_VAR}" \
+        -H "Content-Type: application/json" > /dev/null
+
+      echo "✅ Deployment triggered successfully"
