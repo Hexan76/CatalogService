@@ -6,17 +6,14 @@ stages:
 
 variables:
   CI_REGISTRY_IMAGE: "$CI_REGISTRY/$CI_PROJECT_PATH"
-
   BRANCH_TAG: "$CI_COMMIT_REF_SLUG"
   IMAGE_TAG: "$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA"
-
   BUILDING_BLOCK_BRANCH: "stage"
-
-  DOCKER_BUILDKIT: 1
-  BUILDKIT_PROGRESS: plain
+  DOCKER_BUILDKIT: "1"
+  BUILDKIT_PROGRESS: "plain"
 
 cache:
-  key: ${CI_COMMIT_REF_SLUG}
+  key: "$CI_COMMIT_REF_SLUG"
   paths:
     - .pnpm-store/
 
@@ -33,28 +30,27 @@ prepare_context:
   before_script:
     - echo "Preparing build context"
   script:
-    - set -e
-    - rm -rf .docker-context
-    - mkdir -p .docker-context/catalog-service
-    - mkdir -p .docker-context/building-block
-
     - |
+      set -e
+
+      rm -rf .docker-context
+      mkdir -p .docker-context/catalog-service
+      mkdir -p .docker-context/building-block
+
       tar \
         --exclude=".git" \
         --exclude=".docker-context" \
         -C "$CI_PROJECT_DIR" \
         -cf - . | tar -C "$CI_PROJECT_DIR/.docker-context/catalog-service" -xf -
 
-    - |
       git clone --depth 1 \
         -b "$BUILDING_BLOCK_BRANCH" \
         "https://${BUILDING_BLOCK_USERNAME}:${BUILDING_BLOCK_TOKEN}@gitlab.bsla.dev/microservice/dotnet/building-block.git" \
         "$CI_PROJECT_DIR/.docker-context/building-block"
 
-    - ls -la .docker-context
-    - ls -la .docker-context/catalog-service
-    - ls -la .docker-context/building-block
-
+      ls -la .docker-context
+      ls -la .docker-context/catalog-service
+      ls -la .docker-context/building-block
   artifacts:
     paths:
       - .docker-context
@@ -69,18 +65,20 @@ build_image:
   needs:
     - prepare_context
   script:
-    - mkdir -p .pnpm-store
+    - |
+      set -e
 
-    - >
-      docker build
-      --provenance=false
-      --build-arg BUILDKIT_INLINE_CACHE=1
-      --cache-from="$CI_REGISTRY_IMAGE:cache"
-      --tag "$CI_REGISTRY_IMAGE:$IMAGE_TAG"
-      --tag "$CI_REGISTRY_IMAGE:$BRANCH_TAG"
-      --tag "$CI_REGISTRY_IMAGE:cache"
-      -f .docker-context/catalog-service/Dockerfile
-      .docker-context
+      mkdir -p .pnpm-store
+
+      docker build \
+        --provenance=false \
+        --build-arg BUILDKIT_INLINE_CACHE=1 \
+        --cache-from="$CI_REGISTRY_IMAGE:cache" \
+        --tag "$CI_REGISTRY_IMAGE:$IMAGE_TAG" \
+        --tag "$CI_REGISTRY_IMAGE:$BRANCH_TAG" \
+        --tag "$CI_REGISTRY_IMAGE:cache" \
+        -f .docker-context/catalog-service/Dockerfile \
+        .docker-context
 
 push_image:
   stage: push
@@ -91,10 +89,14 @@ push_image:
   needs:
     - build_image
   script:
-    - echo "image tag: $IMAGE_TAG"
-    - docker push "$CI_REGISTRY_IMAGE:$IMAGE_TAG"
-    - docker push "$CI_REGISTRY_IMAGE:$BRANCH_TAG"
-    - docker push "$CI_REGISTRY_IMAGE:cache"
+    - |
+      set -e
+
+      echo "image tag: $IMAGE_TAG"
+
+      docker push "$CI_REGISTRY_IMAGE:$IMAGE_TAG"
+      docker push "$CI_REGISTRY_IMAGE:$BRANCH_TAG"
+      docker push "$CI_REGISTRY_IMAGE:cache"
 
 deploy_coolify:
   stage: deploy
@@ -105,10 +107,11 @@ deploy_coolify:
   needs:
     - push_image
   script:
-    - set -e
-    - echo "🚀 Deploying to Coolify..."
-
     - |
+      set -e
+
+      echo "🚀 Deploying to Coolify..."
+
       URL_VAR="COOLIFY_BASE_URL_${CI_COMMIT_BRANCH}"
       TOKEN_VAR="COOLIFY_TOKEN_${CI_COMMIT_BRANCH}"
       APPLICATION_ID_VAR="COOLIFY_APPLICATION_ID_${CI_COMMIT_BRANCH}"
@@ -123,9 +126,7 @@ deploy_coolify:
         "${!URL_VAR}/applications/${!APPLICATION_ID_VAR}" \
         -H "Authorization: ${!TOKEN_VAR}" \
         -H "Content-Type: application/json" \
-        -d '{
-          "docker_registry_image_tag": "'"${BRANCH_TAG}"'"
-        }' > /dev/null
+        -d "{\"docker_registry_image_tag\":\"${BRANCH_TAG}\"}" > /dev/null
 
       echo "Triggering deployment..."
 
