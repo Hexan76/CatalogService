@@ -22,7 +22,7 @@ prepare:
     expire_in: 1h
 
 docker:
-  stage: docker
+  stage: dev
   image: docker:27
 
   services:
@@ -45,7 +45,7 @@ docker:
     - docker push $IMAGE_NAME:$IMAGE_TAG
 
 deploy:
-  stage: deploy
+  stage: dev
   image: curlimages/curl:latest
 
   script:
