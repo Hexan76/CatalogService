@@ -1,55 +1,19 @@
-stages:
-  - dev
-
-variables:
-  IMAGE_NAME: $CI_REGISTRY_IMAGE
-  IMAGE_TAG: latest
-
 prepare:
   stage: dev
-  image: alpine/git
-
   script:
     - mkdir workspace
-
-    - git clone https://oauth2:${BUILDINGBLOCK_TOKEN}@gitlab.bsla.dev/microservice/dotnet/building-block.git workspace/BuildingBlock
-
-    - cp -R . workspace/CatalogService
+    - echo hello > workspace/test.txt
 
   artifacts:
     paths:
       - workspace
-    expire_in: 1h
 
 docker:
   stage: dev
-  image: docker:27
-
-  services:
-    - docker:27-dind
-
   dependencies:
     - prepare
 
-  before_script:
-    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
-
   script:
-    - cd workspace
-
-    - docker build \
-        -t $IMAGE_NAME:$IMAGE_TAG \
-        -f CatalogService/Dockerfile \
-        .
-
-    - docker push $IMAGE_NAME:$IMAGE_TAG
-
-deploy:
-  stage: dev
-  image: curlimages/curl:latest
-
-  script:
-    - curl -X POST "$COOLIFY_WEBHOOK"
-
-  only:
-    - stage
+    - pwd
+    - ls -la
+    - ls -la workspace
