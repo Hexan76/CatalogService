@@ -22,7 +22,7 @@ before_script:
 build_image:
   stage: build
   tags:
-    - shell
+    - docker
   only:
     - main
 
@@ -65,7 +65,7 @@ build_image:
 push_image:
   stage: push
   tags:
-    - shell
+    - docker
   only:
     - main
   needs:
@@ -81,7 +81,7 @@ push_image:
 deploy_to_coolify:
   stage: deploy
   tags:
-    - shell
+    - docker
   only:
     - main
   needs:
