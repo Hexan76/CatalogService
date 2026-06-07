@@ -1,87 +1,96 @@
 stages:
   - build
+  - push
   - deploy
 
 variables:
-  DOCKER_DRIVER: overlay2
-  DOCKER_TLS_CERTDIR: ""
-  DOCKER_BUILDKIT: "1"
+  CI_REGISTRY_IMAGE: "$CI_REGISTRY/$CI_PROJECT_PATH"
+
+  BRANCH_TAG: "$CI_COMMIT_REF_SLUG"
+  IMAGE_TAG: "$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA"
 
   BUILDING_BLOCK_BRANCH: "stage"
 
-  IMAGE_SHA: "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
-  IMAGE_STAGE: "$CI_REGISTRY_IMAGE:stage"
+  DOCKER_BUILDKIT: "1"
+  BUILDKIT_PROGRESS: plain
 
-build_catalog_service_image:
+before_script:
+  - echo "Running on shell executor"
+  - docker info
+  - echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" --password-stdin
+
+build_image:
   stage: build
-  image: docker:27
-
-  services:
-    - name: docker:27-dind
-      command: ["--tls=false"]
-
   tags:
-    - docker
-
-  before_script:
-    - apk add --no-cache git rsync
-    - docker info
-    - echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" --password-stdin
+    - shell
+  only:
+    - main
 
   script:
-    - rm -rf "$CI_PROJECT_DIR/../building-block"
+    - set -e
+    - echo "Preparing Docker build context..."
 
     - |
+      CONTEXT_DIR="$CI_PROJECT_DIR/../docker-context-$CI_PIPELINE_ID"
+
+      rm -rf "$CONTEXT_DIR"
+      mkdir -p "$CONTEXT_DIR/catalog-service"
+      mkdir -p "$CONTEXT_DIR/building-block"
+
+      echo "Copying CatalogService..."
+      tar \
+        --exclude=".git" \
+        --exclude=".docker-context" \
+        -C "$CI_PROJECT_DIR" \
+        -cf - . | tar -C "$CONTEXT_DIR/catalog-service" -xf -
+
+      echo "Cloning BuildingBlock..."
       git clone --depth 1 \
         -b "$BUILDING_BLOCK_BRANCH" \
         "https://oauth2:${BUILDING_BLOCK_TOKEN}@gitlab.bsla.dev/microservice/dotnet/building-block.git" \
-        "$CI_PROJECT_DIR/../building-block"
+        "$CONTEXT_DIR/building-block"
 
-    - rm -rf "$CI_PROJECT_DIR/.docker-context"
-    - mkdir -p "$CI_PROJECT_DIR/.docker-context/catalog-service"
-    - mkdir -p "$CI_PROJECT_DIR/.docker-context/building-block"
+      echo "Building Docker image..."
 
-    - |
-      rsync -a --delete \
-        --exclude ".git" \
-        --exclude ".docker-context" \
-        "$CI_PROJECT_DIR/" \
-        "$CI_PROJECT_DIR/.docker-context/catalog-service/"
-
-    - |
-      rsync -a --delete \
-        --exclude ".git" \
-        "$CI_PROJECT_DIR/../building-block/" \
-        "$CI_PROJECT_DIR/.docker-context/building-block/"
-
-    - |
       docker build \
-        -f "$CI_PROJECT_DIR/.docker-context/catalog-service/Dockerfile" \
-        -t "$IMAGE_SHA" \
-        -t "$IMAGE_STAGE" \
-        "$CI_PROJECT_DIR/.docker-context"
+        --provenance=false \
+        --build-arg BUILDKIT_INLINE_CACHE=1 \
+        --cache-from="$CI_REGISTRY_IMAGE:cache" \
+        --tag "$CI_REGISTRY_IMAGE:$IMAGE_TAG" \
+        --tag "$CI_REGISTRY_IMAGE:$BRANCH_TAG" \
+        --tag "$CI_REGISTRY_IMAGE:cache" \
+        -f "$CONTEXT_DIR/catalog-service/Dockerfile" \
+        "$CONTEXT_DIR"
 
-    - docker push "$IMAGE_SHA"
-    - docker push "$IMAGE_STAGE"
+push_image:
+  stage: push
+  tags:
+    - shell
+  only:
+    - main
+  needs:
+    - build_image
 
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-
+  script: |
+    set -e
+    echo "Image tag: $IMAGE_TAG"
+    docker push "$CI_REGISTRY_IMAGE:$IMAGE_TAG"
+    docker push "$CI_REGISTRY_IMAGE:$BRANCH_TAG"
+    docker push "$CI_REGISTRY_IMAGE:cache"
 
 deploy_to_coolify:
   stage: deploy
-  image: alpine:3.20
-
+  tags:
+    - shell
+  only:
+    - main
   needs:
-    - build_catalog_service_image
-
-  before_script:
-    - apk add --no-cache curl
+    - push_image
 
   script:
+    - set -e
+    - echo "Deploying to Coolify..."
+
     - |
       curl --fail --request GET "$COOLIFY_WEBHOOK" \
         --header "Authorization: Bearer $COOLIFY_TOKEN"
-
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
