@@ -26,32 +26,41 @@ build_catalog_service_image:
   before_script:
     - apk add --no-cache git rsync
     - docker info
-
-    # Login to GitLab Container Registry
     - echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" --password-stdin
 
   script:
-    # Clone BuildingBlock beside the current project
     - rm -rf "$CI_PROJECT_DIR/../building-block"
-    - git clone --depth 1 -b "$BUILDING_BLOCK_BRANCH" "https://oauth2:${BUILDING_BLOCK_TOKEN}@gitlab.bsla.dev/microservice/dotnet/building-block.git" "$CI_PROJECT_DIR/../building-block"
 
-    # Create clean Docker build context
+    - |
+      git clone --depth 1 \
+        -b "$BUILDING_BLOCK_BRANCH" \
+        "https://oauth2:${BUILDING_BLOCK_TOKEN}@gitlab.bsla.dev/microservice/dotnet/building-block.git" \
+        "$CI_PROJECT_DIR/../building-block"
+
     - rm -rf "$CI_PROJECT_DIR/.docker-context"
     - mkdir -p "$CI_PROJECT_DIR/.docker-context/catalog-service"
     - mkdir -p "$CI_PROJECT_DIR/.docker-context/building-block"
 
-    # Copy CatalogService and BuildingBlock into one Docker context
-    - rsync -a --delete --exclude ".git" --exclude ".docker-context" "$CI_PROJECT_DIR/" "$CI_PROJECT_DIR/.docker-context/catalog-service/"
-    - rsync -a --delete --exclude ".git" "$CI_PROJECT_DIR/../building-block/" "$CI_PROJECT_DIR/.docker-context/building-block/"
+    - |
+      rsync -a --delete \
+        --exclude ".git" \
+        --exclude ".docker-context" \
+        "$CI_PROJECT_DIR/" \
+        "$CI_PROJECT_DIR/.docker-context/catalog-service/"
 
-    # Build image
-    - docker build
-      -f "$CI_PROJECT_DIR/.docker-context/catalog-service/Dockerfile"
-      -t "$IMAGE_SHA"
-      -t "$IMAGE_STAGE"
-      "$CI_PROJECT_DIR/.docker-context"
+    - |
+      rsync -a --delete \
+        --exclude ".git" \
+        "$CI_PROJECT_DIR/../building-block/" \
+        "$CI_PROJECT_DIR/.docker-context/building-block/"
 
-    # Push image to GitLab Container Registry
+    - |
+      docker build \
+        -f "$CI_PROJECT_DIR/.docker-context/catalog-service/Dockerfile" \
+        -t "$IMAGE_SHA" \
+        -t "$IMAGE_STAGE" \
+        "$CI_PROJECT_DIR/.docker-context"
+
     - docker push "$IMAGE_SHA"
     - docker push "$IMAGE_STAGE"
 
@@ -70,7 +79,9 @@ deploy_to_coolify:
     - apk add --no-cache curl
 
   script:
-    - curl --fail --request GET "$COOLIFY_WEBHOOK" --header "Authorization: Bearer $COOLIFY_TOKEN"
+    - |
+      curl --fail --request GET "$COOLIFY_WEBHOOK" \
+        --header "Authorization: Bearer $COOLIFY_TOKEN"
 
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
