@@ -41,7 +41,7 @@ prepare_context:
     - |
       git clone --depth 1 \
         -b "$BUILDING_BLOCK_BRANCH" \
-        "https://oauth2:${BUILDING_BLOCK_TOKEN}@gitlab.bsla.dev/microservice/dotnet/building-block.git" \
+        "https://oauth2:${BUILDINGBLOCK_TOKEN}@gitlab.bsla.dev/microservice/dotnet/building-block.git" \
         "$CI_PROJECT_DIR/.docker-context/building-block"
 
     - echo "Build context is ready"
