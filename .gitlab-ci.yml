@@ -5,16 +5,14 @@ stages:
 
 variables:
   CI_REGISTRY_IMAGE: "$CI_REGISTRY/$CI_PROJECT_PATH"
-
-  BRANCH_TAG: "$CI_COMMIT_REF_SLUG"
   IMAGE_TAG: "$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA"
+  STABLE_TAG: "$CI_COMMIT_REF_SLUG"
 
   BUILDING_BLOCK_BRANCH: "stage"
 
 prepare_context:
   stage: prepare
   image: alpine:3.20
-
   tags:
     - docker
 
@@ -23,13 +21,11 @@ prepare_context:
 
   script:
     - set -e
-    - echo "Preparing Docker build context..."
-
     - rm -rf .docker-context
     - mkdir -p .docker-context/catalog-service
     - mkdir -p .docker-context/building-block
 
-    - echo "Copying CatalogService..."
+    # Copy current project
     - |
       tar \
         --exclude=".git" \
@@ -37,93 +33,73 @@ prepare_context:
         -C "$CI_PROJECT_DIR" \
         -cf - . | tar -C "$CI_PROJECT_DIR/.docker-context/catalog-service" -xf -
 
-    - echo "Cloning BuildingBlock..."
+    # Clone BuildingBlock beside current project
     - |
       git clone --depth 1 \
         -b "$BUILDING_BLOCK_BRANCH" \
         "https://${BUILDING_BLOCK_USERNAME}:${BUILDING_BLOCK_TOKEN}@gitlab.bsla.dev/microservice/dotnet/building-block.git" \
         "$CI_PROJECT_DIR/.docker-context/building-block"
-        
-    - echo "Build context is ready"
+
     - ls -la .docker-context
-    - ls -la .docker-context/catalog-service
-    - ls -la .docker-context/building-block
+    - ls -la .docker-context/building-block/src
 
   artifacts:
     paths:
-      - .docker-context/
+      - .docker-context
     expire_in: 1 hour
 
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
 
-
-build_and_push_image:
+build_and_push:
   stage: build
-  image:
-    name: gcr.io/kaniko-project/executor:debug
-    entrypoint: [""]
-
+  image: docker:27
+  services:
+    - docker:27-dind
   tags:
     - docker
+
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
 
   needs:
     - prepare_context
 
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" --password-stdin
+
   script:
     - set -e
-    - echo "Building and pushing image with Kaniko..."
 
-    - mkdir -p /kaniko/.docker
+    - docker build
+      -f .docker-context/catalog-service/Dockerfile
+      -t "$CI_REGISTRY_IMAGE:$IMAGE_TAG"
+      -t "$CI_REGISTRY_IMAGE:$STABLE_TAG"
+      .docker-context
 
-    - |
-      cat > /kaniko/.docker/config.json <<EOF
-      {
-        "auths": {
-          "$CI_REGISTRY": {
-            "username": "$CI_REGISTRY_USER",
-            "password": "$CI_REGISTRY_PASSWORD"
-          }
-        }
-      }
-      EOF
+    - docker push "$CI_REGISTRY_IMAGE:$IMAGE_TAG"
+    - docker push "$CI_REGISTRY_IMAGE:$STABLE_TAG"
 
-    - |
-      /kaniko/executor \
-        --context "$CI_PROJECT_DIR/.docker-context" \
-        --dockerfile "$CI_PROJECT_DIR/.docker-context/catalog-service/Dockerfile" \
-        --destination "$CI_REGISTRY_IMAGE:$IMAGE_TAG" \
-        --destination "$CI_REGISTRY_IMAGE:$BRANCH_TAG" \
-        --destination "$CI_REGISTRY_IMAGE:cache" \
-        --cache=true \
-        --cache-repo "$CI_REGISTRY_IMAGE/cache" \
-        --snapshot-mode=redo \
-        --use-new-run
+    - echo "IMAGE=$CI_REGISTRY_IMAGE:$STABLE_TAG" > image.env
 
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
+  artifacts:
+    reports:
+      dotenv: image.env
 
 
-deploy_to_coolify:
+deploy_coolify:
   stage: deploy
-  image: alpine:3.20
-
+  image: curlimages/curl:8.10.1
   tags:
     - docker
 
   needs:
-    - build_and_push_image
-
-  before_script:
-    - apk add --no-cache curl
+    - build_and_push
 
   script:
     - set -e
-    - echo "Deploying to Coolify..."
+    - echo "Deploying image $IMAGE to Coolify..."
+    - curl -fsSL -X POST "$COOLIFY_WEBHOOK_URL"
 
-    - |
-      curl --fail --request GET "$COOLIFY_WEBHOOK" \
-        --header "Authorization: Bearer $COOLIFY_TOKEN"
-
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
+  only:
+    - main
+    - stage
