@@ -18,7 +18,7 @@ before_script:
 prepare_context:
   stage: prepare
   only:
-    - stage
+    - main
   script:
     - |
       set -e
@@ -49,7 +49,7 @@ build_image:
   needs:
     - prepare_context
   only:
-    - stage
+    - main
   script:
     - |
       set -e
@@ -70,7 +70,7 @@ push_image:
   needs:
     - build_image
   only:
-    - stage
+    - main
   script:
     - |
       set -e
