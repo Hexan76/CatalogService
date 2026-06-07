@@ -1,19 +1,23 @@
-prepare:
+stages:
+  - dev
+
+build:
   stage: dev
+
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
+
   script:
     - mkdir workspace
-    - echo hello > workspace/test.txt
 
-  artifacts:
-    paths:
-      - workspace
+    - git clone https://oauth2:${BUILDINGBLOCK_TOKEN}@gitlab.bsla.dev/microservice/dotnet/building-block.git workspace/BuildingBlock
 
-docker:
-  stage: dev
-  dependencies:
-    - prepare
+    - cp -R . workspace/CatalogService
 
-  script:
-    - pwd
-    - ls -la
-    - ls -la workspace
+    - cd workspace
+
+    - docker build -t $CI_REGISTRY_IMAGE:latest -f CatalogService/Dockerfile .
+
+    - docker push $CI_REGISTRY_IMAGE:latest
+
+    - curl -X POST "$COOLIFY_WEBHOOK"
