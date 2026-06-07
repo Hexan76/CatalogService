@@ -28,11 +28,13 @@ before_script:
 
 prepare_context:
   stage: prepare
+  image: alpine:3.20
   only:
     - dev
     - test
     - main
   before_script:
+    - apk add --no-cache git tar
     - echo "Preparing build context"
   script:
     - |
@@ -56,6 +58,7 @@ prepare_context:
       ls -la .docker-context
       ls -la .docker-context/catalog-service
       ls -la .docker-context/building-block
+      
   artifacts:
     paths:
       - .docker-context
