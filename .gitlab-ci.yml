@@ -19,18 +19,12 @@ build_only:
     - echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" --password-stdin
 
   script:
+    - echo "Checking BuildingBlock token..."
+    - '[ -n "$BUILDINGBLOCK_TOKEN" ] || (echo "ERROR: BUILDINGBLOCK_TOKEN is empty or not available" && exit 1)'
+    - echo "Token length is ${#BUILDINGBLOCK_TOKEN}"
+
+    - echo "Testing access to BuildingBlock..."
+    - git ls-remote "https://oauth2:${BUILDINGBLOCK_TOKEN}@gitlab.bsla.dev/microservice/dotnet/building-block.git" HEAD
+
     - echo "Cloning BuildingBlock..."
     - git clone "https://oauth2:${BUILDINGBLOCK_TOKEN}@gitlab.bsla.dev/microservice/dotnet/building-block.git" BuildingBlock
-
-    - echo "Cloning CatalogService..."
-    - git clone "https://oauth2:${CI_JOB_TOKEN}@gitlab.bsla.dev/microservice/dotnet/catalog-service.git" CatalogService
-
-    - echo "Listing structure..."
-    - ls -la
-    - ls -la BuildingBlock
-    - ls -la CatalogService
-
-    - echo "Building Docker image..."
-    - docker build -t "$IMAGE_NAME:$IMAGE_TAG" -f CatalogService/Dockerfile CatalogService
-
-    - echo "Build done"
