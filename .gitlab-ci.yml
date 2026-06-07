@@ -1,136 +1,131 @@
 stages:
-  - prepare
   - build
-  - push
   - deploy
+  - cleanup
+
+variables:
+  BUILDING_BLOCK_REPO_URL: "gitlab.bsla.dev/microservice/dotnet/building-block.git"
+  BUILDING_BLOCK_BRANCH: "stage"
+  BUILDING_BLOCK_FOLDER: "building-block"
+
+  PROJECT_NAME: "catalog-service"
+  IMAGE_NAME: "img-catalog-service"
+  CONTAINER_NAME: "cnt-catalog-service"
+  IMAGE_TAG: "stage"
+  BACKUP_SUFFIX: "-old"
+
+  PORT_NUM_DOCKER: 44381
+  PORT_NUM_EXPOSED: 44381
+  ENVIRONMENT: "Production"
 
 default:
   tags:
     - shell
 
-variables:
-  CI_REGISTRY_IMAGE: "$CI_REGISTRY/$CI_PROJECT_PATH"
-  BRANCH_TAG: "$CI_COMMIT_REF_SLUG"
-  IMAGE_TAG: "$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA"
-  BUILDING_BLOCK_BRANCH: "stage"
-  DOCKER_BUILDKIT: "1"
-  BUILDKIT_PROGRESS: "plain"
-
-cache:
-  key: "$CI_COMMIT_REF_SLUG"
-  paths:
-    - .pnm-store/
-
-before_script:
-  - echo "Running on shell runner"
-  - dotnet --version
-  - docker --version
-
-prepare_context:
-  stage: prepare
-  only:
-    - dev
-    - test
-    - main
+.build-template:
+  stage: build
   script:
     - |
       set -e
 
-      rm -rf .docker-context
-      mkdir -p .docker-context/catalog-service
-      mkdir -p .docker-context/building-block
+      echo "@@@@@@@@@@@@@@ Preparing BuildingBlock Repo Started at: $(date '+%X') @@@@@@@@@@@@@@"
 
-      tar \
-        --exclude=".git" \
-        --exclude=".docker-context" \
-        -C "$CI_PROJECT_DIR" \
-        -cf - . | tar -C "$CI_PROJECT_DIR/.docker-context/catalog-service" -xf -
+      if [ -d "../${BUILDING_BLOCK_FOLDER}" ]; then
+        rm -rf "../${BUILDING_BLOCK_FOLDER}"
+      fi
 
       git clone --depth 1 \
-        -b "$BUILDING_BLOCK_BRANCH" \
-        "https://${BUILDING_BLOCK_USERNAME}:${BUILDING_BLOCK_TOKEN}@gitlab.bsla.dev/microservice/dotnet/building-block.git" \
-        "$CI_PROJECT_DIR/.docker-context/building-block"
+        -b "${BUILDING_BLOCK_BRANCH}" \
+        "https://${BUILDING_BLOCK_USERNAME}:${BUILDING_BLOCK_TOKEN}@${BUILDING_BLOCK_REPO_URL}" \
+        "../${BUILDING_BLOCK_FOLDER}"
 
-      ls -la .docker-context
+      if [ ! -d "../${BUILDING_BLOCK_FOLDER}" ]; then
+        echo "BuildingBlock repository clone failed!"
+        exit 1
+      fi
 
-  artifacts:
-    paths:
-      - .docker-context
-    expire_in: 1 hour
+      echo "@@@@@@@@@@@@@@ Preparing BuildingBlock Repo Finished at: $(date '+%X') @@@@@@@@@@@@@@"
 
-build_image:
-  stage: build
-  needs:
-    - prepare_context
-  only:
-    - dev
-    - test
-    - main
-  script:
+    - docker rmi "${IMAGE_NAME}:${IMAGE_TAG}${BACKUP_SUFFIX}" || echo "Old backup image does not exist"
+
     - |
-      set -e
+      if docker image inspect "${IMAGE_NAME}:${IMAGE_TAG}" > /dev/null 2>&1; then
+        docker tag "${IMAGE_NAME}:${IMAGE_TAG}" "${IMAGE_NAME}:${IMAGE_TAG}${BACKUP_SUFFIX}"
+        echo "Backup image created"
+      else
+        echo "No existing image found, skipping backup"
+      fi
 
-      echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" --password-stdin
+    - docker compose build --no-cache
 
-      docker build \
-        --provenance=false \
-        --build-arg BUILDKIT_INLINE_CACHE=1 \
-        --cache-from="$CI_REGISTRY_IMAGE:cache" \
-        --tag "$CI_REGISTRY_IMAGE:$IMAGE_TAG" \
-        --tag "$CI_REGISTRY_IMAGE:$BRANCH_TAG" \
-        --tag "$CI_REGISTRY_IMAGE:cache" \
-        -f .docker-context/catalog-service/Dockerfile \
-        .docker-context
-
-push_image:
-  stage: push
-  needs:
-    - build_image
-  only:
-    - dev
-    - test
-    - main
-  script:
-    - |
-      set -e
-
-      echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" --password-stdin
-
-      docker push "$CI_REGISTRY_IMAGE:$IMAGE_TAG"
-      docker push "$CI_REGISTRY_IMAGE:$BRANCH_TAG"
-      docker push "$CI_REGISTRY_IMAGE:cache"
-
-deploy_coolify:
+.deploy-template:
   stage: deploy
-  needs:
-    - push_image
-  only:
-    - dev
-    - test
-    - main
+  script:
+    - docker compose -p "${PROJECT_NAME}" down || true
+    - docker compose -p "${PROJECT_NAME}" up -d
+
+.cleanup-template:
+  stage: cleanup
   script:
     - |
       set -e
 
-      echo "🚀 Deploying to Coolify..."
+      df -h --total
 
-      URL_VAR="COOLIFY_BASE_URL_${CI_COMMIT_BRANCH}"
-      TOKEN_VAR="COOLIFY_TOKEN_${CI_COMMIT_BRANCH}"
-      APPLICATION_ID_VAR="COOLIFY_APPLICATION_ID_${CI_COMMIT_BRANCH}"
+      THRESHOLD_PERCENT=80
+      DISK_USED_PERCENT=$(df / --output=pcent | tail -1 | tr -d ' %')
 
-      : "${!URL_VAR:?Missing ${URL_VAR}}"
-      : "${!TOKEN_VAR:?Missing ${TOKEN_VAR}}"
-      : "${!APPLICATION_ID_VAR:?Missing ${APPLICATION_ID_VAR}}"
+      echo "Disk usage: ${DISK_USED_PERCENT}%"
 
-      curl -f -sS --request PATCH \
-        "${!URL_VAR}/applications/${!APPLICATION_ID_VAR}" \
-        -H "Authorization: ${!TOKEN_VAR}" \
-        -H "Content-Type: application/json" \
-        -d "{\"docker_registry_image_tag\":\"${BRANCH_TAG}\"}" > /dev/null
+      if [ "$DISK_USED_PERCENT" -ge "$THRESHOLD_PERCENT" ]; then
+        echo "High disk usage detected. Running docker system prune..."
+        docker system prune -f || true
+      else
+        echo "Disk usage is normal. Skipping cleanup."
+      fi
 
-      curl -f -sS -X POST \
-        "${!URL_VAR}/deploy?uuid=${!APPLICATION_ID_VAR}&force=false" \
-        -H "Authorization: ${!TOKEN_VAR}" \
-        -H "Content-Type: application/json" > /dev/null
+.stage-environment:
+  only:
+    - stage
+  variables:
+    IMAGE_TAG: "stage"
+    ENVIRONMENT: "Development"
+    PORT_NUM_EXPOSED: 44381
 
-      echo "✅ Deployment triggered successfully"
+.prod-environment:
+  only:
+    - main
+  variables:
+    IMAGE_TAG: "prod"
+    ENVIRONMENT: "Production"
+    PORT_NUM_EXPOSED: 44381
+
+build-stage:
+  extends:
+    - .build-template
+    - .stage-environment
+
+deploy-stage:
+  extends:
+    - .deploy-template
+    - .stage-environment
+
+cleanup-stage:
+  extends:
+    - .cleanup-template
+    - .stage-environment
+
+build-prod:
+  extends:
+    - .build-template
+    - .prod-environment
+
+deploy-prod:
+  extends:
+    - .deploy-template
+    - .prod-environment
+
+cleanup-prod:
+  extends:
+    - .cleanup-template
+    - .prod-environment
