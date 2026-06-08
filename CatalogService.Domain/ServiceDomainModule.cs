@@ -2,7 +2,7 @@ using CatalogService.Domain.Shared;
 
 using Framework.BuildingBlock.Domain;
 
-using Microsoft.Extensions.DependencyInjection
+using Microsoft.Extensions.DependencyInjection;
 using Volo.Abp.Modularity;
 
 namespace CatalogService.Domain;
