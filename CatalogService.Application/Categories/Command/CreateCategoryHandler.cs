@@ -1,6 +1,3 @@
-
-using System.Text.RegularExpressions;
-
 using CatalogService.Application;
 using CatalogService.ObjectStorageService;
 
