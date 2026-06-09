@@ -8,4 +8,5 @@ public class CreateCategoryRequest : IFrameworkRequest<CategoryModel>
     public string? Description { get; set; }
     public Guid? ImageId { get; set; }
     public Guid? ParentId { get; set; }
+
 }

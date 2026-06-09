@@ -1,8 +1,3 @@
-﻿using CatalogService.Categories;
-using CatalogService.Constants;
-using Framework.BuildingBlock.HttpApi;
-using Microsoft.AspNetCore.Http;
-
 namespace CatalogService.Locations;
 
 public class Create : BaseEndpoint<CreateCategoryRequest, CategoryModel>

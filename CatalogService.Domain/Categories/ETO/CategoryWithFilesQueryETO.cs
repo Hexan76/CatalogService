@@ -2,7 +2,7 @@ using CatalogService.Files;
 
 namespace CatalogService.Categories;
 
-public class CategoryWithFilesQueryResult
+public class CategoryWithFilesQueryETO
 {
     public Category Category { get; set; } = default!;
 

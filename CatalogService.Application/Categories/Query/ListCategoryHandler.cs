@@ -5,7 +5,7 @@ using Framework.BuildingBlock.Application.Contracts;
 
 namespace CatalogService.Categories;
 
-public class ListCategoryHandler(ICategoryRepository categoryRepository) : CatalogServiceAppService, IPaginatedCategoryHandler
+public class ListCategoryHandler(ICategoryRepository categoryRepository) : CatalogServiceAppService, IListCategoryHandler
 {
     public async Task<MessageContract<ListCategoryResponse>> Handle(ListCategoryRequest request, CancellationToken cancellationToken)
     {

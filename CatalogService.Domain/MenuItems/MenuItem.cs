@@ -1,8 +1,10 @@
-using Framework.BuildingBlock.Domain;
-using CatalogService.Categories;
 using System.ComponentModel.DataAnnotations.Schema;
-using Volo.Abp.Domain.Entities.Auditing;
+
 using CatalogService.MenuItemCategories;
+
+using Framework.BuildingBlock.Domain;
+
+using Volo.Abp.Domain.Entities.Auditing;
 
 namespace CatalogService.MenuItems;
 
