@@ -70,3 +70,21 @@ push_image:
 
       echo "Image pushed successfully:"
       echo "$CI_REGISTRY_IMAGE:$IMAGE_TAG"
+
+deploy_coolify:
+  stage: deploy
+  only:
+    - main
+  needs:
+    - push_image
+  script:
+    - |
+      set -e
+
+      echo "Deploying to Coolify..."
+
+      curl -f -sS -X POST \
+        "$COOLIFY_WEBHOOK_URL" \
+        -H "Authorization: Bearer $COOLIFY_TOKEN"
+
+      echo "Coolify deployment triggered successfully"
