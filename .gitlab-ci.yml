@@ -1,7 +1,8 @@
 stages:
   - build
   - push
-
+  - deploy
+  
 default:
   tags:
     - deploy
@@ -85,5 +86,5 @@ deploy_coolify:
 
       curl -f -sS "$COOLIFY_WEBHOOK_URL" \
         -H "Authorization: Bearer $COOLIFY_TOKEN"
-        
+
       echo "Coolify deployment triggered successfully"
