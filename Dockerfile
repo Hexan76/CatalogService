@@ -1,14 +1,16 @@
 # syntax=docker/dockerfile:1
 
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 
 WORKDIR /src
 
-COPY . .
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends git \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get update && apt-get install -y git
+COPY catalog-service/ .
 
-RUN git clone -b dev https://gitlab+deploy-token-2:gldt-cForGZgfnNQ-Gi6L1x4_@gitlab.bsla.dev/microservice/dotnet/building-block.git ../building-block
+COPY building-block ../building-block
 
 RUN dotnet restore CatalogService.Host/CatalogService.Host.csproj
 
@@ -17,7 +19,7 @@ RUN dotnet publish CatalogService.Host/CatalogService.Host.csproj \
     -o /app/publish \
     /p:UseAppHost=false
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
+FROM --platform=$TARGETPLATFORM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 
 WORKDIR /app
 

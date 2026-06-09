@@ -2,7 +2,7 @@ stages:
   - build
   - push
   - deploy
-  
+
 default:
   tags:
     - deploy
@@ -48,6 +48,7 @@ build_image:
 
       echo "Building docker image..."
       docker build \
+        --platform linux/arm64 \
         --provenance=false \
         -t "$CI_REGISTRY_IMAGE:$IMAGE_TAG" \
         -f "$CI_PROJECT_DIR/.docker-context/catalog-service/Dockerfile" \
