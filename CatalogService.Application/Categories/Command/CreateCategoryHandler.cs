@@ -1,4 +1,5 @@
 using CatalogService.Application;
+using CatalogService.Files;
 using CatalogService.ObjectStorageService;
 
 using Framework.BuildingBlock.Application.Contracts;
@@ -29,7 +30,7 @@ public class CreateCategoryHandler(CategoryManager categoryManager, IHttpClientS
                     EntityKey = result.Slug,
                     GenerateThumbnail=true,
                     Role="default",
-                    StorageEntityType=ObjectStorages.StorageEntityType.Category,
+                    StorageEntityType="Category",
                 }
             };
 

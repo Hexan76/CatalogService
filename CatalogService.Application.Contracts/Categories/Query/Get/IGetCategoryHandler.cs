@@ -1,4 +1,4 @@
-﻿using Framework.BuildingBlock.Application.Contracts;
+using Framework.BuildingBlock.Application.Contracts;
 
 namespace CatalogService.Categories;
 

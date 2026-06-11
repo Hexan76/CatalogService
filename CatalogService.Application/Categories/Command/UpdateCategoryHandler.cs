@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 
 using CatalogService.Application;
+using CatalogService.Files;
 using CatalogService.ObjectStorageService;
 
 using Framework.BuildingBlock.Application.Contracts;
@@ -28,7 +29,7 @@ public class UpdateCategoryHandler(CategoryManager categoryManager, IHttpClientS
                     EntityKey = result.Slug,
                     GenerateThumbnail=true,
                     Role="default",
-                    StorageEntityType=ObjectStorages.StorageEntityType.Category,
+                    StorageEntityType="Category",
                 }
             };
             var finalizeResponse = await httpClientService.SendAsync<FinalizeFilesResponse>(new FinalizeRequest() { Files = files });
