@@ -14,7 +14,7 @@ public class UpdateCategoryHandler(CategoryManager categoryManager, IHttpClientS
     public async Task<MessageContract<CategoryModel>> Handle(UpdateCategoryRequest request, CancellationToken cancellationToken)
     {
 
-        var result = await categoryManager.UpdateCategoryAsync(request.Id, request.Name, request.Description);
+        var result = await categoryManager.UpdateCategoryAsync(request.Id, request.Name, request.Description,request.BusinessTypeId);
 
         var response = ObjectMapper.Map<Category, CategoryModel>(result);
 

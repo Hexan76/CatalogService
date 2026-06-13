@@ -14,7 +14,7 @@ public class CreateCategoryHandler(CategoryManager categoryManager, IHttpClientS
 
         var createItem = ObjectMapper.Map<CreateCategoryRequest, Category>(request);
 
-        var result = await categoryManager.CreateCategoryAsync(createItem.Name, createItem.Description);
+        var result = await categoryManager.CreateCategoryAsync(createItem.Name, createItem.Description, request.BusinessTypeId);
 
         var response = ObjectMapper.Map<Category, CategoryModel>(result);
 

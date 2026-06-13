@@ -1,4 +1,5 @@
 using System.Linq.Dynamic.Core;
+using System.Linq.Expressions;
 
 using CatalogService.EntityFrameworkCore;
 using CatalogService.Files;
@@ -18,6 +19,13 @@ public class BusinessTypeRepository : EfCoreRepositoryFramework<CatalogServiceDb
     {
     }
 
+    public override async Task<IQueryable<BusinessType>> WithDetailsAsync(params Expression<Func<BusinessType, object>>[] propertySelectors)
+    {
+        return (await WithDetailsAsync())
+            .Include(x => x.CategoryBusinessTypes)
+            .ThenInclude(x => x.Category)
+            ;
+    }
     public async Task<PagedResult<BusinessTypeWithFilesQueryETO>> GetListWithFilesAsync()
     {
         var dbContext = await GetDbContextAsync();

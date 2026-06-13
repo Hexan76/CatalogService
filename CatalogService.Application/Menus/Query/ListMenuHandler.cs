@@ -1,42 +1,42 @@
-using CatalogService.Application;
-using CatalogService.ObjectStorageService;
+//using CatalogService.Application;
+//using CatalogService.ObjectStorageService;
 
-using Framework.BuildingBlock.Application.Contracts;
+//using Framework.BuildingBlock.Application.Contracts;
 
-namespace CatalogService.Menus;
+//namespace CatalogService.Menus;
 
-public class ListMenuHandler(ICategoryRepository categoryRepository) : CatalogServiceAppService, IListMenuHandler
-{
-    public async Task<MessageContract<ListMenuResponse>> Handle(ListMenuRequest request, CancellationToken cancellationToken)
-    {
-        var query = await categoryRepository.GetListWithFilesAsync(request.ParentId);
+//public class ListMenuHandler(ICategoryRepository categoryRepository) : CatalogServiceAppService, IListMenuHandler
+//{
+//    public async Task<MessageContract<ListMenuResponse>> Handle(ListMenuRequest request, CancellationToken cancellationToken)
+//    {
+//        var query = await categoryRepository.GetListWithFilesAsync(request.ParentId);
 
-        var result = await AsyncExecuter.ToListAsync(query.Queryable);
+//        var result = await AsyncExecuter.ToListAsync(query.Queryable);
 
-        var response = new ListCategoryResponse();
+//        var response = new ListCategoryResponse();
 
-        var mappedList = new List<CategoryModel>();
-        foreach (var item in result)
-        {
-            var catMap = ObjectMapper.Map<Category, CategoryModel>(item.Category);
+//        var mappedList = new List<CategoryModel>();
+//        foreach (var item in result)
+//        {
+//            var catMap = ObjectMapper.Map<Category, CategoryModel>(item.Category);
 
-            var files = item.Files
-                .OrderBy(x => x.Priority);
+//            var files = item.Files
+//                .OrderBy(x => x.Priority);
 
-            foreach (var file in files)
-            {
-                catMap.Image = new FileUrlModel
-                {
-                    Role = file.Role,
-                    Variants = file.Variants,
-                };
+//            foreach (var file in files)
+//            {
+//                catMap.Image = new FileUrlModel
+//                {
+//                    Role = file.Role,
+//                    Variants = file.Variants,
+//                };
 
-            }
+//            }
 
-            mappedList.Add(catMap);
-        }
-        response.Items = mappedList;
+//            mappedList.Add(catMap);
+//        }
+//        response.Items = mappedList;
 
-        return MessageContract<ListCategoryResponse>.Success(response);
-    }
-}
+//        return MessageContract<ListCategoryResponse>.Success(response);
+//    }
+//}

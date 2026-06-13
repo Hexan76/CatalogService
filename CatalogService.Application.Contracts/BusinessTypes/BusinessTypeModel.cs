@@ -1,3 +1,4 @@
+using CatalogService.Categories;
 using CatalogService.ObjectStorageService;
 
 using Volo.Abp.Application.Dtos;
@@ -11,6 +12,7 @@ public class BusinessTypeModel : EntityDto<Guid>
     public string? Description { get; set; }
     public int SortOrder { get; set; }
     public FileUrlModel Image { get; set; }
+    public ICollection<CategoryModel> Categories { get; set; }
     public bool IsDisabled { get; set; }
 
 }
