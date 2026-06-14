@@ -1,5 +1,5 @@
-﻿
-namespace CatalogService.Locations;
+
+namespace CatalogService.Categories;
 
 public class Get : BaseEndpoint<GetCategoryRequest, CategoryModel>
 {
@@ -7,7 +7,7 @@ public class Get : BaseEndpoint<GetCategoryRequest, CategoryModel>
     {
         base.Configure();
         Verbs(Http.GET);
-        Routes(CatalogServiceApiRoutes.CategoryRoutes.Default);
+        Routes(CatalogServiceApiRoutes.CategoryRoutes.Get);
         Tags([CatalogServiceApiTags.Category]);
         Options(c => c.WithTags([CatalogServiceApiTags.Category]));
         //Policies();

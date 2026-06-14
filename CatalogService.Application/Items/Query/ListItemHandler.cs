@@ -5,11 +5,11 @@
 
 //namespace CatalogService.Items;
 
-//public class ListItemHandler(ICategoryRepository categoryRepository) : CatalogServiceAppService, IListItemHandler
+//public class ListItemHandler(IItemRepository itemRepository) : CatalogServiceAppService, IListItemHandler
 //{
 //    public async Task<MessageContract<ListItemResponse>> Handle(ListItemRequest request, CancellationToken cancellationToken)
 //    {
-//        var query = await categoryRepository.GetListWithFilesAsync(request.ParentId);
+//        var query = await itemRepository.GetListWithFilesAsync(request.ParentId);
 
 //        var result = await AsyncExecuter.ToListAsync(query.Queryable);
 

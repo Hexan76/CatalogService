@@ -234,10 +234,16 @@ namespace CatalogService.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
+                    b.Property<int>("DiscountPrecent")
+                        .HasColumnType("integer");
+
                     b.Property<string>("ExtraProperties")
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("ExtraProperties");
+
+                    b.Property<bool>("HasDiscount")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Ingredients")
                         .IsRequired()

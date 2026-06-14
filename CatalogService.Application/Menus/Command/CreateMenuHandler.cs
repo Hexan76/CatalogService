@@ -1,64 +1,38 @@
-//using CatalogService.Application;
-//using CatalogService.ObjectStorageService;
+using System.Text.RegularExpressions;
 
-//using Framework.BuildingBlock.Application.Contracts;
-//using Framework.HttpClient.Abstractions;
+using CatalogService.Application;
 
-//namespace CatalogService.Menus;
+using Framework.BuildingBlock.Application.Contracts;
 
-//public class CreateMenuHandler(CategoryManager categoryManager, IHttpClientService httpClientService, FileManager fileManager) : CatalogServiceAppService, ICreateMenuHandler
-//{
-//    public async Task<MessageContract<MenuModel>> Handle(CreateMenuRequest request, CancellationToken cancellationToken)
-//    {
+namespace CatalogService.Menus;
 
-//        var createItem = ObjectMapper.Map<CreateCategoryRequest, Category>(request);
+public class CreateMenuHandler(IMenuRepository menuRepository) : CatalogServiceAppService, ICreateMenuHandler
+{
+    public async Task<MessageContract<MenuModel>> Handle(CreateMenuRequest request, CancellationToken cancellationToken)
+    {
 
-//        var result = await categoryManager.CreateCategoryAsync(createItem.Name, createItem.Description);
+        var createItem = ObjectMapper.Map<CreateMenuRequest, Menu>(request);
+        createItem.Slug = GenerateSlug(createItem.Name);
+        var result = await menuRepository.InsertAsync(createItem);
 
-//        var response = ObjectMapper.Map<Category, CategoryModel>(result);
+        var response = ObjectMapper.Map<Menu, MenuModel>(result);
 
-//        if (request.ImageId is not null)
-//        {
-//            var files = new List<FinalizeModel>
-//            {
-//                new FinalizeModel()
-//                {
-//                    Id = request.ImageId??Guid.Empty,
-//                    AppType = ObjectStorages.StorageAppType.QasedFood,
-//                    FileName = result.Name,
-//                    EntityKey = result.Slug,
-//                    GenerateThumbnail=true,
-//                    Role="default",
-//                    StorageEntityType=ObjectStorages.StorageEntityType.Category,
-//                }
-//            };
 
-//            var finalizeResponse = await httpClientService.SendAsync<FinalizeFilesResponse>(new FinalizeRequest() { Files = files });
+        return MessageContract<MenuModel>.Success(response);
+    }
+    static string GenerateSlug(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+            return string.Empty;
 
-//            if (finalizeResponse != null && finalizeResponse.Files.Any())
-//            {
-//                var file = finalizeResponse.Files.FirstOrDefault();
+        text = text.Trim();
 
-//                var fileResult = await fileManager.AddRelatedFileWithEntity(
-//                    file!.Id,
-//                    result.Id,
-//                    typeof(Category).Name,
-//                    file.URL,
-//                    file.FileName,
-//                    file.Size,
-//                    file.Extension,
-//                    "default",
-//                    file.Variants);
+        text = Regex.Replace(text, @"\s+", "-");
 
-//                response.Image = new FileUrlModel()
-//                {
-//                    Role = "default",
-//                    Variants = file.Variants
-//                };
-//            }
-//        }
+        text = Regex.Replace(text, @"[^a-zA-Z0-9\u0600-\u06FF\-]", "");
 
-//        return MessageContract<CategoryModel>.Success(response);
-//    }
+        text = Regex.Replace(text, @"-+", "-");
 
-//}
+        return text.ToLowerInvariant();
+    }
+}

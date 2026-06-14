@@ -25,6 +25,7 @@ public class UpdateBusinessTypeHandler(IBusinessTypeRepository businessTypeRepos
             {
                 new FinalizeModel()
                 {
+                    Id=request.ImageId.Value,
                     AppType = ObjectStorages.StorageAppType.QasedFood,
                     FileName = result.Name,
                     EntityKey = result.Name,

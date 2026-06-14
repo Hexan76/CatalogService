@@ -1,10 +1,6 @@
-﻿using Framework.BuildingBlock.Application.Contracts;
-using Framework.BuildingBlock.HttpApi;
-using Microsoft.AspNetCore.Http;
-using CatalogService.Constants;
-using CatalogService.Categories;
+using Framework.BuildingBlock.Application.Contracts;
 
-namespace CatalogService.Locations;
+namespace CatalogService.Categories;
 
 public class Delete : BaseEndpoint<DeleteCategoryRequest, BaseResponse>
 {

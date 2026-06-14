@@ -14,6 +14,15 @@ public class MenuItemConfig : IEntityTypeConfiguration<MenuItem>
         builder.ToTable(nameof(MenuItem), CatalogServiceDbProperties.DbSchema);
         builder.ConfigureByConvention();
 
+        builder.HasOne(p => p.Menu)
+            .WithMany(c => c.MenuItems)
+            .HasForeignKey(fk => fk.MenuId)
+            .OnDelete(deleteBehavior: DeleteBehavior.Restrict);
+
+        builder.HasOne(p => p.Item)
+            .WithMany(c => c.MenuItems)
+            .HasForeignKey(fk => fk.ItemId)
+            .OnDelete(deleteBehavior: DeleteBehavior.Restrict);
 
     }
 }

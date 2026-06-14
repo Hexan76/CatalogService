@@ -7,7 +7,7 @@ public class Get : BaseEndpoint<GetBusinessTypeRequest, BusinessTypeModel>
     {
         base.Configure();
         Verbs(Http.GET);
-        Routes(CatalogServiceApiRoutes.BusinessTypeRoutes.Default);
+        Routes(CatalogServiceApiRoutes.BusinessTypeRoutes.Get);
         Tags([CatalogServiceApiTags.BusinessType]);
         Options(c => c.WithTags([CatalogServiceApiTags.BusinessType]));
         //Policies();
