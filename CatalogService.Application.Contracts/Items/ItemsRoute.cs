@@ -8,7 +8,9 @@ public class ItemsRoute : BaseRoutes
     {
         List = $"{Default}/list";
         MenuItemList = $"{Default}/menu-items";
+        SearchItem = $"{Default}/search-items";
     }
     public readonly string List;
     public readonly string MenuItemList;
+    public readonly string SearchItem;
 }

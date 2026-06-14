@@ -301,6 +301,44 @@ namespace CatalogService.Migrations
                     b.ToTable("ItemCategory", (string)null);
                 });
 
+            modelBuilder.Entity("CatalogService.Items.ItemVariant", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<int>("DiscountPrecent")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("HasDiscount")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
+
+                    b.ToTable("ItemVariant");
+                });
+
             modelBuilder.Entity("CatalogService.Menus.Menu", b =>
                 {
                     b.Property<Guid>("Id")
@@ -426,18 +464,29 @@ namespace CatalogService.Migrations
                     b.Navigation("Item");
                 });
 
+            modelBuilder.Entity("CatalogService.Items.ItemVariant", b =>
+                {
+                    b.HasOne("CatalogService.Items.Item", "Item")
+                        .WithMany("Variants")
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Item");
+                });
+
             modelBuilder.Entity("CatalogService.Menus.MenuItem", b =>
                 {
                     b.HasOne("CatalogService.Items.Item", "Item")
-                        .WithMany()
+                        .WithMany("MenuItems")
                         .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("CatalogService.Menus.Menu", "Menu")
                         .WithMany("MenuItems")
                         .HasForeignKey("MenuId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Item");
@@ -462,6 +511,10 @@ namespace CatalogService.Migrations
             modelBuilder.Entity("CatalogService.Items.Item", b =>
                 {
                     b.Navigation("ItemCategories");
+
+                    b.Navigation("MenuItems");
+
+                    b.Navigation("Variants");
                 });
 
             modelBuilder.Entity("CatalogService.Menus.Menu", b =>
