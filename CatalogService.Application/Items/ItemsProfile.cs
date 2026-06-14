@@ -13,5 +13,7 @@ public class ItemsProfile : Profile
         CreateMap<CreateItemRequest, Item>(memberList: MemberList.None);
         CreateMap<UpdateItemRequest, Item>(memberList: MemberList.None);
 
+        CreateMap<VariantModel, ItemVariant>(memberList: MemberList.None);
+        CreateMap<ItemVariant, VariantModel>(memberList: MemberList.None);
     }
 }
