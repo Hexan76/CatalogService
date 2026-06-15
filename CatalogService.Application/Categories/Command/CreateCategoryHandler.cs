@@ -1,4 +1,5 @@
 using CatalogService.Application;
+using CatalogService.Files;
 using CatalogService.ObjectStorageService;
 
 using Framework.BuildingBlock.Application.Contracts;
@@ -13,7 +14,7 @@ public class CreateCategoryHandler(CategoryManager categoryManager, IHttpClientS
 
         var createItem = ObjectMapper.Map<CreateCategoryRequest, Category>(request);
 
-        var result = await categoryManager.CreateCategoryAsync(createItem.Name, createItem.Description);
+        var result = await categoryManager.CreateCategoryAsync(createItem.Name, createItem.Description, request.BusinessTypeId);
 
         var response = ObjectMapper.Map<Category, CategoryModel>(result);
 
@@ -29,7 +30,7 @@ public class CreateCategoryHandler(CategoryManager categoryManager, IHttpClientS
                     EntityKey = result.Slug,
                     GenerateThumbnail=true,
                     Role="default",
-                    StorageEntityType=ObjectStorages.StorageEntityType.Category,
+                    StorageEntityType="Category",
                 }
             };
 

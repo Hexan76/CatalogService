@@ -1,0 +1,16 @@
+namespace CatalogService.Items;
+
+public class SearchItem : BaseEndpoint<SearchItemRequest, SearchItemResponse>
+{
+    public override void Configure()
+    {
+        base.Configure();
+        Verbs(Http.GET);
+        Routes(CatalogServiceApiRoutes.ItemRoutes.SearchItem);
+        Tags([CatalogServiceApiTags.Item]);
+        Options(c => c.WithTags([CatalogServiceApiTags.Item]));
+        //Policies();
+        //Permissions();
+        AllowAnonymous();
+    }
+}

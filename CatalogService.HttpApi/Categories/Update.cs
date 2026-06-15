@@ -1,12 +1,4 @@
-﻿using CatalogService.Categories;
-using CatalogService.Constants;
-using Framework.BuildingBlock.HttpApi;
-using MediatR;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
-
-namespace CatalogService.Locations;
+namespace CatalogService.Categories;
 
 public class Update : BaseEndpoint<UpdateCategoryRequest, CategoryModel>
 {

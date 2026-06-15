@@ -1,4 +1,4 @@
-namespace CatalogService.Locations;
+namespace CatalogService.Categories;
 
 public class Create : BaseEndpoint<CreateCategoryRequest, CategoryModel>
 {

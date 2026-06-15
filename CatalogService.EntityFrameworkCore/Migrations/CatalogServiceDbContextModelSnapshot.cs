@@ -27,7 +27,7 @@ namespace CatalogService.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("CatalogService.Categories.Category", b =>
+            modelBuilder.Entity("CatalogService.BusinessTypes.BusinessType", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -71,12 +71,66 @@ namespace CatalogService.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BusinessType", (string)null);
+                });
+
+            modelBuilder.Entity("CatalogService.Categories.Category", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("ConcurrencyStamp");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ExtraProperties")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("ExtraProperties");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
                     b.Property<Guid?>("ParentId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Slug")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<int>("SortOrder")
                         .HasColumnType("integer");
@@ -85,7 +139,31 @@ namespace CatalogService.Migrations
 
                     b.HasIndex("ParentId");
 
+                    b.HasIndex("Slug")
+                        .IsUnique();
+
                     b.ToTable("Category", (string)null);
+                });
+
+            modelBuilder.Entity("CatalogService.Categories.CategoryBusinessType", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("BusinessTypeId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BusinessTypeId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("CategoryBusinessType", (string)null);
                 });
 
             modelBuilder.Entity("CatalogService.Files.FileEntity", b =>
@@ -132,22 +210,7 @@ namespace CatalogService.Migrations
                     b.ToTable("FileEntity", (string)null);
                 });
 
-            modelBuilder.Entity("CatalogService.MenuItemCategories.MenuItemCategory", b =>
-                {
-                    b.Property<Guid>("MenuItemId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("CategoryId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("MenuItemId", "CategoryId");
-
-                    b.HasIndex("CategoryId");
-
-                    b.ToTable("MenuItemCategory", (string)null);
-                });
-
-            modelBuilder.Entity("CatalogService.MenuItems.MenuItem", b =>
+            modelBuilder.Entity("CatalogService.Items.Item", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -171,6 +234,132 @@ namespace CatalogService.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
+                    b.Property<int>("DiscountPrecent")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ExtraProperties")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("ExtraProperties");
+
+                    b.Property<bool>("HasDiscount")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Ingredients")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("VendorId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VendorId");
+
+                    b.ToTable("Item", (string)null);
+                });
+
+            modelBuilder.Entity("CatalogService.Items.ItemCategory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("ItemId", "CategoryId")
+                        .IsUnique();
+
+                    b.ToTable("ItemCategory", (string)null);
+                });
+
+            modelBuilder.Entity("CatalogService.Items.ItemVariant", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<int>("DiscountPrecent")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("HasDiscount")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
+
+                    b.ToTable("ItemVariant");
+                });
+
+            modelBuilder.Entity("CatalogService.Menus.Menu", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("ConcurrencyStamp");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CreatorId");
+
                     b.Property<string>("ExtraProperties")
                         .IsRequired()
                         .HasColumnType("text")
@@ -191,9 +380,6 @@ namespace CatalogService.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("numeric");
-
                     b.Property<string>("Slug")
                         .IsRequired()
                         .HasColumnType("text");
@@ -205,6 +391,27 @@ namespace CatalogService.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.ToTable("Menu", (string)null);
+                });
+
+            modelBuilder.Entity("CatalogService.Menus.MenuItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("MenuId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("MenuId");
 
                     b.ToTable("MenuItem", (string)null);
                 });
@@ -219,35 +426,100 @@ namespace CatalogService.Migrations
                     b.Navigation("Parent");
                 });
 
-            modelBuilder.Entity("CatalogService.MenuItemCategories.MenuItemCategory", b =>
+            modelBuilder.Entity("CatalogService.Categories.CategoryBusinessType", b =>
+                {
+                    b.HasOne("CatalogService.BusinessTypes.BusinessType", "BusinessType")
+                        .WithMany("CategoryBusinessTypes")
+                        .HasForeignKey("BusinessTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CatalogService.Categories.Category", "Category")
+                        .WithMany("CategoryBusinessTypes")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("BusinessType");
+
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("CatalogService.Items.ItemCategory", b =>
                 {
                     b.HasOne("CatalogService.Categories.Category", "Category")
-                        .WithMany("MenuItemCategories")
+                        .WithMany("ItemCategories")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CatalogService.MenuItems.MenuItem", "MenuItem")
-                        .WithMany("MenuItemCategories")
-                        .HasForeignKey("MenuItemId")
+                    b.HasOne("CatalogService.Items.Item", "Item")
+                        .WithMany("ItemCategories")
+                        .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Category");
 
-                    b.Navigation("MenuItem");
+                    b.Navigation("Item");
+                });
+
+            modelBuilder.Entity("CatalogService.Items.ItemVariant", b =>
+                {
+                    b.HasOne("CatalogService.Items.Item", "Item")
+                        .WithMany("Variants")
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Item");
+                });
+
+            modelBuilder.Entity("CatalogService.Menus.MenuItem", b =>
+                {
+                    b.HasOne("CatalogService.Items.Item", "Item")
+                        .WithMany("MenuItems")
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CatalogService.Menus.Menu", "Menu")
+                        .WithMany("MenuItems")
+                        .HasForeignKey("MenuId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Item");
+
+                    b.Navigation("Menu");
+                });
+
+            modelBuilder.Entity("CatalogService.BusinessTypes.BusinessType", b =>
+                {
+                    b.Navigation("CategoryBusinessTypes");
                 });
 
             modelBuilder.Entity("CatalogService.Categories.Category", b =>
                 {
+                    b.Navigation("CategoryBusinessTypes");
+
                     b.Navigation("Children");
 
-                    b.Navigation("MenuItemCategories");
+                    b.Navigation("ItemCategories");
                 });
 
-            modelBuilder.Entity("CatalogService.MenuItems.MenuItem", b =>
+            modelBuilder.Entity("CatalogService.Items.Item", b =>
                 {
-                    b.Navigation("MenuItemCategories");
+                    b.Navigation("ItemCategories");
+
+                    b.Navigation("MenuItems");
+
+                    b.Navigation("Variants");
+                });
+
+            modelBuilder.Entity("CatalogService.Menus.Menu", b =>
+                {
+                    b.Navigation("MenuItems");
                 });
 #pragma warning restore 612, 618
         }
