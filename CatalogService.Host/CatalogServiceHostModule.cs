@@ -11,6 +11,7 @@ using FastEndpoints;
 using FastEndpoints.Swagger;
 
 using Framework.BuildingBlock.HttpApi;
+using Framework.BuildingBlock.Models;
 
 using MassTransit;
 
@@ -199,7 +200,7 @@ public class CatalogServiceHostModule : AbpModule
 
         Configure<AbpExceptionHandlingOptions>(options =>
         {
-            options.SendStackTraceToClients = false;
+            options.SendStackTraceToClients = true;
             options.SendExceptionsDetailsToClients = false;
         });
 

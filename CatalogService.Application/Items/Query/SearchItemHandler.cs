@@ -44,6 +44,6 @@ public class SearchItemHandler(IItemRepository itemRepository, IFileRepository f
         }
 
 
-        return MessageContract<SearchItemResponse>.Success(response);
+        return MessageContract<SearchItemResponse>.Success(response, "paginated Success", totalCount: (int)response.TotalCount, queryPaged.CurrentPage);
     }
 }
