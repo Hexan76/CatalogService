@@ -6,5 +6,6 @@ public class CreateMenuRequest : IFrameworkRequest<MenuModel>
 {
     public string Name { get; set; } = default!;
     public int SortOrder { get; set; }
+    public Guid VendorId { get; set; }
 
 }
