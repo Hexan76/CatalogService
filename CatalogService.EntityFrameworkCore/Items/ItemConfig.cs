@@ -27,11 +27,11 @@ public class ItemConfig : IEntityTypeConfiguration<Item>
         builder.HasMany(x => x.ItemCategories)
             .WithOne(x => x.Item)
             .HasForeignKey(x => x.ItemId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasMany(x => x.Variants)
             .WithOne(x => x.Item)
             .HasForeignKey(x => x.ItemId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

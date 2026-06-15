@@ -469,7 +469,7 @@ namespace CatalogService.Migrations
                     b.HasOne("CatalogService.Items.Item", "Item")
                         .WithMany("Variants")
                         .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Item");
@@ -480,7 +480,7 @@ namespace CatalogService.Migrations
                     b.HasOne("CatalogService.Items.Item", "Item")
                         .WithMany("MenuItems")
                         .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("CatalogService.Menus.Menu", "Menu")

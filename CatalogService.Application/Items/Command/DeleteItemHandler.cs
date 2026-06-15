@@ -7,7 +7,7 @@ public class DeleteItemHandler(IItemRepository itemRepository) : IDeleteItemHand
 {
     public async Task<MessageContract<BaseResponse>> Handle(DeleteItemRequest request, CancellationToken cancellationToken)
     {
-        var founded = await itemRepository.GetAsync(request.Id);
+        var founded = await itemRepository.GetAsync(request.Id, true);
 
         await itemRepository.DeleteAsync(founded);
 

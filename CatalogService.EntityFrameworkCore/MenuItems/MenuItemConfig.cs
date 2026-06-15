@@ -22,7 +22,7 @@ public class MenuItemConfig : IEntityTypeConfiguration<MenuItem>
         builder.HasOne(p => p.Item)
             .WithMany(c => c.MenuItems)
             .HasForeignKey(fk => fk.ItemId)
-            .OnDelete(deleteBehavior: DeleteBehavior.Restrict);
+            .OnDelete(deleteBehavior: DeleteBehavior.Cascade);
 
     }
 }
