@@ -12,5 +12,5 @@ public class VariantModel : EntityDto<Guid>
     public int SortOrder { get; set; }
     public bool IsDisabled { get; set; }
     public virtual Guid MenuId { get; set; }
-    public virtual Guid VendorId { get; set; }
+    public virtual long VendorId { get; set; }
 }

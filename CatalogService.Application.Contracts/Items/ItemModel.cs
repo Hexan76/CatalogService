@@ -22,5 +22,5 @@ public class ItemModel : EntityDto<Guid>
     public FileUrlModel Image { get; set; }
 
     public ICollection<VariantModel> Variants { get; set; } = [];
-    public virtual Guid VendorId { get; set; }
+    public virtual long VendorId { get; set; }
 }

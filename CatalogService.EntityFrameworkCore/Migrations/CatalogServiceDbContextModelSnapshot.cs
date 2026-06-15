@@ -269,8 +269,8 @@ namespace CatalogService.Migrations
                     b.Property<int>("SortOrder")
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("VendorId")
-                        .HasColumnType("uuid");
+                    b.Property<long>("VendorId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -387,8 +387,8 @@ namespace CatalogService.Migrations
                     b.Property<int>("SortOrder")
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("VendorId")
-                        .HasColumnType("uuid");
+                    b.Property<long>("VendorId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 

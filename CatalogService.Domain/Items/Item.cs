@@ -26,5 +26,5 @@ public class Item : AuditedAggregateRoot<Guid>, IHasDisabled
     public virtual ICollection<MenuItem> MenuItems { get; set; } = [];
     public virtual ICollection<ItemVariant> Variants { get; set; } = [];
 
-    public virtual Guid VendorId { get; set; }
+    public virtual long VendorId { get; set; }
 }

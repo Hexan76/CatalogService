@@ -19,5 +19,5 @@ public class CreateItemRequest : IFrameworkRequest<ItemModel>
     public ICollection<VariantModel> Variants { get; set; }
     public Guid CategoryId { get; set; }
     public Guid MenuId { get; set; }
-    public Guid VendorId { get; set; }
+    public long VendorId { get; set; }
 }

@@ -14,5 +14,5 @@ public class Menu : AuditedAggregateRoot<Guid>, IHasDisabled
     public int SortOrder { get; set; }
     public bool IsDisabled { get; set; }
     public virtual ICollection<MenuItem> MenuItems { get; set; } = [];
-    public virtual Guid VendorId { get; set; }
+    public virtual long VendorId { get; set; }
 }
