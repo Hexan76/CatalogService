@@ -8,6 +8,7 @@ public class VariantModel : EntityDto<Guid>
     public string? Description { get; set; }
     public decimal Price { get; set; }
     public int DiscountPrecent { get; set; }
+    public decimal AfterDiscount => Price - ((Price * DiscountPrecent) / 100m);
     public bool HasDiscount { get; set; }
     public int SortOrder { get; set; }
     public bool IsDisabled { get; set; }
