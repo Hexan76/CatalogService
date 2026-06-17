@@ -12,7 +12,8 @@ public class SearchItemHandler(IItemRepository itemRepository, IFileRepository f
     {
         var queryPaged = await itemRepository.PaginationPagingAsync(null, request.Page, request.PageSize);
 
-        var query = queryPaged.Queryable.Where(x => x.Name.Contains(request.SearchTerm ?? ""));
+        var query = queryPaged.Queryable.Where(x => x.Name.Contains(request.SearchTerm ?? "")
+        & x.ItemCategories.Any(x => x.Category.CategoryBusinessTypes.Any(x => x.BusinessTypeId == request.BusinessTypeId.Value)));
 
         var itemIds = query.Select(x => x.Id);
 
