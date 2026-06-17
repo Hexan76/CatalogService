@@ -21,7 +21,9 @@ public class ItemRepository : EfCoreRepositoryFramework<CatalogServiceDbContext,
     public override async Task<IQueryable<Item>> WithDetailsAsync(params Expression<Func<Item, object>>[] propertySelectors)
     {
         return (await GetQueryableAsync())
-            .Include(x => x.MenuItems);
+            .Include(x => x.MenuItems)
+            .Include(x => x.Variants)
+            ;
     }
 
     public override async Task<PagedResult<Item>> PaginationPagingAsync(FilterGroup filterGroup, int page = 1, int pageSize = 10, string sort = "")
