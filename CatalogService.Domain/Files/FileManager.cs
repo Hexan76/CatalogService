@@ -1,9 +1,7 @@
-using CatalogService.Files;
-
 using Volo.Abp;
 using Volo.Abp.DependencyInjection;
 
-namespace CatalogService.Categories;
+namespace CatalogService.Files;
 
 public class FileManager(IFileRepository fileRepository) : ITransientDependency
 {

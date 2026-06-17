@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-using CatalogService.MenuItemCategories;
+using CatalogService.Items;
 
 using Framework.BuildingBlock.Domain;
 
@@ -19,5 +19,6 @@ public class Category : AuditedAggregateRoot<Guid>, IHasDisabled
     public Guid? ParentId { get; set; }
     public virtual Category? Parent { get; set; }
     public virtual ICollection<Category>? Children { get; set; }
-    public virtual ICollection<MenuItemCategory>? MenuItemCategories { get; set; }
+    public virtual ICollection<ItemCategory>? ItemCategories { get; set; } = [];
+    public virtual ICollection<CategoryBusinessType>? CategoryBusinessTypes { get; set; } = [];
 }

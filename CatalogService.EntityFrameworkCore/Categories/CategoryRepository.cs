@@ -18,7 +18,7 @@ public class CategoryRepository : EfCoreRepositoryFramework<CatalogServiceDbCont
     {
     }
 
-    public async Task<PagedResult<CategoryWithFilesQueryResult>> GetListWithFilesAsync(Guid? parentId)
+    public async Task<PagedResult<CategoryWithFilesQueryETO>> GetListWithFilesAsync(Guid? parentId)
     {
         var dbContext = await GetDbContextAsync();
 
@@ -30,7 +30,7 @@ public class CategoryRepository : EfCoreRepositoryFramework<CatalogServiceDbCont
             join file in dbContext.Set<FileEntity>()
                     .Where(x => x.EntityType == nameof(Category))
                 on category.Id equals file.EntityId into files
-            select new CategoryWithFilesQueryResult
+            select new CategoryWithFilesQueryETO
             {
                 Category = category,
 
@@ -39,19 +39,14 @@ public class CategoryRepository : EfCoreRepositoryFramework<CatalogServiceDbCont
                     .ToList()
             };
 
-        var totalCount =
-            await AsyncExecuter.CountAsync(categoriesQuery);
-
-
-        return new PagedResult<CategoryWithFilesQueryResult>
+        return new PagedResult<CategoryWithFilesQueryETO>
         {
-            RowCount = totalCount,
             Queryable = query
         };
 
     }
 
-    public async Task<PagedResult<CategoryWithFilesQueryResult>>
+    public async Task<PagedResult<CategoryWithFilesQueryETO>>
         GetPagedWithFilesAsync(
             FilterGroup filterGroup,
             int page = 1,
@@ -69,7 +64,7 @@ public class CategoryRepository : EfCoreRepositoryFramework<CatalogServiceDbCont
             join file in dbContext.Set<FileEntity>()
                     .Where(x => x.EntityType == nameof(Category))
                 on category.Id equals file.EntityId into files
-            select new CategoryWithFilesQueryResult
+            select new CategoryWithFilesQueryETO
             {
                 Category = category,
 
@@ -82,7 +77,7 @@ public class CategoryRepository : EfCoreRepositoryFramework<CatalogServiceDbCont
             await AsyncExecuter.CountAsync(categoriesQuery);
 
 
-        return new PagedResult<CategoryWithFilesQueryResult>
+        return new PagedResult<CategoryWithFilesQueryETO>
         {
             RowCount = totalCount,
             Queryable = query

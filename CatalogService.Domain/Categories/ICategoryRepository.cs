@@ -7,13 +7,13 @@ namespace CatalogService.Categories;
 
 public interface ICategoryRepository : IRepositoryFramework<Category, Guid>
 {
-    Task<PagedResult<CategoryWithFilesQueryResult>>
+    Task<PagedResult<CategoryWithFilesQueryETO>>
     GetPagedWithFilesAsync(
         FilterGroup filterGroup,
         int page = 1,
         int pageSize = 10,
         string sort = "");
 
-    Task<PagedResult<CategoryWithFilesQueryResult>>
+    Task<PagedResult<CategoryWithFilesQueryETO>>
     GetListWithFilesAsync(Guid? parentId);
 }

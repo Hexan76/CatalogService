@@ -1,28 +1,25 @@
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+# syntax=docker/dockerfile:1
+
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 
 WORKDIR /src
 
-COPY catalog-service/ ./catalog-service/
-COPY building-block/ ./building-block/
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends git \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN ls -la
-RUN ls -la catalog-service
-RUN ls -la building-block
+COPY catalog-service/ .
 
-WORKDIR /src/catalog-service
-
-RUN ls -la
-RUN ls -la CatalogService.Host
+COPY building-block ../building-block
 
 RUN dotnet restore CatalogService.Host/CatalogService.Host.csproj
 
 RUN dotnet publish CatalogService.Host/CatalogService.Host.csproj \
     -c Release \
     -o /app/publish \
-    /p:UseAppHost=false \
-    --no-restore
+    /p:UseAppHost=false
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
+FROM --platform=$TARGETPLATFORM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 
 WORKDIR /app
 
