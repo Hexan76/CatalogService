@@ -10,9 +10,8 @@ public class SearchItemHandler(IItemRepository itemRepository, IFileRepository f
 {
     public async Task<MessageContract<SearchItemResponse>> Handle(SearchItemRequest request, CancellationToken cancellationToken)
     {
-        var queryPaged = await itemRepository.PaginationPagingAsync(null, request.Page, request.PageSize);
 
-        var query = queryPaged.Queryable
+        var query = (await itemRepository.GetQueryableAsync())
             .Where(x => x.Name.Contains(request.SearchTerm ?? ""));
 
         if (request.BusinessTypeId.HasValue)
@@ -22,6 +21,7 @@ public class SearchItemHandler(IItemRepository itemRepository, IFileRepository f
                     ic.Category.CategoryBusinessTypes.Any(cbt =>
                         cbt.BusinessTypeId == request.BusinessTypeId.Value)));
         }
+        var queryPaged = await itemRepository.PaginationPagingAsync(null, query, request.Page, request.PageSize);
 
         var itemIds = query.Select(x => x.Id);
 
