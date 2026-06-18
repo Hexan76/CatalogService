@@ -26,12 +26,12 @@ public class ItemRepository : EfCoreRepositoryFramework<CatalogServiceDbContext,
             ;
     }
 
-    public override async Task<PagedResult<Item>> PaginationPagingAsync(FilterGroup filterGroup, int page = 1, int pageSize = 10, string sort = "")
+    public override async Task<PagedResult<Item>> PaginationPagingAsync(FilterGroup filterGroup, IQueryable<Item>? externalQuery, int page = 1, int pageSize = 10, string sort = "")
     {
         page = page <= 0 ? 1 : page;
         pageSize = pageSize <= 0 ? 10 : pageSize;
 
-        var query = (await GetQueryableAsync())
+        var query = externalQuery ?? (await GetQueryableAsync())
             .AsNoTracking()
             .Include(x => x.Variants)
             .ApplyFilter(filterGroup)
