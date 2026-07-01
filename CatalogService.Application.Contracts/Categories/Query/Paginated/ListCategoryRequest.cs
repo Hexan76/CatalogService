@@ -4,5 +4,6 @@ namespace CatalogService.Categories;
 
 public class ListCategoryRequest : IFrameworkRequest<ListCategoryResponse>
 {
+    public Guid BusinessTypeId { get; set; }
     public Guid? ParentId { get; set; }
 }

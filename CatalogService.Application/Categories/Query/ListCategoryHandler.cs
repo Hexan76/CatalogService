@@ -11,6 +11,7 @@ public class ListCategoryHandler(ICategoryRepository categoryRepository) : Catal
     {
         var query = await categoryRepository.GetListWithFilesAsync(request.ParentId);
 
+        query.Queryable = query.Queryable.Where(x => x.Category.CategoryBusinessTypes.Any(x => x.BusinessTypeId == request.BusinessTypeId));
         var result = await AsyncExecuter.ToListAsync(query.Queryable);
 
         var response = new ListCategoryResponse();
