@@ -6,6 +6,7 @@ public class Create : BaseEndpoint<CreateBusinessTypeRequest, BusinessTypeModel>
     {
         base.Configure();
         Verbs(Http.POST);
+        Validator<CreateBusinessTypeModelValidation>();
         Routes(CatalogServiceApiRoutes.BusinessTypeRoutes.Default);
         Tags([CatalogServiceApiTags.BusinessType]);
         Options(c => c.WithTags([CatalogServiceApiTags.BusinessType]));

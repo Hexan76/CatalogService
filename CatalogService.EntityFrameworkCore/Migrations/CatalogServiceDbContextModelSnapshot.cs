@@ -166,6 +166,124 @@ namespace CatalogService.Migrations
                     b.ToTable("CategoryBusinessType", (string)null);
                 });
 
+            modelBuilder.Entity("CatalogService.CategoryCustomization.CustomizationGroup", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("ConcurrencyStamp");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ExtraProperties")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("ExtraProperties");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("ParentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CustomizationGroup", (string)null);
+                });
+
+            modelBuilder.Entity("CatalogService.Customizations.Customization", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("ConcurrencyStamp");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid>("CustomizationGroupId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ExtraProperties")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("ExtraProperties");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<int>("MaxCountRequest")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomizationGroupId");
+
+                    b.ToTable("Customization", (string)null);
+                });
+
             modelBuilder.Entity("CatalogService.Files.FileEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -266,6 +384,9 @@ namespace CatalogService.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
+
                     b.Property<int>("SortOrder")
                         .HasColumnType("integer");
 
@@ -299,6 +420,28 @@ namespace CatalogService.Migrations
                         .IsUnique();
 
                     b.ToTable("ItemCategory", (string)null);
+                });
+
+            modelBuilder.Entity("CatalogService.Items.ItemCustomization", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CustomizationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomizationId");
+
+                    b.HasIndex("ItemId", "CustomizationId")
+                        .IsUnique();
+
+                    b.ToTable("ItemCustomization", (string)null);
                 });
 
             modelBuilder.Entity("CatalogService.Items.ItemVariant", b =>
@@ -445,6 +588,17 @@ namespace CatalogService.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("CatalogService.Customizations.Customization", b =>
+                {
+                    b.HasOne("CatalogService.CategoryCustomization.CustomizationGroup", "CustomizationGroup")
+                        .WithMany("Customizations")
+                        .HasForeignKey("CustomizationGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CustomizationGroup");
+                });
+
             modelBuilder.Entity("CatalogService.Items.ItemCategory", b =>
                 {
                     b.HasOne("CatalogService.Categories.Category", "Category")
@@ -460,6 +614,25 @@ namespace CatalogService.Migrations
                         .IsRequired();
 
                     b.Navigation("Category");
+
+                    b.Navigation("Item");
+                });
+
+            modelBuilder.Entity("CatalogService.Items.ItemCustomization", b =>
+                {
+                    b.HasOne("CatalogService.Customizations.Customization", "Customization")
+                        .WithMany("Customizations")
+                        .HasForeignKey("CustomizationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CatalogService.Items.Item", "Item")
+                        .WithMany("Customizations")
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customization");
 
                     b.Navigation("Item");
                 });
@@ -508,8 +681,20 @@ namespace CatalogService.Migrations
                     b.Navigation("ItemCategories");
                 });
 
+            modelBuilder.Entity("CatalogService.CategoryCustomization.CustomizationGroup", b =>
+                {
+                    b.Navigation("Customizations");
+                });
+
+            modelBuilder.Entity("CatalogService.Customizations.Customization", b =>
+                {
+                    b.Navigation("Customizations");
+                });
+
             modelBuilder.Entity("CatalogService.Items.Item", b =>
                 {
+                    b.Navigation("Customizations");
+
                     b.Navigation("ItemCategories");
 
                     b.Navigation("MenuItems");

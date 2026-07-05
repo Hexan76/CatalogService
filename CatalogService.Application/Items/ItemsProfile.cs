@@ -1,5 +1,7 @@
 using AutoMapper;
 
+using CatalogService.Customizations;
+
 namespace CatalogService.Items;
 
 public class ItemsProfile : Profile
@@ -15,5 +17,10 @@ public class ItemsProfile : Profile
 
         CreateMap<VariantModel, ItemVariant>(memberList: MemberList.None);
         CreateMap<ItemVariant, VariantModel>(memberList: MemberList.None);
+
+        CreateMap<CustomizationModel, ItemCustomization>(memberList: MemberList.None);
+        CreateMap<ItemCustomization, CustomizationModel>(memberList: MemberList.None)
+            .IncludeMembers(x => x.Customization)
+            ;
     }
 }
