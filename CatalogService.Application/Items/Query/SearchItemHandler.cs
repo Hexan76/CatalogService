@@ -25,14 +25,7 @@ public class SearchItemHandler(IItemRepository itemRepository, IFileRepository f
 
         var itemIds = query.Select(x => x.Id);
 
-        var files = (await fileRepository.GetQueryableAsync()).Where(x => itemIds.Contains(x.EntityId));
-
-        var fileLookup = files
-            .GroupBy(x => x.EntityId)
-            .ToDictionary(
-                x => x.Key,
-                x => x.OrderBy(f => f.Priority).FirstOrDefault()
-            );
+        var files = await fileRepository.GetPrimaryFilesAsync(itemIds);
 
         var response = new SearchItemResponse
         {
@@ -42,7 +35,7 @@ public class SearchItemHandler(IItemRepository itemRepository, IFileRepository f
 
         foreach (var item in response.Items)
         {
-            if (fileLookup.TryGetValue(item.Id, out var file))
+            if (files.TryGetValue(item.Id, out var file))
             {
                 item.Image = new FileUrlModel
                 {

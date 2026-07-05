@@ -1,5 +1,6 @@
 using CatalogService.BusinessTypes;
 using CatalogService.Categories;
+using CatalogService.Customizations;
 using CatalogService.Items;
 using CatalogService.Menus;
 
@@ -14,4 +15,6 @@ public class CatalogServiceApiRoutes
     public static BusinessTypeRoutes BusinessTypeRoutes = new(Application, CatalogServiceApiTags.BusinessType);
     public static ItemsRoute ItemRoutes = new(Application, CatalogServiceApiTags.Item);
     public static MenusRoutes MenuRoutes = new(Application, CatalogServiceApiTags.Menu);
+    public static CustomizationsRoute CustomizationRoutes = new(Application, CatalogServiceApiTags.Customization);
+    public static CustomizationsGroupRoute CustomizationsGroupRoutes = new(Application, CatalogServiceApiTags.CustomizationGroup);
 }

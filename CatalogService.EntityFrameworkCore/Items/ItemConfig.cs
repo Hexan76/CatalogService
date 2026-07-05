@@ -33,5 +33,10 @@ public class ItemConfig : IEntityTypeConfiguration<Item>
             .WithOne(x => x.Item)
             .HasForeignKey(x => x.ItemId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(x => x.Customizations)
+            .WithOne(x => x.Item)
+            .HasForeignKey(x => x.ItemId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

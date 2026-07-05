@@ -23,6 +23,8 @@ public class ItemRepository : EfCoreRepositoryFramework<CatalogServiceDbContext,
         return (await GetQueryableAsync())
             .Include(x => x.MenuItems)
             .Include(x => x.Variants)
+            .Include(x => x.Customizations)
+            .ThenInclude(x => x.Customization)
             ;
     }
 
