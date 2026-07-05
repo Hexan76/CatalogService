@@ -10,20 +10,22 @@ public class SearchItemHandler(IItemRepository itemRepository, IFileRepository f
 {
     public async Task<MessageContract<SearchItemResponse>> Handle(SearchItemRequest request, CancellationToken cancellationToken)
     {
-        var queryPaged = await itemRepository.PaginationPagingAsync(null, request.Page, request.PageSize);
 
-        var query = queryPaged.Queryable.Where(x => x.Name.Contains(request.SearchTerm ?? ""));
+        var query = (await itemRepository.GetQueryableAsync())
+            .Where(x => x.Name.Contains(request.SearchTerm ?? ""));
+
+        if (request.BusinessTypeId.HasValue)
+        {
+            query = query.Where(x =>
+                x.ItemCategories.Any(ic =>
+                    ic.Category.CategoryBusinessTypes.Any(cbt =>
+                        cbt.BusinessTypeId == request.BusinessTypeId.Value)));
+        }
+        var queryPaged = await itemRepository.PaginationPagingAsync(null, query, request.Page, request.PageSize);
 
         var itemIds = query.Select(x => x.Id);
 
-        var files = (await fileRepository.GetQueryableAsync()).Where(x => itemIds.Contains(x.EntityId));
-
-        var fileLookup = files
-            .GroupBy(x => x.EntityId)
-            .ToDictionary(
-                x => x.Key,
-                x => x.OrderBy(f => f.Priority).FirstOrDefault()
-            );
+        var files = await fileRepository.GetPrimaryFilesAsync(itemIds);
 
         var response = new SearchItemResponse
         {
@@ -33,7 +35,7 @@ public class SearchItemHandler(IItemRepository itemRepository, IFileRepository f
 
         foreach (var item in response.Items)
         {
-            if (fileLookup.TryGetValue(item.Id, out var file))
+            if (files.TryGetValue(item.Id, out var file))
             {
                 item.Image = new FileUrlModel
                 {

@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
+using CatalogService.Customizations;
 using CatalogService.ObjectStorageService;
 
 using Volo.Abp.Application.Dtos;
@@ -13,6 +14,7 @@ public class ItemModel : EntityDto<Guid>
     public string? Description { get; set; }
     public int DiscountPrecent { get; set; }
     public bool HasDiscount { get; set; }
+    public double Rate { get; set; } = 4.2;
 
     public int SortOrder { get; set; }
 
@@ -22,5 +24,6 @@ public class ItemModel : EntityDto<Guid>
     public FileUrlModel Image { get; set; }
 
     public ICollection<VariantModel> Variants { get; set; } = [];
+    public ICollection<CustomizationModel> Customizations { get; set; } = [];
     public virtual long VendorId { get; set; }
 }

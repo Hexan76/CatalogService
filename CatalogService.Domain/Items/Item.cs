@@ -15,6 +15,7 @@ public class Item : AuditedAggregateRoot<Guid>, IHasDisabled
     [MaxLength(200)]
     public string Name { get; set; } = default!;
     public string? Description { get; set; }
+    public decimal Price { get; set; }
     public int DiscountPrecent { get; set; }
     public bool HasDiscount { get; set; }
     public int SortOrder { get; set; }
@@ -25,6 +26,7 @@ public class Item : AuditedAggregateRoot<Guid>, IHasDisabled
     public virtual ICollection<ItemCategory> ItemCategories { get; set; } = [];
     public virtual ICollection<MenuItem> MenuItems { get; set; } = [];
     public virtual ICollection<ItemVariant> Variants { get; set; } = [];
+    public virtual ICollection<ItemCustomization> Customizations { get; set; } = [];
 
     public virtual long VendorId { get; set; }
 }
