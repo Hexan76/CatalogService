@@ -26,6 +26,7 @@ public class ItemRepository : EfCoreRepositoryFramework<CatalogServiceDbContext,
             .Include(x => x.Variants)
             .Include(x => x.Customizations)
             .ThenInclude(x => x.Customization)
+            .ThenInclude(x => x.CustomizationGroup)
             ;
     }
 

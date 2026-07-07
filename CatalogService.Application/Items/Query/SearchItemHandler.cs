@@ -29,7 +29,7 @@ public class SearchItemHandler(IItemRepository itemRepository, IFileRepository f
 
         var response = new SearchItemResponse
         {
-            Items = ObjectMapper.Map<List<Item>, List<ItemModel>>(query.ToList()),
+            Items = ObjectMapper.Map<List<Item>, List<SearchItemModel>>(query.ToList()),
             TotalCount = queryPaged.RowCount
         };
 

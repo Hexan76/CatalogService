@@ -22,5 +22,11 @@ public class CatalogServiceDomainSharedModule : AbpModule
         {
             options.AddResource<CatalogServiceResource>();
         });
+
+
+        Configure<LocalizationResourceOptions>(x =>
+        {
+            x.AddResource<CatalogServiceResource>("/Localization/Resources");
+        });
     }
 }
