@@ -1,4 +1,4 @@
-﻿using Framework.BuildingBlock.HttpApi;
+using Framework.BuildingBlock.HttpApi;
 
 namespace CatalogService.Host;
 
@@ -15,7 +15,7 @@ public class SwaggerDefinitions
                 Version = "Version 1.0.0",
                 ApiVersion=1,
                 EndpointFilter = ep =>
-                    ep.Routes.Any(c => c.Contains("/CatalogService", StringComparison.OrdinalIgnoreCase)),
+                    ep.Routes.Any(c => c.Contains("/", StringComparison.OrdinalIgnoreCase)),
                 ExcludeNonFastEndpoints = true,
                 Headers = new List<SwaggerHeaderOption>
                 {

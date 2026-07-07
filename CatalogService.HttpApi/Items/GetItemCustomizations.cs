@@ -1,5 +1,4 @@
-
-namespace CatalogService.Customizations;
+namespace CatalogService.Items;
 
 public class GetItemCustomizations : BaseEndpoint<GetItemCustomizationsRequest, GetItemCustomizationsResponse>
 {
@@ -7,9 +6,9 @@ public class GetItemCustomizations : BaseEndpoint<GetItemCustomizationsRequest, 
     {
         base.Configure();
         Verbs(Http.GET);
-        Routes(CatalogServiceApiRoutes.CustomizationRoutes.GetItemCustomizations);
-        Tags([CatalogServiceApiTags.Customization]);
-        Options(c => c.WithTags([CatalogServiceApiTags.Customization]));
+        Routes(CatalogServiceApiRoutes.ItemRoutes.GetCustomizations);
+        Tags([CatalogServiceApiTags.Item]);
+        Options(c => c.WithTags([CatalogServiceApiTags.Item]));
         //Policies();
         //Permissions();
         AllowAnonymous();
