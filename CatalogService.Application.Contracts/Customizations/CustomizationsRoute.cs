@@ -6,7 +6,7 @@ public class CustomizationsRoute : BaseRoutes
 {
     public CustomizationsRoute(string Prefix, string routeBase) : base(Prefix, routeBase)
     {
-        GetItemCustomizations = $"{Default}/{{ItemId}}";
+        GetVendorCustomizations = $"{Default}/by-vendor/{{VendorId}}";
     }
-    public readonly string GetItemCustomizations;
+    public readonly string GetVendorCustomizations;
 }

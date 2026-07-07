@@ -6,7 +6,7 @@ public class SearchItem : BaseEndpoint<SearchItemRequest, SearchItemResponse>
     {
         base.Configure();
         Verbs(Http.GET);
-        Routes(CatalogServiceApiRoutes.ItemRoutes.SearchItem);
+        Routes(CatalogServiceApiRoutes.ItemRoutes.Search);
         Tags([CatalogServiceApiTags.Item]);
         Options(c => c.WithTags([CatalogServiceApiTags.Item]));
         //Policies();

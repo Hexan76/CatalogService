@@ -8,8 +8,8 @@ namespace CatalogService.Constants;
 
 public class CatalogServiceApiRoutes
 {
-    public const string Prefix = "api";
-    public const string Application = $"{Prefix}/CatalogService";
+    public const string Prefix = "";
+    public const string Application = $"{Prefix}";
 
     public static CategoryRoutes CategoryRoutes = new(Application, CatalogServiceApiTags.Category);
     public static BusinessTypeRoutes BusinessTypeRoutes = new(Application, CatalogServiceApiTags.BusinessType);
