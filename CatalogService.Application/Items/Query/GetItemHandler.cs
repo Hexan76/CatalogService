@@ -1,18 +1,19 @@
-//using CatalogService.Application;
-//using Framework.BuildingBlock.Application.Contracts;
+using CatalogService.Application;
 
-//namespace CatalogService.Items;
+using Framework.BuildingBlock.Application.Contracts;
 
-//public class GetItemHandler(ICategoryRepository categoryRepository) : CatalogServiceAppService, IGetItemHandler
-//{
-//    public async Task<MessageContract<ItemModel>> Handle(GetItemRequest request, CancellationToken cancellationToken)
-//    {
-//        var founded = await categoryRepository.FindAsync(request.Id);
+namespace CatalogService.Items;
 
-//        var response = ObjectMapper.Map<Category, CategoryModel>(founded);
+public class GetItemHandler(IItemRepository itemRepository) : CatalogServiceAppService, IGetItemHandler
+{
+    public async Task<MessageContract<ItemModel>> Handle(GetItemRequest request, CancellationToken cancellationToken)
+    {
+        var founded = await itemRepository.FindAsync(request.Id);
+
+        var response = ObjectMapper.Map<Item, ItemModel>(founded);
 
 
-//        return MessageContract<CategoryModel>.Success(response);
-        
-//    }
-//}
+        return MessageContract<ItemModel>.Success(response);
+
+    }
+}
