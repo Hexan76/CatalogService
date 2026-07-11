@@ -11,7 +11,7 @@ public class DeleteBusinessTypeHandler(IBusinessTypeRepository categoryRepositor
 
         await categoryRepository.DeleteAsync(founded);
 
-        return MessageContract<BaseResponse>.Success(new BaseResponse() { Id = request.Id });
+        return MessageContract<BaseResponse>.Success(new BaseResponse());
 
     }
 }

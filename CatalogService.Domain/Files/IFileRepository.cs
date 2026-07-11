@@ -2,9 +2,9 @@ using Framework.BuildingBlock.Repositories;
 
 namespace CatalogService.Files;
 
-public interface IFileRepository : IRepositoryFramework<FileEntity, Guid>
+public interface IFileRepository : IRepositoryFramework<FileEntity, long>
 {
-    Task<Dictionary<Guid, FileEntity>> GetPrimaryFilesAsync(
-           IEnumerable<Guid> entityIds,
+    Task<Dictionary<long, FileEntity>> GetPrimaryFilesAsync(
+           IEnumerable<long> entityIds,
            CancellationToken cancellationToken = default);
 }

@@ -5,7 +5,7 @@ using Volo.Abp.Application.Dtos;
 
 namespace CatalogService.BusinessTypes;
 
-public class BusinessTypeModel : EntityDto<Guid>
+public class BusinessTypeModel : EntityDto<long>
 {
 
     public string Name { get; set; } = default!;

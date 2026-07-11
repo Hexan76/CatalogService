@@ -9,7 +9,7 @@ using Volo.Abp.EntityFrameworkCore;
 
 namespace CatalogService.Customizations;
 
-public class CustomizationGroupRepository : EfCoreRepositoryFramework<CatalogServiceDbContext, CustomizationGroup, Guid>, ICustomizationGroupRepository
+public class CustomizationGroupRepository : EfCoreRepositoryFramework<CatalogServiceDbContext, CustomizationGroup, long>, ICustomizationGroupRepository
 {
     public CustomizationGroupRepository(IDbContextProvider<CatalogServiceDbContext> dbContextProvider) : base(dbContextProvider)
     {

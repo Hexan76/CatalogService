@@ -6,8 +6,7 @@ namespace CatalogService.Files;
 public class FileManager(IFileRepository fileRepository) : ITransientDependency
 {
     public async Task<FileEntity> AddRelatedFileWithEntity(
-        Guid? fileTempId,
-        Guid entityId,
+        long entityId,
         string entityType,
         string url,
         string fileName,
@@ -30,7 +29,7 @@ public class FileManager(IFileRepository fileRepository) : ITransientDependency
         return await fileRepository.InsertAsync(item);
     }
     public async Task<FileEntity> AddOrUpdateRelatedFile(
-    Guid entityId,
+    long entityId,
     string entityType,
     string url,
     string fileName,
@@ -76,7 +75,7 @@ public class FileManager(IFileRepository fileRepository) : ITransientDependency
 
         return await fileRepository.UpdateAsync(existing);
     }
-    public async Task<FileEntity> SetPriorityFirst(Guid fileId)
+    public async Task<FileEntity> SetPriorityFirst(long fileId)
     {
         var item = await fileRepository.GetAsync(fileId);
 
@@ -105,7 +104,7 @@ public class FileManager(IFileRepository fileRepository) : ITransientDependency
     }
 
     public async Task SetPriority(
-    IDictionary<Guid, int> filePriority)
+    IDictionary<long, int> filePriority)
     {
         if (!filePriority.Any())
             return;
@@ -123,7 +122,7 @@ public class FileManager(IFileRepository fileRepository) : ITransientDependency
         await SetPriorityInternal(filePriority);
     }
     private async Task SetPriorityInternal(
-        IDictionary<Guid, int> filePriority)
+        IDictionary<long, int> filePriority)
     {
         if (!filePriority.Any())
             return;

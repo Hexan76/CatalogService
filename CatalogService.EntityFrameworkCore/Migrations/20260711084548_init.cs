@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -15,7 +16,8 @@ namespace CatalogService.Migrations
                 name: "BusinessType",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
                     SortOrder = table.Column<int>(type: "integer", nullable: false),
@@ -36,13 +38,14 @@ namespace CatalogService.Migrations
                 name: "Category",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Slug = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
                     SortOrder = table.Column<int>(type: "integer", nullable: false),
                     IsDisabled = table.Column<bool>(type: "boolean", nullable: false),
-                    ParentId = table.Column<Guid>(type: "uuid", nullable: true),
+                    ParentId = table.Column<long>(type: "bigint", nullable: true),
                     ExtraProperties = table.Column<string>(type: "text", nullable: false),
                     ConcurrencyStamp = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: false),
                     CreationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -62,10 +65,34 @@ namespace CatalogService.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CustomizationGroup",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    SortOrder = table.Column<int>(type: "integer", nullable: false),
+                    IsDisabled = table.Column<bool>(type: "boolean", nullable: false),
+                    ParentId = table.Column<long>(type: "bigint", nullable: true),
+                    ExtraProperties = table.Column<string>(type: "text", nullable: false),
+                    ConcurrencyStamp = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    LastModifierId = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CustomizationGroup", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "FileEntity",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     FileName = table.Column<string>(type: "text", nullable: false),
                     Url = table.Column<string>(type: "text", nullable: false),
                     Priority = table.Column<int>(type: "integer", nullable: false),
@@ -74,7 +101,7 @@ namespace CatalogService.Migrations
                     EntityType = table.Column<string>(type: "text", nullable: false),
                     Role = table.Column<string>(type: "text", nullable: false),
                     Variants = table.Column<string>(type: "jsonb", nullable: false),
-                    EntityId = table.Column<Guid>(type: "uuid", nullable: false)
+                    EntityId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -85,9 +112,11 @@ namespace CatalogService.Migrations
                 name: "Item",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
+                    Price = table.Column<decimal>(type: "numeric", nullable: false),
                     DiscountPrecent = table.Column<int>(type: "integer", nullable: false),
                     HasDiscount = table.Column<bool>(type: "boolean", nullable: false),
                     SortOrder = table.Column<int>(type: "integer", nullable: false),
@@ -110,7 +139,8 @@ namespace CatalogService.Migrations
                 name: "Menu",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Slug = table.Column<string>(type: "text", nullable: false),
                     SortOrder = table.Column<int>(type: "integer", nullable: false),
@@ -132,9 +162,10 @@ namespace CatalogService.Migrations
                 name: "CategoryBusinessType",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    CategoryId = table.Column<Guid>(type: "uuid", nullable: false),
-                    BusinessTypeId = table.Column<Guid>(type: "uuid", nullable: false)
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    CategoryId = table.Column<long>(type: "bigint", nullable: false),
+                    BusinessTypeId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -154,12 +185,44 @@ namespace CatalogService.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Customization",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    Price = table.Column<decimal>(type: "numeric", nullable: false),
+                    MaxCountRequest = table.Column<int>(type: "integer", nullable: false),
+                    SortOrder = table.Column<int>(type: "integer", nullable: false),
+                    IsDisabled = table.Column<bool>(type: "boolean", nullable: false),
+                    CustomizationGroupId = table.Column<long>(type: "bigint", nullable: false),
+                    ExtraProperties = table.Column<string>(type: "text", nullable: false),
+                    ConcurrencyStamp = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    LastModifierId = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Customization", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Customization_CustomizationGroup_CustomizationGroupId",
+                        column: x => x.CustomizationGroupId,
+                        principalTable: "CustomizationGroup",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ItemCategory",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    CategoryId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ItemId = table.Column<Guid>(type: "uuid", nullable: false)
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    CategoryId = table.Column<long>(type: "bigint", nullable: false),
+                    ItemId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -182,7 +245,8 @@ namespace CatalogService.Migrations
                 name: "ItemVariant",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
                     Price = table.Column<decimal>(type: "numeric", nullable: false),
@@ -190,7 +254,7 @@ namespace CatalogService.Migrations
                     HasDiscount = table.Column<bool>(type: "boolean", nullable: false),
                     SortOrder = table.Column<int>(type: "integer", nullable: false),
                     IsDisabled = table.Column<bool>(type: "boolean", nullable: false),
-                    ItemId = table.Column<Guid>(type: "uuid", nullable: false)
+                    ItemId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -200,16 +264,17 @@ namespace CatalogService.Migrations
                         column: x => x.ItemId,
                         principalTable: "Item",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "MenuItem",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    MenuId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ItemId = table.Column<Guid>(type: "uuid", nullable: false)
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    MenuId = table.Column<long>(type: "bigint", nullable: false),
+                    ItemId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -219,13 +284,39 @@ namespace CatalogService.Migrations
                         column: x => x.ItemId,
                         principalTable: "Item",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_MenuItem_Menu_MenuId",
                         column: x => x.MenuId,
                         principalTable: "Menu",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ItemCustomization",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    CustomizationId = table.Column<long>(type: "bigint", nullable: false),
+                    ItemId = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ItemCustomization", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ItemCustomization_Customization_CustomizationId",
+                        column: x => x.CustomizationId,
+                        principalTable: "Customization",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ItemCustomization_Item_ItemId",
+                        column: x => x.ItemId,
+                        principalTable: "Item",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -250,6 +341,11 @@ namespace CatalogService.Migrations
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Customization_CustomizationGroupId",
+                table: "Customization",
+                column: "CustomizationGroupId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Item_VendorId",
                 table: "Item",
                 column: "VendorId");
@@ -263,6 +359,17 @@ namespace CatalogService.Migrations
                 name: "IX_ItemCategory_ItemId_CategoryId",
                 table: "ItemCategory",
                 columns: new[] { "ItemId", "CategoryId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ItemCustomization_CustomizationId",
+                table: "ItemCustomization",
+                column: "CustomizationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ItemCustomization_ItemId_CustomizationId",
+                table: "ItemCustomization",
+                columns: new[] { "ItemId", "CustomizationId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -294,6 +401,9 @@ namespace CatalogService.Migrations
                 name: "ItemCategory");
 
             migrationBuilder.DropTable(
+                name: "ItemCustomization");
+
+            migrationBuilder.DropTable(
                 name: "ItemVariant");
 
             migrationBuilder.DropTable(
@@ -306,10 +416,16 @@ namespace CatalogService.Migrations
                 name: "Category");
 
             migrationBuilder.DropTable(
+                name: "Customization");
+
+            migrationBuilder.DropTable(
                 name: "Item");
 
             migrationBuilder.DropTable(
                 name: "Menu");
+
+            migrationBuilder.DropTable(
+                name: "CustomizationGroup");
         }
     }
 }

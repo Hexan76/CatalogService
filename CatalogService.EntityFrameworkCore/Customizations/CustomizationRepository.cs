@@ -6,7 +6,7 @@ using Volo.Abp.EntityFrameworkCore;
 
 namespace CatalogService.Customizations;
 
-public class CustomizationRepository : EfCoreRepositoryFramework<CatalogServiceDbContext, Customization, Guid>, ICustomizationRepository
+public class CustomizationRepository : EfCoreRepositoryFramework<CatalogServiceDbContext, Customization, long>, ICustomizationRepository
 {
     public CustomizationRepository(IDbContextProvider<CatalogServiceDbContext> dbContextProvider) : base(dbContextProvider)
     {

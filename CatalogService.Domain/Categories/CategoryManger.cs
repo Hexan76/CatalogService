@@ -6,14 +6,14 @@ namespace CatalogService.Categories;
 
 public class CategoryManager(ICategoryRepository categoryRepository) : ITransientDependency
 {
-    public async Task<Category> CreateCategoryAsync(string name, string description, Guid businessTypeId)
+    public async Task<Category> CreateCategoryAsync(string name, string description, long businessTypeId)
     {
         var createItem = new Category() { Name = name, Slug = GenerateSlug(name) };
         createItem.CategoryBusinessTypes.Add(new() { BusinessTypeId = businessTypeId, CategoryId = createItem.Id });
         return await categoryRepository.InsertAsync(createItem);
 
     }
-    public async Task<Category> UpdateCategoryAsync(Guid id, string name, string description, Guid businessTypeId)
+    public async Task<Category> UpdateCategoryAsync(long id, string name, string description, long businessTypeId)
     {
         var founded = await categoryRepository.GetAsync(id, true);
         founded.Name = name;

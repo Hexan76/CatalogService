@@ -10,7 +10,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 namespace CatalogService.Items;
 
 [Table(nameof(Item))]
-public class Item : AuditedAggregateRoot<Guid>, IHasDisabled
+public class Item : AuditedAggregateRoot<long>, IHasDisabled
 {
     [MaxLength(200)]
     public string Name { get; set; } = default!;

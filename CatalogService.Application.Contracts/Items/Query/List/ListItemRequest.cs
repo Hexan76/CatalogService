@@ -4,5 +4,5 @@ namespace CatalogService.Items;
 
 public class ListItemRequest : IFrameworkRequest<ListItemResponse>
 {
-    public Guid? ParentId { get; set; }
+    public long? ParentId { get; set; }
 }

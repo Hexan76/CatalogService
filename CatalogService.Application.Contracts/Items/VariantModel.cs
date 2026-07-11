@@ -2,7 +2,7 @@ using Volo.Abp.Application.Dtos;
 
 namespace CatalogService.Items;
 
-public class VariantModel : EntityDto<Guid>
+public class VariantModel : EntityDto<long>
 {
     public string Name { get; set; } = default!;
     public string? Description { get; set; }
@@ -12,6 +12,6 @@ public class VariantModel : EntityDto<Guid>
     public bool HasDiscount { get; set; }
     public int SortOrder { get; set; }
     public bool IsDisabled { get; set; }
-    public virtual Guid MenuId { get; set; }
+    public virtual long MenuId { get; set; }
     public virtual long VendorId { get; set; }
 }

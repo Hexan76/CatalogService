@@ -13,7 +13,7 @@ using Volo.Abp.EntityFrameworkCore;
 
 namespace CatalogService.BusinessTypes;
 
-public class BusinessTypeRepository : EfCoreRepositoryFramework<CatalogServiceDbContext, BusinessType, Guid>, IBusinessTypeRepository
+public class BusinessTypeRepository : EfCoreRepositoryFramework<CatalogServiceDbContext, BusinessType, long>, IBusinessTypeRepository
 {
     public BusinessTypeRepository(IDbContextProvider<CatalogServiceDbContext> dbContextProvider) : base(dbContextProvider)
     {

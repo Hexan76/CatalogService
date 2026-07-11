@@ -12,8 +12,8 @@ public class CustomizationManager(
 {
     public async Task<Customization> CreateAsync(
         Customization customization,
-        Guid groupId,
-        Guid[]? itemIds)
+        long groupId,
+        long[]? itemIds)
     {
         var group = await customizationGroupRepository.FindAsync(groupId);
 

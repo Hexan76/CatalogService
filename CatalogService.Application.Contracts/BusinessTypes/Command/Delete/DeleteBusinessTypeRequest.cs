@@ -3,6 +3,6 @@ using Volo.Abp.Application.Dtos;
 
 namespace CatalogService.BusinessTypes;
 
-public class DeleteBusinessTypeRequest : EntityDto<Guid>, IFrameworkRequest<BaseResponse>
+public class DeleteBusinessTypeRequest : EntityDto<long>, IFrameworkRequest<BaseResponse>
 {
 }

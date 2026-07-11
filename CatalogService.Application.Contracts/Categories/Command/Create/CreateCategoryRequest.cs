@@ -7,7 +7,7 @@ public class CreateCategoryRequest : IFrameworkRequest<CategoryModel>
     public string Name { get; set; } = default!;
     public string? Description { get; set; }
     public Guid? ImageId { get; set; }
-    public Guid BusinessTypeId { get; set; }
-    public Guid? ParentId { get; set; }
+    public long BusinessTypeId { get; set; }
+    public long? ParentId { get; set; }
 
 }

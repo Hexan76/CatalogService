@@ -9,7 +9,7 @@ public class CreateCustomizationRequest : IFrameworkRequest<CustomizationModel>
     public decimal Price { get; set; }
     public int MaxCountRequest { get; set; }
     public Guid? ImageId { get; set; }
-    public Guid GroupId { get; set; }
-    public Guid[]? Items { get; set; }
+    public long GroupId { get; set; }
+    public long[]? Items { get; set; }
 
 }

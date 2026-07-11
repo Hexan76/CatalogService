@@ -7,7 +7,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 namespace CatalogService.Menus;
 
 [Table(nameof(Menu))]
-public class Menu : AuditedAggregateRoot<Guid>, IHasDisabled
+public class Menu : AuditedAggregateRoot<long>, IHasDisabled
 {
     public string Name { get; set; } = default!;
     public string Slug { get; set; } = default!;

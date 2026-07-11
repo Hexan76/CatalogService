@@ -7,10 +7,10 @@ using Volo.Abp.Domain.Entities;
 namespace CatalogService.Items;
 
 [Table(nameof(ItemCategory))]
-public class ItemCategory : Entity<Guid>
+public class ItemCategory : Entity<long>
 {
     public virtual Category Category { get; set; }
-    public virtual Guid CategoryId { get; set; }
+    public virtual long CategoryId { get; set; }
     public virtual Item Item { get; set; }
-    public virtual Guid ItemId { get; set; }
+    public virtual long ItemId { get; set; }
 }

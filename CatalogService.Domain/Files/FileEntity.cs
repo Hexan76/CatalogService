@@ -5,7 +5,7 @@ using Volo.Abp.Domain.Entities;
 namespace CatalogService.Files;
 
 [Table(nameof(FileEntity))]
-public class FileEntity : Entity<Guid>
+public class FileEntity : Entity<long>
 {
     public string FileName { get; set; } = default!;
     public string Url { get; set; } = default!;
@@ -15,6 +15,6 @@ public class FileEntity : Entity<Guid>
     public string EntityType { get; set; }
     public string Role { get; set; }
     public IDictionary<string, object> Variants { get; set; }
-    public Guid EntityId { get; set; }
+    public long EntityId { get; set; }
 
 }

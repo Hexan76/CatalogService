@@ -3,7 +3,7 @@ using Volo.Abp.Application.Dtos;
 
 namespace CatalogService.BusinessTypes;
 
-public class GetBusinessTypeRequest : EntityDto<Guid>, IFrameworkRequest<BusinessTypeModel>
+public class GetBusinessTypeRequest : EntityDto<long>, IFrameworkRequest<BusinessTypeModel>
 {
 
 }
