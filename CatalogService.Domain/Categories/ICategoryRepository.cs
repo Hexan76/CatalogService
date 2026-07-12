@@ -5,7 +5,7 @@ using Framework.BuildingBlock.Repositories;
 
 namespace CatalogService.Categories;
 
-public interface ICategoryRepository : IRepositoryFramework<Category, Guid>
+public interface ICategoryRepository : IRepositoryFramework<Category, long>
 {
     Task<PagedResult<CategoryWithFilesQueryETO>>
     GetPagedWithFilesAsync(
@@ -15,5 +15,5 @@ public interface ICategoryRepository : IRepositoryFramework<Category, Guid>
         string sort = "");
 
     Task<PagedResult<CategoryWithFilesQueryETO>>
-    GetListWithFilesAsync(Guid? parentId);
+    GetListWithFilesAsync(long? parentId);
 }

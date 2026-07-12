@@ -4,5 +4,5 @@ namespace CatalogService.Menus;
 
 public class ListMenuRequest : IFrameworkRequest<ListMenuResponse>
 {
-    public Guid? ParentId { get; set; }
+    public long? ParentId { get; set; }
 }

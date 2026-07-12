@@ -12,13 +12,13 @@ using Volo.Abp.EntityFrameworkCore;
 
 namespace CatalogService.Categories;
 
-public class CategoryRepository : EfCoreRepositoryFramework<CatalogServiceDbContext, Category, Guid>, ICategoryRepository
+public class CategoryRepository : EfCoreRepositoryFramework<CatalogServiceDbContext, Category, long>, ICategoryRepository
 {
     public CategoryRepository(IDbContextProvider<CatalogServiceDbContext> dbContextProvider) : base(dbContextProvider)
     {
     }
 
-    public async Task<PagedResult<CategoryWithFilesQueryETO>> GetListWithFilesAsync(Guid? parentId)
+    public async Task<PagedResult<CategoryWithFilesQueryETO>> GetListWithFilesAsync(long? parentId)
     {
         var dbContext = await GetDbContextAsync();
 

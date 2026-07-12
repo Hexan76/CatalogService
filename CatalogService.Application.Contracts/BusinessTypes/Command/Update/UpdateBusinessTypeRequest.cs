@@ -4,7 +4,7 @@ using Volo.Abp.Application.Dtos;
 
 namespace CatalogService.BusinessTypes;
 
-public class UpdateBusinessTypeRequest : EntityDto<Guid>, IFrameworkRequest<BusinessTypeModel>
+public class UpdateBusinessTypeRequest : EntityDto<long>, IFrameworkRequest<BusinessTypeModel>
 {
     public string Name { get; set; } = default!;
     public string? Description { get; set; }

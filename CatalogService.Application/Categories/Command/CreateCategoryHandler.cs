@@ -41,7 +41,6 @@ public class CreateCategoryHandler(CategoryManager categoryManager, IHttpClientS
                 var file = finalizeResponse.Files.FirstOrDefault();
 
                 var fileResult = await fileManager.AddRelatedFileWithEntity(
-                    file!.Id,
                     result.Id,
                     typeof(Category).Name,
                     file.URL,

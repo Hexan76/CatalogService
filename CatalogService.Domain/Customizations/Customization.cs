@@ -10,7 +10,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 namespace CatalogService.Customizations;
 
 [Table(nameof(Customization))]
-public class Customization : AuditedAggregateRoot<Guid>, IHasDisabled
+public class Customization : AuditedAggregateRoot<long>, IHasDisabled
 {
     public string Name { get; set; } = default!;
     public string? Description { get; set; }
@@ -20,5 +20,5 @@ public class Customization : AuditedAggregateRoot<Guid>, IHasDisabled
     public bool IsDisabled { get; set; }
     public virtual ICollection<ItemCustomization> Items { get; set; }
     public virtual CustomizationGroup CustomizationGroup { get; set; }
-    public virtual Guid CustomizationGroupId { get; set; }
+    public virtual long CustomizationGroupId { get; set; }
 }

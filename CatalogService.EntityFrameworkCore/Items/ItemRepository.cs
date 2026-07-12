@@ -12,7 +12,7 @@ using Volo.Abp.EntityFrameworkCore;
 
 namespace CatalogService.Items;
 
-public class ItemRepository : EfCoreRepositoryFramework<CatalogServiceDbContext, Item, Guid>, IItemRepository
+public class ItemRepository : EfCoreRepositoryFramework<CatalogServiceDbContext, Item, long>, IItemRepository
 {
     public ItemRepository(IDbContextProvider<CatalogServiceDbContext> dbContextProvider) : base(dbContextProvider)
     {
@@ -22,9 +22,11 @@ public class ItemRepository : EfCoreRepositoryFramework<CatalogServiceDbContext,
     {
         return (await GetQueryableAsync())
             .Include(x => x.MenuItems)
+                .ThenInclude(mi => mi.Menu)
             .Include(x => x.Variants)
             .Include(x => x.Customizations)
             .ThenInclude(x => x.Customization)
+            .ThenInclude(x => x.CustomizationGroup)
             ;
     }
 

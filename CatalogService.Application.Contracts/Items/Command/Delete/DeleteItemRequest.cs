@@ -3,6 +3,6 @@ using Volo.Abp.Application.Dtos;
 
 namespace CatalogService.Items;
 
-public class DeleteItemRequest : EntityDto<Guid>, IFrameworkRequest<BaseResponse>
+public class DeleteItemRequest : EntityDto<long>, IFrameworkRequest<BaseResponse>
 {
 }

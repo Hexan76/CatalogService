@@ -5,7 +5,7 @@ using Framework.BuildingBlock.Repositories;
 
 namespace CatalogService.BusinessTypes;
 
-public interface IBusinessTypeRepository : IRepositoryFramework<BusinessType, Guid>
+public interface IBusinessTypeRepository : IRepositoryFramework<BusinessType, long>
 {
     Task<PagedResult<BusinessTypeWithFilesQueryETO>>
     GetPagedWithFilesAsync(

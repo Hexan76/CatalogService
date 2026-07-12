@@ -7,7 +7,7 @@ using Volo.Abp.Application.Dtos;
 
 namespace CatalogService.Items;
 
-public class ItemModel : EntityDto<Guid>
+public class ItemModel : EntityDto<long>
 {
     [MaxLength(200)]
     public string Name { get; set; } = default!;
@@ -24,6 +24,6 @@ public class ItemModel : EntityDto<Guid>
     public FileUrlModel Image { get; set; }
 
     public ICollection<VariantModel> Variants { get; set; } = [];
-    public ICollection<CustomizationModel> Customizations { get; set; } = [];
+    public ICollection<CustomizationGroupModel> CustomizationGroups { get; set; } = [];
     public virtual long VendorId { get; set; }
 }

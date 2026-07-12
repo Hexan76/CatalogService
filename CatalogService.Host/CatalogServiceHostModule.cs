@@ -134,6 +134,8 @@ public class CatalogServiceHostModule : AbpModule
 
         context.Services.ConfigureHttpJsonOptions(options =>
         {
+            options.SerializerOptions.ReferenceHandler =
+              ReferenceHandler.IgnoreCycles;
             options.SerializerOptions.Converters.Add(
                 new JsonStringEnumConverter());
         });
@@ -455,6 +457,7 @@ public class CatalogServiceHostModule : AbpModule
         app.UseFastEndpoints(cfg =>
         {
             cfg.Versioning.Prefix = "v";
+            cfg.Endpoints.RoutePrefix = "api";
             cfg.Versioning.PrependToRoute = true;
             cfg.Errors.ResponseBuilder = (failures, ctx, statusCode) =>
             {

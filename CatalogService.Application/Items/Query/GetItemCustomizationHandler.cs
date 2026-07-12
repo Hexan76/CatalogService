@@ -6,6 +6,8 @@ using CatalogService.ObjectStorageService;
 
 using Framework.BuildingBlock.Application.Contracts;
 
+namespace CatalogService.Items;
+
 public class GetItemCustomizationHandler(
     ICustomizationGroupRepository customizationGroupRepository,
     IFileRepository fileRepository)

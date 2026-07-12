@@ -43,7 +43,6 @@ public class CreateCustomizationHandler(IHttpClientService httpClientService, Cu
                 var file = finalizeResponse.Files.FirstOrDefault();
 
                 var fileResult = await fileManager.AddRelatedFileWithEntity(
-                    file!.Id,
                     result.Id,
                     typeof(Customization).Name,
                     file.URL,

@@ -1,6 +1,6 @@
 using Framework.BuildingBlock.Application.Contracts;
 
-namespace CatalogService.Customizations;
+namespace CatalogService.Items;
 
 public interface IGetItemCustomizationsHandler : IFrameworkRequestHandler<GetItemCustomizationsRequest, GetItemCustomizationsResponse>
 {

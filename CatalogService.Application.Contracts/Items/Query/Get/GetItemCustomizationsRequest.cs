@@ -1,8 +1,8 @@
 using Framework.BuildingBlock.Application.Contracts;
 
-namespace CatalogService.Customizations;
+namespace CatalogService.Items;
 
 public class GetItemCustomizationsRequest : IFrameworkRequest<GetItemCustomizationsResponse>
 {
-    public Guid ItemId { get; set; }
+    public long ItemId { get; set; }
 }

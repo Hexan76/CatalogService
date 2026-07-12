@@ -11,7 +11,7 @@ public class DeleteCategoryHandler(ICategoryRepository categoryRepository) : IDe
 
         await categoryRepository.DeleteAsync(founded);
 
-        return MessageContract<BaseResponse>.Success(new BaseResponse() { Id = request.Id });
+        return MessageContract<BaseResponse>.Success(new BaseResponse());
 
     }
 }
