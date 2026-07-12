@@ -4,7 +4,7 @@ using Volo.Abp.Application.Dtos;
 
 namespace CatalogService.Categories;
 
-public class CategoryModel : EntityDto<Guid>
+public class CategoryModel : EntityDto<long>
 {
 
     public string Name { get; set; } = default!;
@@ -14,7 +14,7 @@ public class CategoryModel : EntityDto<Guid>
     public FileUrlModel Image { get; set; }
     public bool IsDisabled { get; set; }
     public bool IsPopular { get; set; }
-    public Guid? ParentId { get; set; }
+    public long? ParentId { get; set; }
     public virtual CategoryModel? Parent { get; set; }
 
 }

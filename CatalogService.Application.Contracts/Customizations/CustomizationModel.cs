@@ -4,7 +4,7 @@ using Volo.Abp.Application.Dtos;
 
 namespace CatalogService.Customizations;
 
-public class CustomizationModel : EntityDto<Guid>
+public class CustomizationModel : EntityDto<long>
 {
     public string Name { get; set; } = default!;
     public string? Description { get; set; }

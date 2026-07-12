@@ -41,7 +41,6 @@ public class CreateBusinessTypeHandler(IBusinessTypeRepository businessTypeRepos
                 var file = finalizeResponse.Files.FirstOrDefault();
 
                 var fileResult = await fileManager.AddRelatedFileWithEntity(
-                    file!.Id,
                     result.Id,
                     typeof(BusinessType).Name,
                     file.URL,

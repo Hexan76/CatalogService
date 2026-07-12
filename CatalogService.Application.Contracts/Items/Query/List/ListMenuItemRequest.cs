@@ -5,5 +5,5 @@ namespace CatalogService.Items;
 public class ListMenuItemRequest : IFrameworkRequest<ListMenuItemResponse>
 {
     public long VendorId { get; set; }
-    public Guid? MenuId { get; set; }
+    public long? MenuId { get; set; }
 }

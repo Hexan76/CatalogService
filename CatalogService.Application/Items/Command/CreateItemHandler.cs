@@ -44,7 +44,6 @@ public class CreateItemHandler(
                 var file = finalizeResponse.Files.FirstOrDefault();
 
                 var fileResult = await fileManager.AddRelatedFileWithEntity(
-                    file!.Id,
                     result.Id,
                     typeof(Item).Name,
                     file.URL,

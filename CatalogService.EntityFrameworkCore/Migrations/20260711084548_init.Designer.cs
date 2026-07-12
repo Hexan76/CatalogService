@@ -13,8 +13,8 @@ using Volo.Abp.EntityFrameworkCore;
 namespace CatalogService.Migrations
 {
     [DbContext(typeof(CatalogServiceDbContext))]
-    [Migration("20260705083453_customizations")]
-    partial class customizations
+    [Migration("20260711084548_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,9 +32,11 @@ namespace CatalogService.Migrations
 
             modelBuilder.Entity("CatalogService.BusinessTypes.BusinessType", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -84,9 +86,11 @@ namespace CatalogService.Migrations
 
             modelBuilder.Entity("CatalogService.Categories.Category", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -127,8 +131,8 @@ namespace CatalogService.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.Property<Guid?>("ParentId")
-                        .HasColumnType("uuid");
+                    b.Property<long?>("ParentId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Slug")
                         .IsRequired()
@@ -150,15 +154,17 @@ namespace CatalogService.Migrations
 
             modelBuilder.Entity("CatalogService.Categories.CategoryBusinessType", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("bigint");
 
-                    b.Property<Guid>("BusinessTypeId")
-                        .HasColumnType("uuid");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<Guid>("CategoryId")
-                        .HasColumnType("uuid");
+                    b.Property<long>("BusinessTypeId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("CategoryId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -171,9 +177,11 @@ namespace CatalogService.Migrations
 
             modelBuilder.Entity("CatalogService.CategoryCustomization.CustomizationGroup", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -213,8 +221,8 @@ namespace CatalogService.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("ParentId")
-                        .HasColumnType("uuid");
+                    b.Property<long?>("ParentId")
+                        .HasColumnType("bigint");
 
                     b.Property<int>("SortOrder")
                         .HasColumnType("integer");
@@ -226,9 +234,11 @@ namespace CatalogService.Migrations
 
             modelBuilder.Entity("CatalogService.Customizations.Customization", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -245,8 +255,8 @@ namespace CatalogService.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("CreatorId");
 
-                    b.Property<Guid>("CustomizationGroupId")
-                        .HasColumnType("uuid");
+                    b.Property<long>("CustomizationGroupId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -289,12 +299,14 @@ namespace CatalogService.Migrations
 
             modelBuilder.Entity("CatalogService.Files.FileEntity", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("bigint");
 
-                    b.Property<Guid>("EntityId")
-                        .HasColumnType("uuid");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("EntityId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("EntityType")
                         .IsRequired()
@@ -333,9 +345,11 @@ namespace CatalogService.Migrations
 
             modelBuilder.Entity("CatalogService.Items.Item", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -405,15 +419,17 @@ namespace CatalogService.Migrations
 
             modelBuilder.Entity("CatalogService.Items.ItemCategory", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("bigint");
 
-                    b.Property<Guid>("CategoryId")
-                        .HasColumnType("uuid");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<Guid>("ItemId")
-                        .HasColumnType("uuid");
+                    b.Property<long>("CategoryId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("ItemId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -427,15 +443,17 @@ namespace CatalogService.Migrations
 
             modelBuilder.Entity("CatalogService.Items.ItemCustomization", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("bigint");
 
-                    b.Property<Guid>("CustomizationId")
-                        .HasColumnType("uuid");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<Guid>("ItemId")
-                        .HasColumnType("uuid");
+                    b.Property<long>("CustomizationId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("ItemId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -449,9 +467,11 @@ namespace CatalogService.Migrations
 
             modelBuilder.Entity("CatalogService.Items.ItemVariant", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -465,8 +485,8 @@ namespace CatalogService.Migrations
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 
-                    b.Property<Guid>("ItemId")
-                        .HasColumnType("uuid");
+                    b.Property<long>("ItemId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -487,9 +507,11 @@ namespace CatalogService.Migrations
 
             modelBuilder.Entity("CatalogService.Menus.Menu", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -543,15 +565,17 @@ namespace CatalogService.Migrations
 
             modelBuilder.Entity("CatalogService.Menus.MenuItem", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("bigint");
 
-                    b.Property<Guid>("ItemId")
-                        .HasColumnType("uuid");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<Guid>("MenuId")
-                        .HasColumnType("uuid");
+                    b.Property<long>("ItemId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("MenuId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -624,7 +648,7 @@ namespace CatalogService.Migrations
             modelBuilder.Entity("CatalogService.Items.ItemCustomization", b =>
                 {
                     b.HasOne("CatalogService.Customizations.Customization", "Customization")
-                        .WithMany("Customizations")
+                        .WithMany("Items")
                         .HasForeignKey("CustomizationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -691,7 +715,7 @@ namespace CatalogService.Migrations
 
             modelBuilder.Entity("CatalogService.Customizations.Customization", b =>
                 {
-                    b.Navigation("Customizations");
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("CatalogService.Items.Item", b =>

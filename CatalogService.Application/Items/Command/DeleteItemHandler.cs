@@ -11,7 +11,7 @@ public class DeleteItemHandler(IItemRepository itemRepository) : IDeleteItemHand
 
         await itemRepository.DeleteAsync(founded);
 
-        return MessageContract<BaseResponse>.Success(new BaseResponse() { Id = request.Id });
+        return MessageContract<BaseResponse>.Success(new BaseResponse() );
 
     }
 }

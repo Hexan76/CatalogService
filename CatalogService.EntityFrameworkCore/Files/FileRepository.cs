@@ -7,7 +7,7 @@ using Volo.Abp.EntityFrameworkCore;
 namespace CatalogService.Files;
 
 public class FileRepository
-    : EfCoreRepositoryFramework<CatalogServiceDbContext, FileEntity, Guid>,
+    : EfCoreRepositoryFramework<CatalogServiceDbContext, FileEntity, long>,
       IFileRepository
 {
     public FileRepository(IDbContextProvider<CatalogServiceDbContext> dbContextProvider)
@@ -15,8 +15,8 @@ public class FileRepository
     {
     }
 
-    public async Task<Dictionary<Guid, FileEntity>> GetPrimaryFilesAsync(
-        IEnumerable<Guid> entityIds,
+    public async Task<Dictionary<long, FileEntity>> GetPrimaryFilesAsync(
+        IEnumerable<long> entityIds,
         CancellationToken cancellationToken = default)
     {
         var ids = entityIds.Distinct().ToList();

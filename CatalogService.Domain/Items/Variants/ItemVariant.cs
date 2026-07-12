@@ -7,7 +7,7 @@ using Volo.Abp.Domain.Entities;
 namespace CatalogService.Items;
 
 [Table(nameof(ItemVariant))]
-public class ItemVariant : Entity<Guid>, IHasDisabled
+public class ItemVariant : Entity<long>, IHasDisabled
 {
     public string Name { get; set; } = default!;
     public string? Description { get; set; }
@@ -17,5 +17,5 @@ public class ItemVariant : Entity<Guid>, IHasDisabled
     public int SortOrder { get; set; }
     public bool IsDisabled { get; set; }
     public virtual Item Item { get; set; }
-    public virtual Guid ItemId { get; set; }
+    public virtual long ItemId { get; set; }
 }

@@ -9,7 +9,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 namespace CatalogService.BusinessTypes;
 
 [Table(nameof(BusinessType))]
-public class BusinessType : AuditedAggregateRoot<Guid>, IHasDisabled
+public class BusinessType : AuditedAggregateRoot<long>, IHasDisabled
 {
     public string Name { get; set; } = default!;
     public string? Description { get; set; }

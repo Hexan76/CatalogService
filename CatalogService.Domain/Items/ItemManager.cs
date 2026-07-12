@@ -6,7 +6,7 @@ namespace CatalogService.Items;
 
 public class ItemManager(IItemRepository itemRepository) : ITransientDependency
 {
-    public async Task<Item> CreateAsync(Item item,Guid categoryId,Guid menuId)
+    public async Task<Item> CreateAsync(Item item, long categoryId, long menuId)
     {
         item.ItemCategories.Add(new ItemCategory
         {
@@ -53,7 +53,7 @@ public class ItemManager(IItemRepository itemRepository) : ITransientDependency
         {
             var existing = item.Variants.FirstOrDefault(x => x.Id == inputVariant.Id);
 
-            if (existing == null || inputVariant.Id == Guid.Empty)
+            if (existing == null)
             {
                 item.Variants.Add(new ItemVariant
                 {

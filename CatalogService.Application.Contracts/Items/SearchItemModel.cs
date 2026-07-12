@@ -6,7 +6,7 @@ using Volo.Abp.Application.Dtos;
 
 namespace CatalogService.Items;
 
-public class SearchItemModel : EntityDto<Guid>
+public class SearchItemModel : EntityDto<long>
 {
     [MaxLength(200)]
     public string Name { get; set; } = default!;

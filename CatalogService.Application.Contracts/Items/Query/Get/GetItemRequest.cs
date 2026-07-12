@@ -3,7 +3,7 @@ using Volo.Abp.Application.Dtos;
 
 namespace CatalogService.Items;
 
-public class GetItemRequest : EntityDto<Guid>, IFrameworkRequest<ItemModel>
+public class GetItemRequest : EntityDto<long>, IFrameworkRequest<ItemModel>
 {
 
 }
