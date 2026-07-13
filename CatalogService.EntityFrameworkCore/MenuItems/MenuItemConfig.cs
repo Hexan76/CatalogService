@@ -14,6 +14,19 @@ public class MenuItemConfig : IEntityTypeConfiguration<MenuItem>
         builder.ToTable(nameof(MenuItem), CatalogServiceDbProperties.DbSchema);
         builder.ConfigureByConvention();
 
+
+        builder.HasKey(x => x.Id);
+        builder.Property(x => x.Id)
+                .ValueGeneratedOnAdd()
+                ;
+
+
+        builder.HasIndex(x => new
+        {
+            x.ItemId,
+            x.MenuId
+        }).IsUnique();
+
         builder.HasOne(p => p.Menu)
             .WithMany(c => c.MenuItems)
             .HasForeignKey(fk => fk.MenuId)

@@ -499,7 +499,7 @@ namespace CatalogService.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.ToTable("ItemVariant");
+                    b.ToTable("ItemVariant", (string)null);
                 });
 
             modelBuilder.Entity("CatalogService.Menus.Menu", b =>
