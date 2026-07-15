@@ -16,7 +16,7 @@ public class UpdateItemHandler(ItemManager itemManager, IHttpClientService httpC
 
         var requestItem = ObjectMapper.Map<UpdateItemRequest, Item>(request);
         var result = await itemManager.UpdateAsync(requestItem);
-
+        
         var response = ObjectMapper.Map<Item, ItemModel>(result);
 
         if (request.ImageId is not null)

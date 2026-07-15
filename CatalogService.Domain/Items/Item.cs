@@ -12,6 +12,8 @@ namespace CatalogService.Items;
 [Table(nameof(Item))]
 public class Item : AuditedAggregateRoot<long>, IHasDisabled
 {
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public override long Id { get => base.Id; protected set => base.Id = value; }
     [MaxLength(200)]
     public string Name { get; set; } = default!;
     public string? Description { get; set; }
