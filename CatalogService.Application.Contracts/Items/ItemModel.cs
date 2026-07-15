@@ -21,6 +21,7 @@ public class ItemModel : EntityDto<long>
     [MaxLength(500)]
     public string Ingredients { get; set; }
     public bool IsDisabled { get; set; }
+    public long ParentId { get; set; }
     public FileUrlModel Image { get; set; }
 
     public ICollection<ItemModel> Variants { get; set; } = [];
