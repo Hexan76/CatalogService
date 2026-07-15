@@ -30,8 +30,8 @@ public class ItemConfig : IEntityTypeConfiguration<Item>
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasMany(x => x.Variants)
-            .WithOne(x => x.Item)
-            .HasForeignKey(x => x.ItemId)
+            .WithOne(x => x.Parent)
+            .HasForeignKey(x => x.ParentId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasMany(x => x.Customizations)

@@ -24,10 +24,7 @@ public class ItemManager(IItemRepository itemRepository) : ITransientDependency
     }
     public async Task<Item> UpdateAsync(Item input)
     {
-        var item = await itemRepository.GetAsync(
-            input.Id,
-            includeDetails: true
-        );
+        var item = await itemRepository.GetAsync(input.Id, includeDetails: true);
 
         item.Name = input.Name;
         item.Description = input.Description;
@@ -55,7 +52,7 @@ public class ItemManager(IItemRepository itemRepository) : ITransientDependency
 
             if (existing == null)
             {
-                item.Variants.Add(new ItemVariant
+                item.Variants.Add(new Item
                 {
                     Name = inputVariant.Name,
                     Description = inputVariant.Description,
@@ -64,8 +61,7 @@ public class ItemManager(IItemRepository itemRepository) : ITransientDependency
                     HasDiscount = inputVariant.HasDiscount,
                     SortOrder = inputVariant.SortOrder,
                     IsDisabled = inputVariant.IsDisabled,
-
-                    ItemId = item.Id
+                    ParentId = item.Id
                 });
             }
             else

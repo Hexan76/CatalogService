@@ -12,10 +12,10 @@ public class ItemModel : EntityDto<long>
     [MaxLength(200)]
     public string Name { get; set; } = default!;
     public string? Description { get; set; }
+    public double Price { get; set; }
     public int DiscountPrecent { get; set; }
     public bool HasDiscount { get; set; }
     public double Rate { get; set; } = 4.2;
-
     public int SortOrder { get; set; }
 
     [MaxLength(500)]
@@ -23,7 +23,7 @@ public class ItemModel : EntityDto<long>
     public bool IsDisabled { get; set; }
     public FileUrlModel Image { get; set; }
 
-    public ICollection<VariantModel> Variants { get; set; } = [];
+    public ICollection<ItemModel> Variants { get; set; } = [];
     public ICollection<CustomizationGroupModel> CustomizationGroups { get; set; } = [];
     public virtual long VendorId { get; set; }
 }

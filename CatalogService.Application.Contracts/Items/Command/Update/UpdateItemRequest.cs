@@ -18,5 +18,5 @@ public class UpdateItemRequest : EntityDto<long>, IFrameworkRequest<ItemModel>
     [MaxLength(500)]
     public string Ingredients { get; set; } = default!;
 
-    public ICollection<VariantModel> Variants { get; set; }
+    public ICollection<UpdateItemRequest> Variants { get; set; }
 }

@@ -19,6 +19,6 @@ public class SearchItemModel : EntityDto<long>
     public bool IsDisabled { get; set; }
     public FileUrlModel Image { get; set; }
 
-    public ICollection<VariantModel> Variants { get; set; } = [];
+    public ICollection<ItemModel> Variants { get; set; } = [];
     public virtual long VendorId { get; set; }
 }
