@@ -12,7 +12,7 @@ public class ItemModel : EntityDto<long>
     [MaxLength(200)]
     public string Name { get; set; } = default!;
     public string? Description { get; set; }
-    public double Price { get; set; }
+    public double Price { get; set; } = 20;
     public int DiscountPrecent { get; set; }
     public bool HasDiscount { get; set; }
     public double Rate { get; set; } = 4.2;
