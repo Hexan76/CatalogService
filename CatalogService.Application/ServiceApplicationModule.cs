@@ -34,6 +34,6 @@ public class CatalogServiceApplicationModule : AbpModule
         {
             options.RegisterServicesFromAssembly(typeof(CatalogServiceApplicationModule).Assembly);
         });
-        context.Services.AddRabbitMQConsumers([typeof(CatalogServiceAppService).Assembly]);
+        //context.Services.AddRabbitMQConsumers([typeof(CatalogServiceAppService).Assembly]);
     }
 }
