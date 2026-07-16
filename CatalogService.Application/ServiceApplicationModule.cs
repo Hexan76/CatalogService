@@ -1,7 +1,13 @@
-using Framework.BuildingBlock.Application;
-using Microsoft.Extensions.DependencyInjection;
 using CatalogService.Application.Contracts;
 using CatalogService.Domain;
+
+using Framework.BuildingBlock.Application;
+using Framework.RabbitMQ;
+
+using Microsoft.Extensions.DependencyInjection;
+
+using MiniExcelLibs;
+
 using Volo.Abp.AutoMapper;
 using Volo.Abp.Modularity;
 
@@ -28,6 +34,6 @@ public class CatalogServiceApplicationModule : AbpModule
         {
             options.RegisterServicesFromAssembly(typeof(CatalogServiceApplicationModule).Assembly);
         });
-
+        context.Services.AddRabbitMQConsumers([typeof(CatalogServiceAppService).Assembly]);
     }
 }

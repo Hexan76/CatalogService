@@ -14,6 +14,9 @@ public class ItemConfig : IEntityTypeConfiguration<Item>
         builder.ToTable(nameof(Item), CatalogServiceDbProperties.DbSchema);
         builder.ConfigureByConvention();
 
+        builder.Property(x => x.Id)
+        .ValueGeneratedOnAdd()
+        ;
 
         builder.Property(x => x.Name)
             .IsRequired()

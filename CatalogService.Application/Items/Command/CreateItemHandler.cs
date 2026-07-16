@@ -1,16 +1,19 @@
 using CatalogService.Application;
 using CatalogService.Files;
+using CatalogService.Items.Command;
 using CatalogService.ObjectStorageService;
 
 using Framework.BuildingBlock.Application.Contracts;
 using Framework.HttpClient.Abstractions;
+using Framework.RabbitMQ;
 
 namespace CatalogService.Items;
 
 public class CreateItemHandler(
     ItemManager itemManager,
     IHttpClientService httpClientService,
-    FileManager fileManager) : CatalogServiceAppService, ICreateItemHandler
+    FileManager fileManager,
+    IMessagePublisher messagePublisher) : CatalogServiceAppService, ICreateItemHandler
 {
     public async Task<MessageContract<ItemModel>> Handle(CreateItemRequest request, CancellationToken cancellationToken)
     {
@@ -60,6 +63,16 @@ public class CreateItemHandler(
                 };
             }
         }
+
+        await messagePublisher.PublishAsync(new Message<ItemCreatedEvent>()
+        {
+            Type = nameof(ItemCreatedEvent),
+            Payload = new ItemCreatedEvent()
+            {
+                ItemId = response.Id,
+                ItemName = response.Name
+            },
+        }, null, cancellationToken);
 
         return MessageContract<ItemModel>.Success(response);
     }

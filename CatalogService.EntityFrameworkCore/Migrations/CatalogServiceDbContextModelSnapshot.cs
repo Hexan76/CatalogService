@@ -470,6 +470,46 @@ namespace CatalogService.Migrations
                     b.ToTable("ItemCustomization", (string)null);
                 });
 
+            modelBuilder.Entity("CatalogService.Items.ItemVariant", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<int>("DiscountPrecent")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("HasDiscount")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<long>("ItemId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
+
+                    b.ToTable("ItemVariant", (string)null);
+                });
+
             modelBuilder.Entity("CatalogService.Menus.Menu", b =>
                 {
                     b.Property<long>("Id")

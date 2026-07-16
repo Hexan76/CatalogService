@@ -16,6 +16,9 @@ public class ItemCategoryConfig : IEntityTypeConfiguration<ItemCategory>
         builder.ConfigureByConvention();
 
         builder.HasKey(x => x.Id);
+        builder.Property(x => x.Id)
+                .ValueGeneratedOnAdd()
+                ;
 
         builder.HasIndex(x => new
         {
