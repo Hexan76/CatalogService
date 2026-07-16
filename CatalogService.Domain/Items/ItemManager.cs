@@ -1,5 +1,6 @@
 using CatalogService.Menus;
 
+using Volo.Abp;
 using Volo.Abp.DependencyInjection;
 
 namespace CatalogService.Items;
@@ -24,10 +25,7 @@ public class ItemManager(IItemRepository itemRepository) : ITransientDependency
     }
     public async Task<Item> UpdateAsync(Item input)
     {
-        var item = await itemRepository.GetAsync(
-            input.Id,
-            includeDetails: true
-        );
+        var item = await itemRepository.GetAsync(input.Id);
 
         item.Name = input.Name;
         item.Description = input.Description;
@@ -51,11 +49,31 @@ public class ItemManager(IItemRepository itemRepository) : ITransientDependency
 
         foreach (var inputVariant in input.Variants)
         {
-            var existing = item.Variants.FirstOrDefault(x => x.Id == inputVariant.Id);
-
-            if (existing == null)
+            if (inputVariant.Id > 0)
             {
-                item.Variants.Add(new ItemVariant
+                var existingVariant = item.Variants
+                    .FirstOrDefault(x => x.Id == inputVariant.Id);
+
+                if (existingVariant != null)
+                {
+                    existingVariant.Name = inputVariant.Name;
+                    existingVariant.Description = inputVariant.Description;
+                    existingVariant.Price = inputVariant.Price;
+                    existingVariant.DiscountPrecent = inputVariant.DiscountPrecent;
+                    existingVariant.HasDiscount = inputVariant.HasDiscount;
+                    existingVariant.SortOrder = inputVariant.SortOrder;
+                    existingVariant.Ingredients = input.Ingredients;
+                    existingVariant.IsDisabled = inputVariant.IsDisabled;
+                }
+                else
+                {
+                    throw new BusinessException("Variant not found.");
+                }
+            }
+            else
+            {
+                // New Variant
+                item.Variants.Add(new Item
                 {
                     Name = inputVariant.Name,
                     Description = inputVariant.Description,
@@ -64,22 +82,12 @@ public class ItemManager(IItemRepository itemRepository) : ITransientDependency
                     HasDiscount = inputVariant.HasDiscount,
                     SortOrder = inputVariant.SortOrder,
                     IsDisabled = inputVariant.IsDisabled,
-
-                    ItemId = item.Id
+                    Ingredients = inputVariant.Ingredients,
+                    ParentId = item.Id
                 });
-            }
-            else
-            {
-                existing.Name = inputVariant.Name;
-                existing.Description = inputVariant.Description;
-                existing.Price = inputVariant.Price;
-                existing.DiscountPrecent = inputVariant.DiscountPrecent;
-                existing.HasDiscount = inputVariant.HasDiscount;
-                existing.SortOrder = inputVariant.SortOrder;
-                existing.IsDisabled = inputVariant.IsDisabled;
             }
         }
 
-        return await itemRepository.UpdateAsync(item);
+        return await itemRepository.UpdateAsync(item, true);
     }
 }

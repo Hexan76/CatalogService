@@ -287,6 +287,9 @@ namespace CatalogService.Migrations
                     b.Property<int>("SortOrder")
                         .HasColumnType("integer");
 
+                    b.Property<long>("VendorId")
+                        .HasColumnType("bigint");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CustomizationGroupId");
@@ -398,6 +401,9 @@ namespace CatalogService.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
+                    b.Property<long?>("ParentId")
+                        .HasColumnType("bigint");
+
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
 
@@ -408,6 +414,8 @@ namespace CatalogService.Migrations
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
 
                     b.HasIndex("VendorId");
 
@@ -623,6 +631,16 @@ namespace CatalogService.Migrations
                     b.Navigation("CustomizationGroup");
                 });
 
+            modelBuilder.Entity("CatalogService.Items.Item", b =>
+                {
+                    b.HasOne("CatalogService.Items.Item", "Parent")
+                        .WithMany("Variants")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Parent");
+                });
+
             modelBuilder.Entity("CatalogService.Items.ItemCategory", b =>
                 {
                     b.HasOne("CatalogService.Categories.Category", "Category")
@@ -657,17 +675,6 @@ namespace CatalogService.Migrations
                         .IsRequired();
 
                     b.Navigation("Customization");
-
-                    b.Navigation("Item");
-                });
-
-            modelBuilder.Entity("CatalogService.Items.ItemVariant", b =>
-                {
-                    b.HasOne("CatalogService.Items.Item", "Item")
-                        .WithMany("Variants")
-                        .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.Navigation("Item");
                 });

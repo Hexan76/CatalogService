@@ -12,6 +12,8 @@ namespace CatalogService.Items;
 [Table(nameof(Item))]
 public class Item : AuditedAggregateRoot<long>, IHasDisabled
 {
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public override long Id { get => base.Id; protected set => base.Id = value; }
     [MaxLength(200)]
     public string Name { get; set; } = default!;
     public string? Description { get; set; }
@@ -23,9 +25,13 @@ public class Item : AuditedAggregateRoot<long>, IHasDisabled
     [MaxLength(500)]
     public string Ingredients { get; set; } = default!;
     public bool IsDisabled { get; set; }
+
+
+    public virtual Item? Parent { get; set; }
+    public virtual long? ParentId { get; set; }
     public virtual ICollection<ItemCategory> ItemCategories { get; set; } = [];
     public virtual ICollection<MenuItem> MenuItems { get; set; } = [];
-    public virtual ICollection<ItemVariant> Variants { get; set; } = [];
+    public virtual ICollection<Item> Variants { get; set; } = [];
     public virtual ICollection<ItemCustomization> Customizations { get; set; } = [];
 
     public virtual long VendorId { get; set; }

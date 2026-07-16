@@ -24,6 +24,7 @@ public class ItemRepository : EfCoreRepositoryFramework<CatalogServiceDbContext,
             .Include(x => x.MenuItems)
                 .ThenInclude(mi => mi.Menu)
             .Include(x => x.Variants)
+                .ThenInclude(x => x.Parent)
             .Include(x => x.Customizations)
             .ThenInclude(x => x.Customization)
             .ThenInclude(x => x.CustomizationGroup)

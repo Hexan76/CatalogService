@@ -1,8 +1,13 @@
+using System.Reflection;
+
 using CatalogService.Domain;
+
 using Framework.BuildingBlock;
 using Framework.BuildingBlock.EntityFrameworkCore;
+
 using Microsoft.EntityFrameworkCore;
-using System.Reflection;
+using Microsoft.Extensions.Options;
+
 using Volo.Abp.Data;
 
 namespace CatalogService.EntityFrameworkCore;
@@ -17,13 +22,16 @@ public class CatalogServiceDbContext : GenericDbContextWrapper<CatalogServiceDbC
     public CatalogServiceDbContext(DbContextOptions<CatalogServiceDbContext> options)
         : base(options)
     {
-
+        
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseLazyLoadingProxies()
         ;
+        optionsBuilder
+        .LogTo(Console.WriteLine)
+        .EnableSensitiveDataLogging();
     }
     protected override void OnModelCreating(ModelBuilder builder)
     {

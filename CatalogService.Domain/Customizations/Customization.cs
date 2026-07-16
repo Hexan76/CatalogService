@@ -21,4 +21,5 @@ public class Customization : AuditedAggregateRoot<long>, IHasDisabled
     public virtual ICollection<ItemCustomization> Items { get; set; }
     public virtual CustomizationGroup CustomizationGroup { get; set; }
     public virtual long CustomizationGroupId { get; set; }
+    public long VendorId { get; set; }
 }

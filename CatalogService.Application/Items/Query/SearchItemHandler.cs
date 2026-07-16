@@ -12,7 +12,7 @@ public class SearchItemHandler(IItemRepository itemRepository, IFileRepository f
     {
 
         var query = (await itemRepository.GetQueryableAsync())
-            .Where(x => x.Name.Contains(request.SearchTerm ?? ""));
+            .Where(x => x.Name.Contains(request.SearchTerm ?? "") && x.ParentId == null);
 
         if (request.BusinessTypeId.HasValue)
         {
