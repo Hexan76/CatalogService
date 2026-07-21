@@ -11,10 +11,10 @@
         <PackageReference Include="Volo.Abp.Authorization" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="MassTransit" />
-    </ItemGroup>
-    <ItemGroup>
       <ProjectReference Include="..\..\building-block\src\Framework.BuildingBlock.Application.Contracts\Framework.BuildingBlock.Application.Contracts.csproj" />
       <ProjectReference Include="..\CatalogService.Domain.Shared\CatalogService.Domain.Shared.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Items\Event\" />
     </ItemGroup>
 </Project>

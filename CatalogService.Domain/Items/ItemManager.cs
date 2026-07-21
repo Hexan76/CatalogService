@@ -21,7 +21,7 @@ public class ItemManager(IItemRepository itemRepository) : ITransientDependency
             MenuId = menuId
         });
 
-        return await itemRepository.InsertAsync(item);
+        return await itemRepository.InsertAsync(item, true);
     }
     public async Task<Item> UpdateAsync(Item input)
     {
