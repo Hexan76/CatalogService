@@ -1,10 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
         <RootNamespace>CatalogService</RootNamespace>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="MediatR" />
+        <PackageReference Include="Masstransit" />
+        <PackageReference Include="Masstransit.RabbitMq" />
         <PackageReference Include="Volo.Abp.LuckyPenny.AutoMapper" />
         <PackageReference Include="Volo.Abp.Ddd.Application" />
         <ProjectReference Include="..\..\building-block\src\Framework.BuildingBlock.Application\Framework.BuildingBlock.Application.csproj" />

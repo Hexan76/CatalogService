@@ -1,42 +1,20 @@
-//using CatalogService.Application;
-//using CatalogService.ObjectStorageService;
+using CatalogService.Application;
 
-//using Framework.BuildingBlock.Application.Contracts;
+using Framework.BuildingBlock.Application.Contracts;
 
-//namespace CatalogService.Menus;
+namespace CatalogService.Menus;
 
-//public class ListMenuHandler(ICategoryRepository categoryRepository) : CatalogServiceAppService, IListMenuHandler
-//{
-//    public async Task<MessageContract<ListMenuResponse>> Handle(ListMenuRequest request, CancellationToken cancellationToken)
-//    {
-//        var query = await categoryRepository.GetListWithFilesAsync(request.ParentId);
+public class ListMenuHandler(IMenuRepository menuRepository) : CatalogServiceAppService, IListMenuHandler
+{
+    public async Task<MessageContract<ListMenuResponse>> Handle(ListMenuRequest request, CancellationToken cancellationToken)
+    {
+        var result = await menuRepository.GetListAsync();
 
-//        var result = await AsyncExecuter.ToListAsync(query.Queryable);
+        var response = new ListMenuResponse();
 
-//        var response = new ListCategoryResponse();
+        var mappedList = new List<MenuModel>();
 
-//        var mappedList = new List<CategoryModel>();
-//        foreach (var item in result)
-//        {
-//            var catMap = ObjectMapper.Map<Category, CategoryModel>(item.Category);
 
-//            var files = item.Files
-//                .OrderBy(x => x.Priority);
-
-//            foreach (var file in files)
-//            {
-//                catMap.Image = new FileUrlModel
-//                {
-//                    Role = file.Role,
-//                    Variants = file.Variants,
-//                };
-
-//            }
-
-//            mappedList.Add(catMap);
-//        }
-//        response.Items = mappedList;
-
-//        return MessageContract<ListCategoryResponse>.Success(response);
-//    }
-//}
+        return MessageContract<ListMenuResponse>.Success(response);
+    }
+}

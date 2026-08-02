@@ -3,11 +3,10 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <MicrosoftVersion>10.0.7</MicrosoftVersion>
+    <MicrosoftVersion>10.0.9</MicrosoftVersion>
     <AbpVersion>10.3.0</AbpVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="MassTransit.Abstractions" Version="9.1.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="$(MicrosoftVersion)" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="$(MicrosoftVersion)" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="$(MicrosoftVersion)" />
@@ -66,7 +65,9 @@
     <PackageVersion Include="MediatR" Version="14.1.0" />
     <PackageVersion Include="FastEndpoints" Version="8.1.0" />
     <PackageVersion Include="FastEndpoints.Swagger" Version="8.1.0" />
-    <PackageVersion Include="MassTransit" Version="9.1.0" />
+    <PackageVersion Include="MassTransit" Version="9.1.2" />
+    <PackageVersion Include="MassTransit.Abstractions" Version="9.1.0" />
+    <PackageVersion Include="MassTransit.RabbitMQ" Version="9.1.2" />
     <PackageVersion Include="Serilog.AspNetCore" Version="10.0.0" />
     <PackageVersion Include="Serilog.Sinks.Async" Version="2.1.0" />
     <PackageVersion Include="SixLabors.ImageSharp" Version="3.1.12" />

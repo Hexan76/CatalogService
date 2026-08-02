@@ -29,9 +29,9 @@ public class CatalogServiceDbContext : GenericDbContextWrapper<CatalogServiceDbC
     {
         optionsBuilder.UseLazyLoadingProxies()
         ;
-        optionsBuilder
-        .LogTo(Console.WriteLine)
-        .EnableSensitiveDataLogging();
+        //optionsBuilder
+        //.LogTo(Console.WriteLine)
+        //.EnableSensitiveDataLogging();
     }
     protected override void OnModelCreating(ModelBuilder builder)
     {

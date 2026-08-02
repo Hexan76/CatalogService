@@ -1,11 +1,12 @@
 using CatalogService.Application;
 using CatalogService.Files;
-using CatalogService.Items.Command;
 using CatalogService.ObjectStorageService;
 
 using Framework.BuildingBlock.Application.Contracts;
 using Framework.HttpClient.Abstractions;
 using Framework.RabbitMQ;
+
+//using MassTransit;
 
 namespace CatalogService.Items;
 
@@ -67,11 +68,7 @@ public class CreateItemHandler(
         await messagePublisher.PublishAsync(new Message<ItemCreatedEvent>()
         {
             Type = nameof(ItemCreatedEvent),
-            Payload = new ItemCreatedEvent()
-            {
-                ItemId = response.Id,
-                ItemName = response.Name
-            },
+            Payload = new ItemCreatedEvent(response),
         }, null, cancellationToken);
 
         return MessageContract<ItemModel>.Success(response);
