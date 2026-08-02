@@ -34,7 +34,7 @@ public class UpdateBusinessTypeHandler(IBusinessTypeRepository businessTypeRepos
                     StorageEntityType="BusinessType",
                 }
             };
-            var finalizeResponse = await httpClientService.SendAsync<FinalizeFilesResponse>(new FinalizeRequest() { Files = files });
+            var finalizeResponse = await httpClientService.SendAsync<FinalizeFilesResponse>(new FinalizeRequest() { Files = files }, ResponseType.Default, "ObjectStorageClient");
 
             if (finalizeResponse != null && finalizeResponse.Files.Any())
             {

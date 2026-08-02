@@ -1,5 +1,6 @@
 using Volo.Abp;
 using Volo.Abp.DependencyInjection;
+using Volo.Abp.Domain.Repositories;
 
 namespace CatalogService.Files;
 
@@ -38,11 +39,10 @@ public class FileManager(IFileRepository fileRepository) : ITransientDependency
     string role,
     IDictionary<string, object> variants)
     {
-        var existing = await fileRepository.FindAsync(x =>
+        var existing = await fileRepository.FirstOrDefaultAsync(x =>
             x.EntityId == entityId &&
             x.EntityType == entityType &&
-            x.Role == role &&
-            x.Url == url);
+            x.Role == role);
 
         if (existing == null)
         {
@@ -64,6 +64,7 @@ public class FileManager(IFileRepository fileRepository) : ITransientDependency
         var changed =
             existing.FileName != fileName ||
             existing.Size != size ||
+            existing.Url != url ||
             existing.Extension != extension;
 
         if (!changed)
@@ -72,8 +73,10 @@ public class FileManager(IFileRepository fileRepository) : ITransientDependency
         existing.FileName = fileName;
         existing.Size = size;
         existing.Extension = extension;
+        existing.Url = url;
+        existing.Variants = variants;
 
-        return await fileRepository.UpdateAsync(existing);
+        return await fileRepository.UpdateAsync(existing, true);
     }
     public async Task<FileEntity> SetPriorityFirst(long fileId)
     {

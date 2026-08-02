@@ -17,8 +17,7 @@ public class CatalogServiceDomainModule : AbpModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
-        var objectStorageUrl = context.Configuration.GetSection("ObjectStorageService");
-        context.Services.AddHttpClientFramework(objectStorageUrl["BaseUrl"]);
+        context.Services.AddHttpClientFramework(context.Configuration);
         
         context.Services.AddFrameworkRabbitMQ(context.Configuration);
     }
