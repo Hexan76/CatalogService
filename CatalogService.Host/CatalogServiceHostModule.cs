@@ -433,18 +433,18 @@ public class CatalogServiceHostModule : AbpModule
 
         app.UseEndpoints(endpoints =>
         {
-            // Map root URL to Swagger redirect
-            endpoints.MapGet("/", context =>
+            endpoints.MapGet("/", async context =>
             {
-                context.Response.Redirect("/swagger", permanent: false);
-                return Task.CompletedTask;
+                var pathBase = context.Request.PathBase.Value ?? string.Empty;
+                context.Response.Redirect($"{pathBase}/swagger");
+                await Task.CompletedTask;
             });
 
-            // You can keep the default controller route if needed for other controllers
             endpoints.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
         });
+
         app.UseAuditing();
         app.UseAbpSerilogEnrichers();
         //app.UseConfiguredEndpoints(endpoints =>
