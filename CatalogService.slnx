@@ -7,11 +7,11 @@
     <Project Path="../building-block/src/Framework.BuildingBlock.EntityFrameworkCore/Framework.BuildingBlock.EntityFrameworkCore.csproj" />
     <Project Path="../building-block/src/Framework.BuildingBlock.HttpApi/Framework.BuildingBlock.HttpApi.csproj" />
   </Folder>
-  <Project Path="CatalogService.Application.Contracts/CatalogService.Application.Contracts.csproj" />
-  <Project Path="CatalogService.Application/CatalogService.Application.csproj" />
-  <Project Path="CatalogService.Domain.Shared/CatalogService.Domain.Shared.csproj" />
-  <Project Path="CatalogService.Domain/CatalogService.Domain.csproj" />
-  <Project Path="CatalogService.EntityFrameworkCore/CatalogService.EntityFrameworkCore.csproj" />
-  <Project Path="CatalogService.Host/CatalogService.Host.csproj" />
-  <Project Path="CatalogService.HttpApi/CatalogService.HttpApi.csproj" />
+  <Folder Name="/src/">
+    <Project Path="src/CatalogService.Api/CatalogService.Api.csproj" />
+    <Project Path="src/CatalogService.Application/CatalogService.Application.csproj" />
+    <Project Path="src/CatalogService.DbMigrator/CatalogService.DbMigrator.csproj" />
+    <Project Path="src/CatalogService.Domain/CatalogService.Domain.csproj" />
+    <Project Path="src/CatalogService.Infrastructure/CatalogService.Infrastructure.csproj" />
+  </Folder>
 </Solution>

@@ -1,0 +1,20 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
+using Framework.BuildingBlock.Entities;
+
+namespace CatalogService.Files;
+
+[Table(nameof(FileEntity))]
+public class FileEntity : Entity<long>
+{
+    public string FileName { get; set; } = default!;
+    public string Url { get; set; } = default!;
+    public int Priority { get; set; } = default!;
+    public long Size { get; set; }
+    public string Extension { get; set; }
+    public string EntityType { get; set; }
+    public string Role { get; set; }
+    public IDictionary<string, object> Variants { get; set; }
+    public long EntityId { get; set; }
+
+}
