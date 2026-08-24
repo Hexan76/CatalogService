@@ -31,6 +31,7 @@ public static class DependencyInjection
         {
             cfg.Versioning.Prefix = "v";
             cfg.Endpoints.RoutePrefix = "api";
+            cfg.Versioning.PrependToRoute = true;
             cfg.Errors.ResponseBuilder = (failures, ctx, statusCode) =>
             {
                 IValidationFailureHandler validationFailureHandler =
