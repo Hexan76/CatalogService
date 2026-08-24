@@ -36,7 +36,7 @@ workflow:
         COOLIFY_TOKEN: $COOLIFY_TOKEN_PROD
         COOLIFY_APPLICATION_ID: $COOLIFY_APPLICATION_ID_PROD
         COOLIFY_URL: $COOLIFY_URL_PROD
-        COOLIFY_METHOD: "-f -sS"
+        COOLIFY_METHOD: "-X POST"
 
 .branch_rules: &branch_rules
   rules:
