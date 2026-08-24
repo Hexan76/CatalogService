@@ -19,7 +19,7 @@ RUN dotnet publish src/CatalogService.Api/CatalogService.Api.csproj \
     -o /app/publish \
     /p:UseAppHost=false
 
-FROM --platform=$TARGETPLATFORM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 
 WORKDIR /app
 
@@ -30,4 +30,4 @@ ENV ASPNETCORE_ENVIRONMENT=Production
 
 EXPOSE 44381
 
-ENTRYPOINT ["dotnet", "CatalogService.Host.dll"]
+ENTRYPOINT ["dotnet", "CatalogService.Api.dll"]
