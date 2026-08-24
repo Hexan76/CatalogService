@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 using Framework.BuildingBlock.Application.Contracts;
 
 namespace CatalogService.Items;
@@ -14,8 +12,7 @@ public class CreateItemRequest : IFrameworkRequest<ItemModel>
     public bool HasDiscount { get; set; }
     public int SortOrder { get; set; }
 
-    [MaxLength(500)]
-    public string Ingredients { get; set; } = default!;
+    public string[] IngredientsArray { get; set; } = default!;
 
     public ICollection<CreateItemRequest> Variants { get; set; } = [];
     public long CategoryId { get; set; }

@@ -65,11 +65,11 @@ public class CreateItemHandler(
             }
         }
 
-        await messagePublisher.PublishAsync(new Message<ItemCreatedEvent>()
-        {
-            Type = nameof(ItemCreatedEvent),
-            Payload = new ItemCreatedEvent(response),
-        }, null, cancellationToken);
+        //await messagePublisher.PublishAsync(new Message<ItemCreatedEvent>()
+        //{
+        //    Type = nameof(ItemCreatedEvent),
+        //    Payload = new ItemCreatedEvent(response),
+        //}, null, cancellationToken);
 
         return MessageContract<ItemModel>.Success(response);
     }
