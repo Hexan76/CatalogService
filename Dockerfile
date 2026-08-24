@@ -12,9 +12,9 @@ COPY catalog-service/ .
 
 COPY building-block ../building-block
 
-RUN dotnet restore CatalogService.Host/CatalogService.Host.csproj
+RUN dotnet restore src/CatalogService.Host/CatalogService.Host.csproj
 
-RUN dotnet publish CatalogService.Host/CatalogService.Host.csproj \
+RUN dotnet publish src/CatalogService.Host/CatalogService.Host.csproj \
     -c Release \
     -o /app/publish \
     /p:UseAppHost=false
