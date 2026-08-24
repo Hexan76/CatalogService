@@ -10,8 +10,8 @@ public static class OpenApiDefinitions
         [
             new OpenApiDefinitionOptions
             {
-                DocumentName = "GatewayBFF Api",
-                Title = "GatewayBFF Api",
+                DocumentName = "Catalog Service Api",
+                Title = "CatalogService Api",
                 Version = "1.0.0",
                 ApiVersion = 1,
                 IsDefault = true,
