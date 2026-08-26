@@ -5,9 +5,11 @@ using CatalogService.EntityFrameworkCore;
 using CatalogService.Files;
 using CatalogService.Items;
 using CatalogService.Menus;
+using CatalogService.Settings;
 
 using Framework.BuildingBlock.Abstracts;
 using Framework.BuildingBlock.EntityFrameworkCore;
+using Framework.BuildingBlock.Settings;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -44,6 +46,13 @@ public static class DependencyInjection
         services.AddScoped<ICategoryRepository, CategoryRepository>();
         services.AddScoped<ICustomizationRepository, CustomizationRepository>();
         services.AddScoped<ICustomizationGroupRepository, CustomizationGroupRepository>();
+
+        services.AddFrameworkSettings(configuration, typeof(CatalogSettingDefinitionProvider).Assembly);
+
+        services.Configure<SettingsCacheOptions>(options =>
+        {
+            options.AppKey = "CatalogService";
+        });
 
         // Registers IDatabaseMigrator (from the building block) for OrderDbContext so it can be
         // used anywhere in the system (API startup, workers, or the OrderService.DbMigrator console).

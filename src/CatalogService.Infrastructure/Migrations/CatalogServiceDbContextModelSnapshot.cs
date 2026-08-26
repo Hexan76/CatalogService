@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using Volo.Abp.EntityFrameworkCore;
 
 #nullable disable
 
@@ -18,11 +17,7 @@ namespace CatalogService.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("_Abp_DatabaseProvider", EfCoreDatabaseProvider.PostgreSql)
-                .HasAnnotation("ProductVersion", "10.0.7")
-                .HasAnnotation("Proxies:ChangeTracking", false)
-                .HasAnnotation("Proxies:CheckEquality", false)
-                .HasAnnotation("Proxies:LazyLoading", true)
+                .HasAnnotation("ProductVersion", "10.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -36,38 +31,26 @@ namespace CatalogService.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
                         .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("character varying(40)")
-                        .HasColumnName("ConcurrencyStamp");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("CreationTime")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("CreationTime");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("CreatorId");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<string>("ExtraProperties")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("ExtraProperties");
-
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("LastModificationTime");
+                    b.Property<DateTime?>("ModificationTime")
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("LastModifierId");
+                    b.Property<Guid?>("ModifierId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -107,21 +90,16 @@ namespace CatalogService.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<string>("ExtraProperties")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("ExtraProperties");
-
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("LastModificationTime")
+                    b.Property<DateTime?>("ModificationTime")
                         .HasColumnType("timestamp without time zone")
-                        .HasColumnName("LastModificationTime");
+                        .HasColumnName("ModificationTime");
 
-                    b.Property<Guid?>("LastModifierId")
+                    b.Property<Guid?>("ModifierId")
                         .HasColumnType("uuid")
-                        .HasColumnName("LastModifierId");
+                        .HasColumnName("ModifierId");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -198,21 +176,16 @@ namespace CatalogService.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<string>("ExtraProperties")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("ExtraProperties");
-
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("LastModificationTime")
+                    b.Property<DateTime?>("ModificationTime")
                         .HasColumnType("timestamp without time zone")
-                        .HasColumnName("LastModificationTime");
+                        .HasColumnName("ModificationTime");
 
-                    b.Property<Guid?>("LastModifierId")
+                    b.Property<Guid?>("ModifierId")
                         .HasColumnType("uuid")
-                        .HasColumnName("LastModifierId");
+                        .HasColumnName("ModifierId");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -258,24 +231,19 @@ namespace CatalogService.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<string>("ExtraProperties")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("ExtraProperties");
-
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("LastModificationTime");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("LastModifierId");
-
                     b.Property<int>("MaxCountRequest")
                         .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModificationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("ModificationTime");
+
+                    b.Property<Guid?>("ModifierId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("ModifierId");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -372,11 +340,6 @@ namespace CatalogService.Migrations
                     b.Property<int>("DiscountPrecent")
                         .HasColumnType("integer");
 
-                    b.Property<string>("ExtraProperties")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("ExtraProperties");
-
                     b.Property<bool>("HasDiscount")
                         .HasColumnType("boolean");
 
@@ -388,13 +351,13 @@ namespace CatalogService.Migrations
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("LastModificationTime")
+                    b.Property<DateTime?>("ModificationTime")
                         .HasColumnType("timestamp without time zone")
-                        .HasColumnName("LastModificationTime");
+                        .HasColumnName("ModificationTime");
 
-                    b.Property<Guid?>("LastModifierId")
+                    b.Property<Guid?>("ModifierId")
                         .HasColumnType("uuid")
-                        .HasColumnName("LastModifierId");
+                        .HasColumnName("ModifierId");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -402,6 +365,9 @@ namespace CatalogService.Migrations
                         .HasColumnType("character varying(200)");
 
                     b.Property<long?>("ParentId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("PreparingTime")
                         .HasColumnType("bigint");
 
                     b.Property<decimal>("Price")
@@ -470,46 +436,6 @@ namespace CatalogService.Migrations
                     b.ToTable("ItemCustomization", (string)null);
                 });
 
-            modelBuilder.Entity("CatalogService.Items.ItemVariant", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<int>("DiscountPrecent")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("HasDiscount")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsDisabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<long>("ItemId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("numeric");
-
-                    b.Property<int>("SortOrder")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ItemId");
-
-                    b.ToTable("ItemVariant", (string)null);
-                });
-
             modelBuilder.Entity("CatalogService.Menus.Menu", b =>
                 {
                     b.Property<long>("Id")
@@ -533,21 +459,16 @@ namespace CatalogService.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("CreatorId");
 
-                    b.Property<string>("ExtraProperties")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("ExtraProperties");
-
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("LastModificationTime")
+                    b.Property<DateTime?>("ModificationTime")
                         .HasColumnType("timestamp without time zone")
-                        .HasColumnName("LastModificationTime");
+                        .HasColumnName("ModificationTime");
 
-                    b.Property<Guid?>("LastModifierId")
+                    b.Property<Guid?>("ModifierId")
                         .HasColumnType("uuid")
-                        .HasColumnName("LastModifierId");
+                        .HasColumnName("ModifierId");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -584,11 +505,55 @@ namespace CatalogService.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ItemId");
-
                     b.HasIndex("MenuId");
 
+                    b.HasIndex("ItemId", "MenuId")
+                        .IsUnique();
+
                     b.ToTable("MenuItem", (string)null);
+                });
+
+            modelBuilder.Entity("Framework.BuildingBlock.Settings.Setting", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("ConcurrencyStamp");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<DateTime?>("ModificationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("ModificationTime");
+
+                    b.Property<Guid?>("ModifierId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("ModifierId");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Setting", (string)null);
                 });
 
             modelBuilder.Entity("CatalogService.Categories.Category", b =>
@@ -612,7 +577,7 @@ namespace CatalogService.Migrations
                     b.HasOne("CatalogService.Categories.Category", "Category")
                         .WithMany("CategoryBusinessTypes")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("BusinessType");
@@ -690,7 +655,7 @@ namespace CatalogService.Migrations
                     b.HasOne("CatalogService.Menus.Menu", "Menu")
                         .WithMany("MenuItems")
                         .HasForeignKey("MenuId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Item");

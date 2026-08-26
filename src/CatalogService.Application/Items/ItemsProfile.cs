@@ -21,9 +21,11 @@ public class ItemsProfile : Profile
         //TODO : remove after handle template
         CreateMap<ItemModel, Item>(memberList: MemberList.None);
         CreateMap<CreateItemRequest, Item>(memberList: MemberList.None)
-        .ForMember(x => x.Ingredients, o => o.MapFrom(src => string.Join('|', src.IngredientsArray)))
-        ;
-        CreateMap<UpdateItemRequest, Item>(memberList: MemberList.None);
+            .ForMember(x => x.Ingredients, o => o.MapFrom(src => string.Join('|', src.IngredientsArray)))
+            ;
+        CreateMap<UpdateItemRequest, Item>(memberList: MemberList.None)
+            .ForMember(x => x.Ingredients, o => o.MapFrom(src => string.Join('|', src.IngredientsArray)))
+            ;
 
         CreateMap<CustomizationModel, ItemCustomization>(memberList: MemberList.None);
         CreateMap<ItemCustomization, CustomizationModel>(memberList: MemberList.None)

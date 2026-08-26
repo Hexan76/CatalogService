@@ -8,4 +8,5 @@ public class CatalogServiceApiTags
     public const string Menu = "menus";
     public const string Customization = "customizations";
     public const string CustomizationGroup = "customizations-group";
+    public const string Settings = "settings";
 }
