@@ -18,6 +18,11 @@ public static class DependencyInjection
         services.AddAutoMapper(cfg => { }, assembly);
         services.AddValidatorsFromAssembly(assembly);
 
+        services.AddStackExchangeRedisCache(cfg =>
+        {
+            cfg.Configuration = configuration.GetSection("Redis")["Configuration"];
+        });
+
         services.AddHttpClientFramework(configuration);
         services.AddHttpClientService("ObjectStorageClient", configuration);
 

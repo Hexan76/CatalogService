@@ -14,7 +14,7 @@ public class CatalogServiceDbContextFactory : IDesignTimeDbContextFactory<Catalo
         var configuration = BuildConfiguration();
 
         var builder = new DbContextOptionsBuilder<CatalogServiceDbContext>()
-            .UseNpgsql(configuration.GetConnectionString("Write"));
+            .UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
 
         return new CatalogServiceDbContext(builder.Options);
     }
@@ -22,7 +22,7 @@ public class CatalogServiceDbContextFactory : IDesignTimeDbContextFactory<Catalo
     private static IConfigurationRoot BuildConfiguration()
     {
         var builder = new ConfigurationBuilder()
-            .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "../CatalogService.Host/"))
+            .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "../CatalogService.Api/"))
             .AddJsonFile("appsettings.json", optional: false);
 
         return builder.Build();

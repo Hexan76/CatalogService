@@ -1,4 +1,5 @@
 using Framework.BuildingBlock.EntityFrameworkCore;
+using Framework.BuildingBlock.Settings;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -23,6 +24,7 @@ public class CatalogServiceDbContext : FrameworkDbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.SettingConfigure();
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(CatalogServiceDbContext).Assembly);
     }
 }

@@ -18,6 +18,7 @@ public class Item : AuditedAggregateRoot<long>, IHasDisabled
     public int DiscountPrecent { get; set; }
     public bool HasDiscount { get; set; }
     public int SortOrder { get; set; }
+    public long PreparingTime { get; set; }
 
     [MaxLength(500)]
     public string Ingredients { get; set; } = default!;

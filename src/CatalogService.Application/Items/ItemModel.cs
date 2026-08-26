@@ -17,6 +17,7 @@ public class ItemModel : EntityDto<long>
     public bool HasDiscount { get; set; }
     public double Rate { get; set; } = 4.2;
     public int SortOrder { get; set; }
+    public long PreparingTime { get; set; }
 
     [MaxLength(500)]
     public string Ingredients { get; set; }

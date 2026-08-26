@@ -17,4 +17,5 @@ public class CatalogServiceApiRoutes
     public static MenusRoutes MenuRoutes = new(Application, CatalogServiceApiTags.Menu);
     public static CustomizationsRoute CustomizationRoutes = new(Application, CatalogServiceApiTags.Customization);
     public static CustomizationsGroupRoute CustomizationsGroupRoutes = new(Application, CatalogServiceApiTags.CustomizationGroup);
+    public static SettingRoutes SettingRoutes = new(Application, CatalogServiceApiTags.Settings);
 }

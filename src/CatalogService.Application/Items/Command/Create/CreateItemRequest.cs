@@ -11,6 +11,7 @@ public class CreateItemRequest : IFrameworkRequest<ItemModel>
     public int DiscountPrecent { get; set; }
     public bool HasDiscount { get; set; }
     public int SortOrder { get; set; }
+    public long PreparingTime { get; set; }
 
     public string[] IngredientsArray { get; set; } = default!;
 
