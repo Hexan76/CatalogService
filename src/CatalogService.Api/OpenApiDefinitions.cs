@@ -31,7 +31,7 @@ public static class OpenApiDefinitions
                 [
                    new() { Url = "https://core.qasedexpress.com/catalog", Description = "Production" },
                    new() { Url = "http://core.qasedexpress.com/catalog", Description = "HTTP" },
-                   new() { Url = "https://localhost:7299", Description = "Local" }
+                   new() { Url = "http://localhost:5146", Description = "Local" }
                 ]
             }
         ];

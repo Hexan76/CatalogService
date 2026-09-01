@@ -25,6 +25,7 @@ public static class DependencyInjection
 
         services.AddHttpClientFramework(configuration);
         services.AddHttpClientService("ObjectStorageClient", configuration);
+        services.AddHttpClientService("PricingClient", configuration);
 
         // services.AddScoped<IVendorServiceClient, VendorServiceClient>();
         // services.AddScoped<ICatalogServiceClient, CatalogServiceClient>();
