@@ -2,9 +2,9 @@ using Framework.HttpClient.Abstractions;
 
 namespace CatalogService.PricingService;
 
-public class CreatePriceRequest : IHttpRequest
+public class UpsertPriceRequest : IHttpRequest
 {
-    public HttpMethod Method => HttpMethod.Post;
+    public HttpMethod Method => HttpMethod.Put;
 
     public string Route { get; set; } = "api/v1/prices";
 

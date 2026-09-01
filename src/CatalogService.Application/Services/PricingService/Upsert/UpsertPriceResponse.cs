@@ -1,6 +1,6 @@
 namespace CatalogService.PricingService;
 
-public class CreatePriceResponse
+public class UpsertPriceResponse
 {
     public long Id { get; set; }
     public long VendorId { get; set; }
