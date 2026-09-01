@@ -33,6 +33,11 @@ public class ItemManager(IItemRepository itemRepository)
         item.DiscountPrecent = input.DiscountPrecent;
         item.Ingredients = input.Ingredients;
 
+        if (input.Price > 0)
+        {
+            item.Price = input.Price;
+        }
+
 
         var existingVariants = item.Variants.ToList();
 
