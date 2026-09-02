@@ -4,6 +4,7 @@ using AutoMapper;
 
 using CatalogService.Files;
 using CatalogService.ObjectStorageService;
+using CatalogService.PricingService;
 
 using Framework.BuildingBlock.Application.Contracts;
 using Framework.HttpClient.Abstractions;
@@ -21,6 +22,19 @@ public class UpdateItemHandler(
 
         var requestItem = mapper.Map<UpdateItemRequest, Item>(request);
         var result = await itemManager.UpdateAsync(requestItem);
+
+        if (request.Price > 0)
+        {
+            await SendPriceAsync(result);
+        }
+
+        foreach (var variant in result.Variants)
+        {
+            if (variant.Price > 0)
+            {
+                await SendPriceAsync(variant, result.VendorId);
+            }
+        }
 
         var response = mapper.Map<Item, ItemModel>(result);
 
@@ -65,6 +79,21 @@ public class UpdateItemHandler(
 
         return MessageContract<ItemModel>.Success(response);
     }
+
+    private async Task SendPriceAsync(Item item, long fallbackVendorId = 0)
+    {
+        await httpClientService.SendAsync<ApiResult<UpsertPriceResponse>>(
+            new UpsertPriceRequest
+            {
+                VendorId = item.VendorId != 0 ? item.VendorId : fallbackVendorId,
+                EntityId = item.Id,
+                Amount = item.Price,
+                Currency = "AFN"
+            },
+            ResponseType.Custom,
+            "PricingClient");
+    }
+
     static string GenerateSlug(string text)
     {
         if (string.IsNullOrWhiteSpace(text))

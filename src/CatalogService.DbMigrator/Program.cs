@@ -9,7 +9,11 @@ using CatalogService.Infrastructure;
 // Keep the same Npgsql timestamp behavior the DbContext factory relies on.
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-var builder = Host.CreateApplicationBuilder(args);
+var builder = Host.CreateApplicationBuilder(new HostApplicationBuilderSettings
+{
+    Args = args,
+    ContentRootPath = AppContext.BaseDirectory
+});
 
 // Reuse the exact same infrastructure registration as the API. This wires up the
 // OrderDbContext and the IDatabaseMigrator (registered inside AddInfrastructure).

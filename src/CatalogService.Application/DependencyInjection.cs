@@ -1,5 +1,7 @@
 using System.Reflection;
 
+using CatalogService.PricingService;
+
 using FluentValidation;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -25,6 +27,8 @@ public static class DependencyInjection
 
         services.AddHttpClientFramework(configuration);
         services.AddHttpClientService("ObjectStorageClient", configuration);
+        services.AddHttpClientService("PricingClient", configuration);
+        services.AddScoped<CurrentPriceClient>();
 
         // services.AddScoped<IVendorServiceClient, VendorServiceClient>();
         // services.AddScoped<ICatalogServiceClient, CatalogServiceClient>();
