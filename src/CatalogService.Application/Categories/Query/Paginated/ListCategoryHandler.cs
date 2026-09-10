@@ -15,7 +15,7 @@ public class ListCategoryHandler(ICategoryRepository categoryRepository, IMapper
         var query = await categoryRepository.GetListWithFilesAsync(request.ParentId);
 
         query.Queryable = query.Queryable
-        .Where(x => x.Category.CategoryBusinessTypes.Any(x => x.BusinessTypeId == request.BusinessTypeId));
+        .Where(x => x.Category.CategoryBusinessTypes.Any(x => request.BusinessTypeIds.Contains(x.BusinessTypeId)));
 
         if (request.ParentId is not null)
         {
