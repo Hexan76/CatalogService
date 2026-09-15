@@ -1,5 +1,6 @@
 using AutoMapper;
 
+using CatalogService.Items.Query.Get;
 using CatalogService.PricingService;
 
 using Framework.BuildingBlock.Application.Contracts;
