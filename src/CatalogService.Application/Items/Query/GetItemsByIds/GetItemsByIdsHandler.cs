@@ -1,6 +1,6 @@
 using AutoMapper;
 
-using CatalogService.Items.Query.Get;
+using CatalogService.PricingService;
 
 using Framework.BuildingBlock.Application.Contracts;
 
@@ -8,7 +8,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CatalogService.Items;
 
-public class GetItemsByIdsHandler(IItemRepository itemRepository, IMapper mapper) : IGetItemsByIdsHandler
+public class GetItemsByIdsHandler(
+    IItemRepository itemRepository,
+    IMapper mapper,
+    CurrentPriceClient currentPriceClient) : IGetItemsByIdsHandler
 {
     public async Task<MessageContract<ListItemResponse>> Handle(GetItemsByIdsRequest request, CancellationToken cancellationToken)
     {
@@ -24,6 +27,7 @@ public class GetItemsByIdsHandler(IItemRepository itemRepository, IMapper mapper
             Items = mapper.Map<List<Item>, List<ItemModel>>(result)
         };
 
+        await currentPriceClient.ApplyAsync(response.Items, cancellationToken);
 
         return MessageContract<ListItemResponse>.Success(response);
     }

@@ -2,6 +2,7 @@ using AutoMapper;
 
 using CatalogService.Files;
 using CatalogService.ObjectStorageService;
+using CatalogService.PricingService;
 
 using Framework.BuildingBlock.Application.Contracts;
 
@@ -12,7 +13,8 @@ namespace CatalogService.Items;
 public class SearchItemHandler(
     IItemRepository itemRepository,
     IFileRepository fileRepository,
-    IMapper mapper) : ISearchItemHandler
+    IMapper mapper,
+    CurrentPriceClient currentPriceClient) : ISearchItemHandler
 {
     public async Task<MessageContract<SearchItemResponse>> Handle(SearchItemRequest request, CancellationToken cancellationToken)
     {
@@ -61,6 +63,8 @@ public class SearchItemHandler(
                 };
             }
         }
+
+        await currentPriceClient.ApplyAsync(response.Items, cancellationToken);
 
 
         return MessageContract<SearchItemResponse>.Success(response, "paginated Success", totalCount: (int)response.TotalCount, queryPaged.CurrentPage);
