@@ -19,7 +19,7 @@ public class UpdateCategoryHandler(
     public async Task<MessageContract<CategoryModel>> Handle(UpdateCategoryRequest request, CancellationToken cancellationToken)
     {
 
-        var result = await categoryManager.UpdateCategoryAsync(request.Id, request.Name, request.Description,request.BusinessTypeId);
+        var result = await categoryManager.UpdateCategoryAsync(request.Id, request.Name, request.Description, request.BusinessTypeId);
 
         var response = mapper.Map<Category, CategoryModel>(result);
 
@@ -29,6 +29,7 @@ public class UpdateCategoryHandler(
             {
                 new FinalizeModel()
                 {
+                    Id=request.ImageId??Guid.Empty,
                     AppType = "QasedFood",
                     FileName = result.Name,
                     EntityKey = result.Slug,
@@ -37,7 +38,7 @@ public class UpdateCategoryHandler(
                     StorageEntityType="Category",
                 }
             };
-            var finalizeResponse = await httpClientService.SendAsync<FinalizeFilesResponse>(new FinalizeRequest() { Files = files });
+            var finalizeResponse = await httpClientService.SendAsync<FinalizeFilesResponse>(new FinalizeRequest() { Files = files }, WrapType: ResponseType.Default, "ObjectStorageClient");
 
             if (finalizeResponse != null && finalizeResponse.Files.Any())
             {
