@@ -2,6 +2,7 @@ using AutoMapper;
 
 using CatalogService.Files;
 using CatalogService.ObjectStorageService;
+using CatalogService.PricingService;
 
 using Framework.BuildingBlock.Application.Contracts;
 
@@ -12,7 +13,8 @@ namespace CatalogService.Items;
 public class ListMenuItemHandler(
     IItemRepository itemRepository,
     IFileRepository fileRepository,
-    IMapper mapper) :  IListMenuItemHandler
+    IMapper mapper,
+    CurrentPriceClient currentPriceClient) :  IListMenuItemHandler
 {
     public async Task<MessageContract<ListMenuItemResponse>> Handle(ListMenuItemRequest request, CancellationToken cancellationToken)
     {
@@ -69,6 +71,10 @@ public class ListMenuItemHandler(
                 }
             }
         }
+
+        await currentPriceClient.ApplyAsync(
+            menuGroups.SelectMany(menu => menu.Items),
+            cancellationToken);
 
         return MessageContract<ListMenuItemResponse>.Success(new ListMenuItemResponse { Items = menuGroups });
     }

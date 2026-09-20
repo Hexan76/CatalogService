@@ -4,6 +4,7 @@ using CatalogService.CategoryCustomization;
 using CatalogService.Customizations;
 using CatalogService.Files;
 using CatalogService.ObjectStorageService;
+using CatalogService.PricingService;
 
 using Framework.BuildingBlock.Application.Contracts;
 
@@ -14,7 +15,9 @@ namespace CatalogService.Items;
 public class GetItemCustomizationHandler(
     ICustomizationGroupRepository customizationGroupRepository,
     IMapper mapper,
-    IFileRepository fileRepository)
+    IFileRepository fileRepository,
+    IItemRepository itemRepository,
+    CurrentPriceClient currentPriceClient)
     : IGetItemCustomizationsHandler
 {
     public async Task<MessageContract<GetItemCustomizationsResponse>> Handle(
@@ -71,6 +74,12 @@ public class GetItemCustomizationHandler(
                     };
                 }
             }
+        }
+
+        if (response.Items.Count > 0)
+        {
+            var item = await itemRepository.FindAsync(request.ItemId, cancellationToken);
+            await currentPriceClient.ApplyAsync(response.Items, item?.VendorId ?? 0, cancellationToken);
         }
 
         return MessageContract<GetItemCustomizationsResponse>.Success(response);

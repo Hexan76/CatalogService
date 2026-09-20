@@ -19,6 +19,17 @@ public static class DependencyInjection
 
         services.AddObservability(builder.Configuration, builder.Host);
 
+        services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(policy =>
+            {
+                policy.SetIsOriginAllowed(IsLocalDevOrigin)
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
+            });
+        });
+
         return services;
     }
 
@@ -27,6 +38,7 @@ public static class DependencyInjection
         app.UseMiddleware<FrameworkExceptionMiddlware>();
         app.UseSerilogRequestLogging();
         app.UseRouting();
+        app.UseCors();
         app.UseFastEndpoints(cfg =>
         {
             cfg.Versioning.Prefix = "v";
@@ -47,5 +59,18 @@ public static class DependencyInjection
         app.MapHealthChecks("/health");
 
         return app;
+    }
+
+    private static bool IsLocalDevOrigin(string origin)
+    {
+        if (!Uri.TryCreate(origin, UriKind.Absolute, out var uri))
+        {
+            return false;
+        }
+
+        var isLocalHost = uri.Host is "localhost" or "127.0.0.1";
+        var isAllowedPort = uri.Port is >= 3000 and <= 3100;
+
+        return isLocalHost && isAllowedPort;
     }
 }

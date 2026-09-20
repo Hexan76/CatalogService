@@ -10,40 +10,144 @@ public class CurrentPriceClient(IHttpClientService httpClientService)
 {
     public const string DefaultCurrency = "AFN";
 
-    public async Task<decimal?> GetAmountAsync(
+    public async Task ApplyAsync(ItemModel item, CancellationToken cancellationToken = default)
+    {
+        if (item is null)
+        {
+            return;
+        }
+
+        await ApplyAsync([item], cancellationToken);
+    }
+
+    public async Task ApplyAsync(IEnumerable<ItemModel> items, CancellationToken cancellationToken = default)
+    {
+        var list = items.Where(x => x is not null).ToList();
+        if (list.Count == 0)
+        {
+            return;
+        }
+
+        var ids = list.SelectMany(CollectIds).Distinct().Where(id => id > 0).ToList();
+        var prices = await GetByIdsAsync(ids, cancellationToken);
+
+        foreach (var item in list)
+        {
+            ApplyToItem(item, prices);
+        }
+    }
+
+    public async Task ApplyAsync(SearchItemModel item, CancellationToken cancellationToken = default)
+    {
+        if (item is null)
+        {
+            return;
+        }
+
+        await ApplyAsync([item], cancellationToken);
+    }
+
+    public async Task ApplyAsync(IEnumerable<SearchItemModel> items, CancellationToken cancellationToken = default)
+    {
+        var list = items.Where(x => x is not null).ToList();
+        if (list.Count == 0)
+        {
+            return;
+        }
+
+        var ids = list.SelectMany(CollectIds).Distinct().Where(id => id > 0).ToList();
+        var prices = await GetByIdsAsync(ids, cancellationToken);
+
+        foreach (var item in list)
+        {
+            ApplyToSearchItem(item, prices);
+        }
+    }
+
+    public async Task ApplyAsync(
+        IEnumerable<CustomizationGroupModel> groups,
         long vendorId,
-        long entityId,
         CancellationToken cancellationToken = default)
     {
-        if (vendorId <= 0 || entityId <= 0)
+        var groupList = groups.ToList();
+        var ids = groupList
+            .SelectMany(g => g.Customizations)
+            .Select(c => c.Id)
+            .Where(id => id > 0)
+            .Distinct()
+            .ToList();
+
+        var prices = await GetByIdsAsync(ids, cancellationToken);
+
+        foreach (var group in groupList)
         {
-            return null;
+            foreach (var customization in group.Customizations)
+            {
+                var amount = ResolveAmount(prices, customization.Id, vendorId);
+                if (amount.HasValue)
+                {
+                    customization.Price = amount.Value;
+                }
+            }
+        }
+    }
+
+    private async Task<List<GetCurrentPriceResponse>> GetByIdsAsync(
+        List<long> ids,
+        CancellationToken cancellationToken)
+    {
+        if (ids.Count == 0)
+        {
+            return [];
         }
 
         try
         {
-            var response = await httpClientService.SendAsync<ApiResult<GetCurrentPriceResponse>>(
-                new GetCurrentPriceRequest
-                {
-                    VendorId = vendorId,
-                    EntityId = entityId,
-                    Currency = DefaultCurrency
-                },
+            var response = await httpClientService.SendAsync<ApiResult<GetPricesByIdsResponse>>(
+                new GetPricesByIdsRequest { Ids = ids },
                 cancellationToken,
                 ResponseType.Custom,
                 "PricingClient");
 
-            return response?.Result?.Amount;
+            return response?.Result?.Items?.ToList() ?? [];
         }
         catch
         {
-            return null;
+            return [];
         }
     }
 
-    public async Task ApplyAsync(ItemModel item, CancellationToken cancellationToken = default)
+    private static IEnumerable<long> CollectIds(ItemModel item)
     {
-        var amount = await GetAmountAsync(item.VendorId, item.Id, cancellationToken);
+        yield return item.Id;
+
+        foreach (var variant in item.Variants)
+        {
+            yield return variant.Id;
+        }
+
+        foreach (var group in item.CustomizationGroups)
+        {
+            foreach (var customization in group.Customizations)
+            {
+                yield return customization.Id;
+            }
+        }
+    }
+
+    private static IEnumerable<long> CollectIds(SearchItemModel item)
+    {
+        yield return item.Id;
+
+        foreach (var variant in item.Variants)
+        {
+            yield return variant.Id;
+        }
+    }
+
+    private static void ApplyToItem(ItemModel item, List<GetCurrentPriceResponse> prices)
+    {
+        var amount = ResolveAmount(prices, item.Id, item.VendorId);
         if (amount.HasValue)
         {
             item.Price = (double)amount.Value;
@@ -52,7 +156,7 @@ public class CurrentPriceClient(IHttpClientService httpClientService)
         foreach (var variant in item.Variants)
         {
             var vendorId = variant.VendorId != 0 ? variant.VendorId : item.VendorId;
-            var variantAmount = await GetAmountAsync(vendorId, variant.Id, cancellationToken);
+            var variantAmount = ResolveAmount(prices, variant.Id, vendorId);
             if (variantAmount.HasValue)
             {
                 variant.Price = (double)variantAmount.Value;
@@ -63,7 +167,7 @@ public class CurrentPriceClient(IHttpClientService httpClientService)
         {
             foreach (var customization in group.Customizations)
             {
-                var customizationAmount = await GetAmountAsync(item.VendorId, customization.Id, cancellationToken);
+                var customizationAmount = ResolveAmount(prices, customization.Id, item.VendorId);
                 if (customizationAmount.HasValue)
                 {
                     customization.Price = customizationAmount.Value;
@@ -72,9 +176,9 @@ public class CurrentPriceClient(IHttpClientService httpClientService)
         }
     }
 
-    public async Task ApplyAsync(SearchItemModel item, CancellationToken cancellationToken = default)
+    private static void ApplyToSearchItem(SearchItemModel item, List<GetCurrentPriceResponse> prices)
     {
-        var amount = await GetAmountAsync(item.VendorId, item.Id, cancellationToken);
+        var amount = ResolveAmount(prices, item.Id, item.VendorId);
         if (amount.HasValue)
         {
             item.Price = amount.Value;
@@ -83,7 +187,7 @@ public class CurrentPriceClient(IHttpClientService httpClientService)
         foreach (var variant in item.Variants)
         {
             var vendorId = variant.VendorId != 0 ? variant.VendorId : item.VendorId;
-            var variantAmount = await GetAmountAsync(vendorId, variant.Id, cancellationToken);
+            var variantAmount = ResolveAmount(prices, variant.Id, vendorId);
             if (variantAmount.HasValue)
             {
                 variant.Price = (double)variantAmount.Value;
@@ -91,21 +195,26 @@ public class CurrentPriceClient(IHttpClientService httpClientService)
         }
     }
 
-    public async Task ApplyAsync(
-        IEnumerable<CustomizationGroupModel> groups,
-        long vendorId,
-        CancellationToken cancellationToken = default)
+    private static decimal? ResolveAmount(
+        List<GetCurrentPriceResponse> prices,
+        long entityId,
+        long vendorId)
     {
-        foreach (var group in groups)
+        var matches = prices.Where(x => x.EntityId == entityId).ToList();
+        if (matches.Count == 0)
         {
-            foreach (var customization in group.Customizations)
-            {
-                var amount = await GetAmountAsync(vendorId, customization.Id, cancellationToken);
-                if (amount.HasValue)
-                {
-                    customization.Price = amount.Value;
-                }
-            }
+            return null;
         }
+
+        var match =
+            matches.FirstOrDefault(x =>
+                x.VendorId == vendorId &&
+                string.Equals(x.Currency, DefaultCurrency, StringComparison.OrdinalIgnoreCase))
+            ?? matches.FirstOrDefault(x =>
+                string.Equals(x.Currency, DefaultCurrency, StringComparison.OrdinalIgnoreCase))
+            ?? matches.FirstOrDefault(x => x.VendorId == vendorId)
+            ?? matches.FirstOrDefault();
+
+        return match?.Amount;
     }
 }
