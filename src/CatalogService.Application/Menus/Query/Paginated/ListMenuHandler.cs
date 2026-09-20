@@ -11,8 +11,7 @@ public class ListMenuHandler(IMenuRepository menuRepository, IMapper mapper) : I
     public async Task<MessageContract<ListMenuResponse>> Handle(ListMenuRequest request, CancellationToken cancellationToken)
     {
         var result = await menuRepository.GetQueryable()
-            .Include(x => x.MenuItems)
-            .Where(x => x.MenuItems.Any(item => item.Menu.VendorId == request.VendorId))
+            .Where(x => x.VendorId == request.VendorId)
             .ToListAsync();
 
         var mappedList = mapper.Map<List<MenuModel>>(result);
