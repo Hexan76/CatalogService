@@ -13,7 +13,7 @@ public class CreateMenuHandler(IMenuRepository menuRepository, IMapper mapper) :
 
         var createItem = mapper.Map<CreateMenuRequest, Menu>(request);
         createItem.Slug = GenerateSlug(createItem.Name);
-        var result = await menuRepository.InsertAsync(createItem);
+        var result = await menuRepository.InsertAsync(createItem, true);
 
         var response = mapper.Map<Menu, MenuModel>(result);
 
