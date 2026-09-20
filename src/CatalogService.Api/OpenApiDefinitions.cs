@@ -19,12 +19,12 @@ public static class OpenApiDefinitions
                 EnableJWTBearerAuth=true,
                 SecurityDefinitions=new Dictionary<string, NSwag.OpenApiSecurityScheme>
                 {
-                    {"Bearer",
-                    new NSwag.OpenApiSecurityScheme
-                        {
-                            Type = NSwag.OpenApiSecuritySchemeType.ApiKey,
-                            Name = "Authorization",
-                        }
+                    {"Bearer", new NSwag.OpenApiSecurityScheme
+                            {
+                                Type = NSwag.OpenApiSecuritySchemeType.ApiKey,
+                                Name = "Authorization",
+                                In = NSwag.OpenApiSecurityApiKeyLocation.Header
+                            }
                     }
                 },
                 Servers =
