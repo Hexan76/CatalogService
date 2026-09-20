@@ -15,7 +15,8 @@ public class FileConfig : IEntityTypeConfiguration<FileEntity>
     {
         builder.ToTable(nameof(FileEntity), CatalogServiceDbProperties.DbSchema);
         builder.ConfigureByConvention();
-
+        builder.HasKey(x => x.Id);
+        builder.Property(x => x.Id).ValueGeneratedOnAdd();
         builder.Property(x => x.Variants)
             .HasColumnType("jsonb")
             .HasConversion(

@@ -37,14 +37,11 @@ public class FileManager(IFileRepository fileRepository)
     string role,
     IDictionary<string, object> variants)
     {
-        var existing = await fileRepository.FindAsync(x =>
-            x.EntityId == entityId &&
-            x.EntityType == entityType &&
-            x.Role == role);
+        var existing = await fileRepository.FindRelatedAsync(entityId, entityType, role);
 
-        if (existing == null)
+        if (existing is null)
         {
-            var file = new FileEntity
+            return await fileRepository.InsertAsync(new FileEntity
             {
                 EntityId = entityId,
                 EntityType = entityType,
@@ -54,19 +51,8 @@ public class FileManager(IFileRepository fileRepository)
                 Extension = extension,
                 Role = role,
                 Variants = variants
-            };
-
-            return await fileRepository.InsertAsync(file);
+            }, true);
         }
-
-        var changed =
-            existing.FileName != fileName ||
-            existing.Size != size ||
-            existing.Url != url ||
-            existing.Extension != extension;
-
-        if (!changed)
-            return existing;
 
         existing.FileName = fileName;
         existing.Size = size;

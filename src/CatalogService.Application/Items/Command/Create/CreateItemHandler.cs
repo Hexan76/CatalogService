@@ -49,7 +49,7 @@ public class CreateItemHandler(
                 }
             };
 
-            var finalizeResponse = await httpClientService.SendAsync<FinalizeFilesResponse>(new FinalizeRequest() { Files = files });
+            var finalizeResponse = await httpClientService.SendAsync<FinalizeFilesResponse>(new FinalizeRequest() { Files = files }, WrapType: ResponseType.Default, "ObjectStorageClient");
 
             if (finalizeResponse != null && finalizeResponse.Files.Any())
             {
