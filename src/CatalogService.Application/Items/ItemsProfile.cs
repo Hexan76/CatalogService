@@ -12,6 +12,8 @@ public class ItemsProfile : Profile
         CreateMap<Item, ItemModel>()
             .ForMember(x => x.Image, o => o.Ignore())
             .ForMember(x => x.Rate, o => o.Ignore())
+            // TEMPORARY MOCK — Quantity: remove this Ignore with ItemModel.Quantity
+            .ForMember(x => x.Quantity, o => o.Ignore())
             .ForMember(x => x.CustomizationGroups,
                 o => o.MapFrom<ItemCustomizationGroupsResolver>());
 

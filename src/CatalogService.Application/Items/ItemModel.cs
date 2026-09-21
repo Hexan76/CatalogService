@@ -29,4 +29,9 @@ public class ItemModel : EntityDto<long>
     public ICollection<ItemModel> Variants { get; set; } = [];
     public ICollection<CustomizationGroupModel> CustomizationGroups { get; set; } = [];
     public virtual long VendorId { get; set; }
+
+    // TEMPORARY MOCK — Quantity
+    // Mock inventory count for menu-items clients. Not persisted.
+    // Remove this property when real inventory is implemented.
+    public int Quantity { get; set; }
 }
