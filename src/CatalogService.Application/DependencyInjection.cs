@@ -6,6 +6,8 @@ using FluentValidation;
 
 using Microsoft.Extensions.DependencyInjection;
 
+using Framework.RabbitMQ;
+
 namespace CatalogService.Application;
 
 public static class DependencyInjection
@@ -17,6 +19,7 @@ public static class DependencyInjection
         Assembly assembly = Assembly.GetExecutingAssembly();
 
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(assembly));
+        services.AddRabbitMQConsumers(assembly);
         services.AddAutoMapper(cfg => { }, assembly);
         services.AddValidatorsFromAssembly(assembly);
 
@@ -29,6 +32,7 @@ public static class DependencyInjection
         services.AddHttpClientService("ObjectStorageClient", configuration);
         services.AddHttpClientService("PricingClient", configuration);
         services.AddScoped<CurrentPriceClient>();
+
 
         // services.AddScoped<IVendorServiceClient, VendorServiceClient>();
         // services.AddScoped<ICatalogServiceClient, CatalogServiceClient>();

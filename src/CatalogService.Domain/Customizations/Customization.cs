@@ -14,6 +14,7 @@ public class Customization : AuditedAggregateRoot<long>, IHasDisabled
     public string Name { get; set; } = default!;
     public string? Description { get; set; }
     public decimal Price { get; set; }
+    public int AvailableQuantity { get; set; }
     public int MaxCountRequest { get; set; }
     public int SortOrder { get; set; }
     public bool IsDisabled { get; set; }

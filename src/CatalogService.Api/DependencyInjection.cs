@@ -35,6 +35,7 @@ public static class DependencyInjection
 
     public static WebApplication UseApi(this WebApplication app)
     {
+        app.UseRequestLocalization();
         app.UseMiddleware<FrameworkExceptionMiddlware>();
         app.UseSerilogRequestLogging();
         app.UseRouting();
