@@ -1,3 +1,5 @@
+using CatalogService.Localization;
+
 using Volo.Abp;
 
 namespace CatalogService.Files;
@@ -102,7 +104,10 @@ public class FileManager(IFileRepository fileRepository)
             ids.Contains(x.Id));
 
         if (files.Count != ids.Count)
-            throw new BusinessException("Some files were not found.");
+            throw new BusinessException(
+                    CatalogServiceErrorCodes.SomeFilesNotFound,
+                    CatalogServiceErrorCodes.SomeFilesNotFound)
+                .WithResource(typeof(CatalogServiceResources));
 
         ValidateFilesBelongToSameScope(files);
 
@@ -115,10 +120,16 @@ public class FileManager(IFileRepository fileRepository)
             return;
 
         if (filePriority.Values.Any(x => x <= 0))
-            throw new BusinessException("Priority must be greater than zero.");
+            throw new BusinessException(
+                    CatalogServiceErrorCodes.PriorityMustBeGreaterThanZero,
+                    CatalogServiceErrorCodes.PriorityMustBeGreaterThanZero)
+                .WithResource(typeof(CatalogServiceResources));
 
         if (filePriority.Values.Distinct().Count() != filePriority.Count)
-            throw new BusinessException("Duplicate priorities are not allowed.");
+            throw new BusinessException(
+                    CatalogServiceErrorCodes.DuplicatePrioritiesNotAllowed,
+                    CatalogServiceErrorCodes.DuplicatePrioritiesNotAllowed)
+                .WithResource(typeof(CatalogServiceResources));
 
         var ids = filePriority.Keys.ToList();
 
@@ -126,7 +137,10 @@ public class FileManager(IFileRepository fileRepository)
             ids.Contains(x.Id));
 
         if (files.Count != ids.Count)
-            throw new BusinessException("Some files were not found.");
+            throw new BusinessException(
+                    CatalogServiceErrorCodes.SomeFilesNotFound,
+                    CatalogServiceErrorCodes.SomeFilesNotFound)
+                .WithResource(typeof(CatalogServiceResources));
 
         foreach (var file in files)
         {
@@ -140,7 +154,9 @@ public class FileManager(IFileRepository fileRepository)
     {
         if (!files.Any())
             throw new BusinessException(
-                "No files found.");
+                    CatalogServiceErrorCodes.NoFilesFound,
+                    CatalogServiceErrorCodes.NoFilesFound)
+                .WithResource(typeof(CatalogServiceResources));
 
         var scopeCount = files
             .Select(x => new
@@ -155,7 +171,9 @@ public class FileManager(IFileRepository fileRepository)
         if (scopeCount > 1)
         {
             throw new BusinessException(
-                "All files must belong to the same scope.");
+                    CatalogServiceErrorCodes.FilesMustBelongToSameScope,
+                    CatalogServiceErrorCodes.FilesMustBelongToSameScope)
+                .WithResource(typeof(CatalogServiceResources));
         }
     }
 }

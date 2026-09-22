@@ -6,6 +6,21 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Content Include="Localization\Resources\en-US.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Localization\Resources\fa-AF.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Localization\Resources\ps-AF.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Localization\Resources\fa-IR.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\..\..\building-block\src\Framework.BuildingBlock.Domain\Framework.BuildingBlock.Domain.csproj" />
       <!-- <ProjectReference Include="..\CatalogService.Domain.Shared\CatalogService.Domain.Shared.csproj" /> -->
     </ItemGroup>

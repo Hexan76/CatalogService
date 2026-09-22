@@ -1,0 +1,11 @@
+{
+  "Exceptions": {
+    "400001": "Customization group was not found.",
+    "400002": "Variant was not found.",
+    "400003": "Some files were not found.",
+    "400004": "Priority must be greater than zero.",
+    "400005": "Duplicate priorities are not allowed.",
+    "400006": "No files found.",
+    "400007": "All files must belong to the same scope."
+  }
+}

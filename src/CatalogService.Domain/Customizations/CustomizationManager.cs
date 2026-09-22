@@ -1,4 +1,5 @@
 using CatalogService.Items;
+using CatalogService.Localization;
 
 using Volo.Abp;
 
@@ -17,7 +18,10 @@ public class CustomizationManager(
 
         if (group == null)
         {
-            throw new BusinessException("CustomizationGroup.NotFound")
+            throw new BusinessException(
+                    CatalogServiceErrorCodes.CustomizationGroupNotFound,
+                    CatalogServiceErrorCodes.CustomizationGroupNotFound)
+                .WithResource(typeof(CatalogServiceResources))
                 .WithData("GroupId", groupId);
         }
 
@@ -38,5 +42,37 @@ public class CustomizationManager(
         }
 
         return await customizationRepository.InsertAsync(customization);
+    }
+
+    public async Task<Customization> UpdateAsync(Customization input)
+    {
+        var customization = await customizationRepository.GetAsync(input.Id);
+
+        customization.Name = input.Name;
+        customization.Description = input.Description;
+        customization.Price = input.Price;
+        customization.AvailableQuantity = input.AvailableQuantity;
+        customization.MaxCountRequest = input.MaxCountRequest;
+        customization.SortOrder = input.SortOrder;
+        customization.IsDisabled = input.IsDisabled;
+
+        if (input.CustomizationGroupId > 0 &&
+            input.CustomizationGroupId != customization.CustomizationGroupId)
+        {
+            var group = await customizationGroupRepository.FindAsync(input.CustomizationGroupId);
+
+            if (group == null)
+            {
+                throw new BusinessException(
+                        CatalogServiceErrorCodes.CustomizationGroupNotFound,
+                        CatalogServiceErrorCodes.CustomizationGroupNotFound)
+                    .WithResource(typeof(CatalogServiceResources))
+                    .WithData("GroupId", input.CustomizationGroupId);
+            }
+
+            customization.CustomizationGroupId = input.CustomizationGroupId;
+        }
+
+        return await customizationRepository.UpdateAsync(customization, true);
     }
 }

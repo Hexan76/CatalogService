@@ -1,3 +1,4 @@
+using CatalogService.Localization;
 using CatalogService.Menus;
 
 using Volo.Abp;
@@ -71,7 +72,10 @@ public class ItemManager(IItemRepository itemRepository)
                 }
                 else
                 {
-                    throw new BusinessException("Variant not found.");
+                    throw new BusinessException(
+                            CatalogServiceErrorCodes.VariantNotFound,
+                            CatalogServiceErrorCodes.VariantNotFound)
+                        .WithResource(typeof(CatalogServiceResources));
                 }
             }
             else

@@ -15,6 +15,7 @@ public class Item : AuditedAggregateRoot<long>, IHasDisabled
     public string Name { get; set; } = default!;
     public string? Description { get; set; }
     public decimal Price { get; set; }
+    public int AvailableQuantity { get; set; }
     public int DiscountPrecent { get; set; }
     public bool HasDiscount { get; set; }
     public int SortOrder { get; set; }
