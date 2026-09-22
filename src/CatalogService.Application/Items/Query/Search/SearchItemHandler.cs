@@ -40,6 +40,10 @@ public class SearchItemHandler(
                     ic.Category.CategoryBusinessTypes.Any(cbt =>
                         cbt.BusinessTypeId == request.BusinessTypeId.Value)));
         }
+        if (request.VendorId.HasValue)
+        {
+            query = query.Where(x => x.VendorId == request.VendorId);
+        }
         var queryPaged = await itemRepository.PaginationPagingAsync(null, query, request.Page, request.PageSize);
 
         var itemIds = query.Select(x => x.Id);
