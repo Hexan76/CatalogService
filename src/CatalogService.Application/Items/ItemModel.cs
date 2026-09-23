@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
+using CatalogService.Categories;
 using CatalogService.Customizations;
 using CatalogService.ObjectStorageService;
 
@@ -24,10 +25,12 @@ public class ItemModel : EntityDto<long>
     public string Ingredients { get; set; }
     public string[] IngredientsArray => Ingredients?.Split('|', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
     public bool IsDisabled { get; set; }
+    public bool IsOutofStock { get; set; }
     public long ParentId { get; set; }
     public FileUrlModel Image { get; set; }
 
     public ICollection<ItemModel> Variants { get; set; } = [];
+    public ICollection<CategoryModel> Categories { get; set; } = [];
     public ICollection<CustomizationGroupModel> CustomizationGroups { get; set; } = [];
     public virtual long VendorId { get; set; }
 

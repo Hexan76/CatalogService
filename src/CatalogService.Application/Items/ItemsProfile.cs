@@ -1,5 +1,6 @@
 using AutoMapper;
 
+using CatalogService.Categories;
 using CatalogService.Customizations;
 
 namespace CatalogService.Items;
@@ -13,7 +14,8 @@ public class ItemsProfile : Profile
             .ForMember(x => x.Image, o => o.Ignore())
             .ForMember(x => x.Rate, o => o.Ignore())
             .ForMember(x => x.CustomizationGroups,
-                o => o.MapFrom<ItemCustomizationGroupsResolver>());
+                o => o.MapFrom<ItemCustomizationGroupsResolver>())
+            .ForMember(x => x.Categories, o => o.MapFrom(src => MapCategories(src)));
 
         CreateMap<Item, SearchItemModel>(memberList: MemberList.None)
             ;
@@ -34,6 +36,13 @@ public class ItemsProfile : Profile
             .IncludeMembers(x => x.Customization)
             ;
     }
+
+    private static List<Category> MapCategories(Item item)
+        => (item.ItemCategories ?? [])
+            .Where(x => x.Category != null)
+            .Select(x => x.Category)
+            .OrderBy(x => x.SortOrder)
+            .ToList();
 
     private static List<ItemCustomization> MapCustomizations(long[]? customizationIds)
         => (customizationIds ?? [])
