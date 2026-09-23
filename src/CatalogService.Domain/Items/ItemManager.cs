@@ -1,3 +1,4 @@
+using CatalogService.Customizations;
 using CatalogService.Localization;
 using CatalogService.Menus;
 
@@ -5,7 +6,9 @@ using Volo.Abp;
 
 namespace CatalogService.Items;
 
-public class ItemManager(IItemRepository itemRepository)
+public class ItemManager(
+    IItemRepository itemRepository,
+    ICustomizationRepository customizationRepository)
 {
     public async Task<Item> CreateAsync(Item item, long categoryId, long menuId)
     {
@@ -21,8 +24,15 @@ public class ItemManager(IItemRepository itemRepository)
             MenuId = menuId
         });
 
+        item.Variants ??= [];
+        item.Customizations ??= [];
+
+        await EnsureCustomizationsExistAsync(CollectCustomizationIds(item));
+        AppendAndMergeCustomizations(item);
+
         return await itemRepository.InsertAsync(item, true);
     }
+
     public async Task<Item> UpdateAsync(Item input)
     {
         var item = await itemRepository.GetAsync(input.Id);
@@ -33,18 +43,23 @@ public class ItemManager(IItemRepository itemRepository)
         item.HasDiscount = input.HasDiscount;
         item.DiscountPrecent = input.DiscountPrecent;
         item.Ingredients = input.Ingredients;
+        item.PreparingTime = input.PreparingTime;
 
         if (input.Price > 0)
         {
             item.Price = input.Price;
         }
 
+        await EnsureCustomizationsExistAsync(CollectCustomizationIds(input));
+        AppendCustomizations(item, GetCustomizationIds(input));
 
+        var parentCustomizationIds = GetCustomizationIds(item);
+        var inputVariants = input.Variants ?? [];
         var existingVariants = item.Variants.ToList();
 
         foreach (var existing in existingVariants)
         {
-            var stillExists = input.Variants.Any(x => x.Id == existing.Id);
+            var stillExists = inputVariants.Any(x => x.Id == existing.Id);
 
             if (!stillExists)
             {
@@ -52,8 +67,11 @@ public class ItemManager(IItemRepository itemRepository)
             }
         }
 
-        foreach (var inputVariant in input.Variants)
+        foreach (var inputVariant in inputVariants)
         {
+            var mergedCustomizationIds = parentCustomizationIds
+                .Concat(GetCustomizationIds(inputVariant));
+
             if (inputVariant.Id > 0)
             {
                 var existingVariant = item.Variants
@@ -67,8 +85,12 @@ public class ItemManager(IItemRepository itemRepository)
                     existingVariant.DiscountPrecent = inputVariant.DiscountPrecent;
                     existingVariant.HasDiscount = inputVariant.HasDiscount;
                     existingVariant.SortOrder = inputVariant.SortOrder;
-                    existingVariant.Ingredients = input.Ingredients;
+                    existingVariant.Ingredients = inputVariant.Ingredients;
                     existingVariant.IsDisabled = inputVariant.IsDisabled;
+                    existingVariant.PreparingTime = inputVariant.PreparingTime;
+                    existingVariant.VendorId = item.VendorId;
+
+                    AppendCustomizations(existingVariant, mergedCustomizationIds);
                 }
                 else
                 {
@@ -80,8 +102,7 @@ public class ItemManager(IItemRepository itemRepository)
             }
             else
             {
-                // New Variant
-                item.Variants.Add(new Item
+                var variant = new Item
                 {
                     Name = inputVariant.Name,
                     Description = inputVariant.Description,
@@ -91,11 +112,105 @@ public class ItemManager(IItemRepository itemRepository)
                     SortOrder = inputVariant.SortOrder,
                     IsDisabled = inputVariant.IsDisabled,
                     Ingredients = inputVariant.Ingredients,
+                    PreparingTime = inputVariant.PreparingTime,
+                    VendorId = item.VendorId,
                     ParentId = item.Id
-                });
+                };
+
+                AppendCustomizations(variant, mergedCustomizationIds);
+                item.Variants.Add(variant);
             }
         }
 
         return await itemRepository.UpdateAsync(item, true);
     }
+
+    private void AppendAndMergeCustomizations(Item item)
+    {
+        MergeCustomizations(item, GetCustomizationIds(item));
+
+        var parentCustomizationIds = GetCustomizationIds(item);
+
+        foreach (var variant in item.Variants)
+        {
+            variant.VendorId = item.VendorId;
+            variant.ParentId = item.Id;
+
+            AppendCustomizations(
+                variant,
+                parentCustomizationIds.Concat(GetCustomizationIds(variant)));
+        }
+    }
+
+    private static void MergeCustomizations(Item item, IEnumerable<long> customizationIds)
+    {
+        item.Customizations ??= new List<ItemCustomization>();
+
+        var requestedIds = DistinctCustomizationIds(customizationIds);
+
+        foreach (var existing in item.Customizations
+            .Where(x => !requestedIds.Contains(x.CustomizationId))
+            .ToList())
+        {
+            item.Customizations.Remove(existing);
+        }
+
+        AppendCustomizations(item, requestedIds);
+    }
+
+    private static void AppendCustomizations(Item item, IEnumerable<long> customizationIds)
+    {
+        item.Customizations ??= new List<ItemCustomization>();
+
+        var existingIds = item.Customizations
+            .Select(x => x.CustomizationId)
+            .ToHashSet();
+
+        foreach (var customizationId in DistinctCustomizationIds(customizationIds))
+        {
+            if (existingIds.Add(customizationId))
+            {
+                item.Customizations.Add(new ItemCustomization
+                {
+                    ItemId = item.Id,
+                    CustomizationId = customizationId
+                });
+            }
+        }
+    }
+
+    private async Task EnsureCustomizationsExistAsync(IReadOnlyCollection<long> customizationIds)
+    {
+        if (customizationIds.Count == 0)
+        {
+            return;
+        }
+
+        var existingCount = await customizationRepository.CountAsync(x =>
+            customizationIds.Contains(x.Id));
+
+        if (existingCount != customizationIds.Count)
+        {
+            throw new BusinessException(
+                    CatalogServiceErrorCodes.CustomizationNotFound,
+                    CatalogServiceErrorCodes.CustomizationNotFound)
+                .WithResource(typeof(CatalogServiceResources));
+        }
+    }
+
+    private static IReadOnlyCollection<long> CollectCustomizationIds(Item item)
+    {
+        return DistinctCustomizationIds(
+            GetCustomizationIds(item)
+                .Concat((item.Variants ?? []).SelectMany(GetCustomizationIds)));
+    }
+
+    private static IReadOnlyCollection<long> GetCustomizationIds(Item item)
+        => DistinctCustomizationIds(item.Customizations?.Select(x => x.CustomizationId));
+
+    private static IReadOnlyCollection<long> DistinctCustomizationIds(IEnumerable<long>? customizationIds)
+        => (customizationIds ?? [])
+            .Where(id => id > 0)
+            .Distinct()
+            .ToArray();
 }

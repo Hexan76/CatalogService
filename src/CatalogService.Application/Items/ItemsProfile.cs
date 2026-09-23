@@ -22,9 +22,11 @@ public class ItemsProfile : Profile
         CreateMap<ItemModel, Item>(memberList: MemberList.None);
         CreateMap<CreateItemRequest, Item>(memberList: MemberList.None)
             .ForMember(x => x.Ingredients, o => o.MapFrom(src => string.Join('|', src.IngredientsArray)))
+            .ForMember(x => x.Customizations, o => o.MapFrom(src => MapCustomizations(src.CusomizationIds)))
             ;
         CreateMap<UpdateItemRequest, Item>(memberList: MemberList.None)
             .ForMember(x => x.Ingredients, o => o.MapFrom(src => string.Join('|', src.IngredientsArray)))
+            .ForMember(x => x.Customizations, o => o.MapFrom(src => MapCustomizations(src.CusomizationIds)))
             ;
 
         CreateMap<CustomizationModel, ItemCustomization>(memberList: MemberList.None);
@@ -32,6 +34,13 @@ public class ItemsProfile : Profile
             .IncludeMembers(x => x.Customization)
             ;
     }
+
+    private static List<ItemCustomization> MapCustomizations(long[]? customizationIds)
+        => (customizationIds ?? [])
+            .Where(id => id > 0)
+            .Distinct()
+            .Select(id => new ItemCustomization { CustomizationId = id })
+            .ToList();
 }
 public class ItemCustomizationGroupsResolver
     : IValueResolver<Item, ItemModel, ICollection<CustomizationGroupModel>>
