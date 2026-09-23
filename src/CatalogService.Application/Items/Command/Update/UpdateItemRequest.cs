@@ -20,6 +20,6 @@ public class UpdateItemRequest : EntityDto<long>, IFrameworkRequest<ItemModel>
     [MaxLength(500)]
     public string Ingredients { get; set; } = default!;
     public string[] IngredientsArray { get; set; } = default!;
-
+    public long[] CusomizationIds { get; set; } = [];
     public ICollection<UpdateItemRequest> Variants { get; set; }
 }

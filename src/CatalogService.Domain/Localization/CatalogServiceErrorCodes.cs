@@ -9,4 +9,5 @@ public static class CatalogServiceErrorCodes
     public const string DuplicatePrioritiesNotAllowed = "400005";
     public const string NoFilesFound = "400006";
     public const string FilesMustBelongToSameScope = "400007";
+    public const string CustomizationNotFound = "400008";
 }

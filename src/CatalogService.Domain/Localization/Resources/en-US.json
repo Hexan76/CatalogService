@@ -6,6 +6,7 @@
     "400004": "Priority must be greater than zero.",
     "400005": "Duplicate priorities are not allowed.",
     "400006": "No files found.",
-    "400007": "All files must belong to the same scope."
+    "400007": "All files must belong to the same scope.",
+    "400008": "Customization was not found."
   }
 }

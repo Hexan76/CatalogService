@@ -16,6 +16,7 @@ public class CreateItemRequest : IFrameworkRequest<ItemModel>
     public string[] IngredientsArray { get; set; } = default!;
 
     public ICollection<CreateItemRequest> Variants { get; set; } = [];
+    public long[] CusomizationIds { get; set; } = [];
     public long CategoryId { get; set; }
     public long MenuId { get; set; }
     public long VendorId { get; set; }
