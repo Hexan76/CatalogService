@@ -24,7 +24,7 @@ public class Item : AuditedAggregateRoot<long>, IHasDisabled
     [MaxLength(500)]
     public string Ingredients { get; set; } = default!;
     public bool IsDisabled { get; set; }
-
+    public bool IsOutofStock { get; set; }
 
     public virtual Item? Parent { get; set; }
     public virtual long? ParentId { get; set; }

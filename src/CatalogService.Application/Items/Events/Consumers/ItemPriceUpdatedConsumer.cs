@@ -26,6 +26,7 @@ public class ItemPriceUpdatedConsumer(IItemRepository itemRepository,
                     return;
 
                 founded.AvailableQuantity = message.Payload.Quantity;
+                founded.IsOutofStock = message.Payload.isOutofStock;
                 await itemManager.UpdateAsync(founded);
 
                 break;

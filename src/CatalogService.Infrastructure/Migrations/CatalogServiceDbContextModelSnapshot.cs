@@ -357,6 +357,9 @@ namespace CatalogService.Migrations
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsOutofStock")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime?>("ModificationTime")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("ModificationTime");
