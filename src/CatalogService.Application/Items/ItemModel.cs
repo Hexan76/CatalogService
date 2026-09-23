@@ -13,6 +13,7 @@ public class ItemModel : EntityDto<long>
     public string Name { get; set; } = default!;
     public string? Description { get; set; }
     public double Price { get; set; } = 20;
+    public int AvailableQuantity { get; set; }
     public int DiscountPrecent { get; set; }
     public bool HasDiscount { get; set; }
     public double Rate { get; set; } = 4.2;
@@ -30,8 +31,4 @@ public class ItemModel : EntityDto<long>
     public ICollection<CustomizationGroupModel> CustomizationGroups { get; set; } = [];
     public virtual long VendorId { get; set; }
 
-    // TEMPORARY MOCK — Quantity
-    // Mock inventory count for menu-items clients. Not persisted.
-    // Remove this property when real inventory is implemented.
-    public int Quantity { get; set; }
 }
