@@ -76,37 +76,7 @@ public class ListMenuItemHandler(
             menuGroups.SelectMany(menu => menu.Items),
             cancellationToken);
 
-        // =====================================================================
-        // TEMPORARY MOCK — Quantity
-        // Mock inventory counts on menu items. Two items are randomly set to 0.
-        // Remove this call, ApplyTemporaryMockItemQuantities, ItemModel.Quantity,
-        // and the AutoMapper Ignore for Quantity when real inventory is wired.
-        // =====================================================================
-        ApplyTemporaryMockItemQuantities(menuGroups);
-        // =====================================================================
-
         return MessageContract<ListMenuItemResponse>.Success(new ListMenuItemResponse { Items = menuGroups });
     }
 
-    // TEMPORARY MOCK — Quantity: delete this entire method when removing the mock.
-    private static void ApplyTemporaryMockItemQuantities(IEnumerable<MenuItemModel> menuGroups)
-    {
-        var items = menuGroups.SelectMany(menu => menu.Items).ToList();
-
-        foreach (var item in items)
-        {
-            item.Quantity = Random.Shared.Next(1, 21);
-
-            foreach (var variant in item.Variants)
-            {
-                variant.Quantity = Random.Shared.Next(1, 21);
-            }
-        }
-
-        var itemsToZero = Math.Min(2, items.Count);
-        foreach (var item in items.OrderBy(_ => Random.Shared.Next()).Take(itemsToZero))
-        {
-            item.Quantity = 0;
-        }
-    }
 }
