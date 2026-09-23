@@ -55,7 +55,7 @@ public class CreateItemHandler(
             {
                 var file = finalizeResponse.Files.FirstOrDefault();
 
-                var fileResult = await fileManager.AddRelatedFileWithEntity(
+                var fileResult = await fileManager.AddOrUpdateRelatedFile(
                     result.Id,
                     typeof(Item).Name,
                     file.URL,
@@ -72,12 +72,6 @@ public class CreateItemHandler(
                 };
             }
         }
-
-        //await messagePublisher.PublishAsync(new Message<ItemCreatedEvent>()
-        //{
-        //    Type = nameof(ItemCreatedEvent),
-        //    Payload = new ItemCreatedEvent(response),
-        //}, null, cancellationToken);
 
         return MessageContract<ItemModel>.Success(response);
     }
