@@ -41,7 +41,7 @@ public class CustomizationManager(
             }
         }
 
-        return await customizationRepository.InsertAsync(customization);
+        return await customizationRepository.InsertAsync(customization, true);
     }
 
     public async Task<Customization> UpdateAsync(Customization input)
