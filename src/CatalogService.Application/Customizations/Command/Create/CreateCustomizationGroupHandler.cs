@@ -14,7 +14,7 @@ public class CreateCustomizationGroupHandler(ICustomizationGroupRepository custo
     {
         var craeteItem = mapper.Map<CreateCustomizationGroupRequest, CustomizationGroup>(request);
 
-        var resutl = await customizationGroupRepository.InsertAsync(craeteItem);
+        var resutl = await customizationGroupRepository.InsertAsync(craeteItem, true);
         var response = mapper.Map<CustomizationGroup, CustomizationGroupModel>(resutl);
 
         return MessageContract<CustomizationGroupModel>.Success(response);
