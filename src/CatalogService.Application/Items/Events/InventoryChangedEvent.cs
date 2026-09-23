@@ -13,5 +13,6 @@ public record InventoryChangedEvent(
     long EntityId,
     string EntityType,
     int Quantity,
+    bool isOutofStock,
     string TransactionType);
 
