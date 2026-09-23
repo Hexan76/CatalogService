@@ -1,5 +1,6 @@
 using AutoMapper;
 
+using CatalogService.Categories;
 using CatalogService.Files;
 using CatalogService.ObjectStorageService;
 using CatalogService.PricingService;
@@ -28,7 +29,12 @@ public class ListMenuItemHandler(
                 .ThenInclude(x => x.Menu)
             .Include(x => x.Customizations)
             .ThenInclude(x => x.Customization)
-            .ThenInclude(x => x.CustomizationGroup);
+            .ThenInclude(x => x.CustomizationGroup)
+            .Include(x => x.ItemCategories)
+            .ThenInclude(x => x.Category)
+            .Include(x => x.Variants)
+            .ThenInclude(x => x.ItemCategories)
+            .ThenInclude(x => x.Category);
 
         if (request.MenuId.HasValue)
         {
@@ -56,6 +62,13 @@ public class ListMenuItemHandler(
             .Distinct();
 
         var files = await fileRepository.GetPrimaryFilesAsync(itemIds, cancellationToken);
+
+        var categoryIds = menuGroups
+            .SelectMany(menu => menu.Items)
+            .SelectMany(item => item.Categories.Concat(item.Variants.SelectMany(variant => variant.Categories)))
+            .Select(category => category.Id)
+            .Distinct()
+            .ToList();
 
         foreach (var menu in menuGroups)
         {
