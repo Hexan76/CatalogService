@@ -23,7 +23,7 @@ public static class DependencyInjection
         {
             options.AddDefaultPolicy(policy =>
             {
-                policy.SetIsOriginAllowed(IsLocalDevOrigin)
+                policy.SetIsOriginAllowed(IsAllowedOrigin)
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials();
@@ -62,11 +62,21 @@ public static class DependencyInjection
         return app;
     }
 
-    private static bool IsLocalDevOrigin(string origin)
+    private static readonly HashSet<string> AllowedOrigins = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "https://vendor.qased.info"
+    };
+
+    private static bool IsAllowedOrigin(string origin)
     {
         if (!Uri.TryCreate(origin, UriKind.Absolute, out var uri))
         {
             return false;
+        }
+
+        if (AllowedOrigins.Contains(uri.GetLeftPart(UriPartial.Authority)))
+        {
+            return true;
         }
 
         var isLocalHost = uri.Host is "localhost" or "127.0.0.1";
