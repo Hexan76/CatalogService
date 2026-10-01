@@ -46,7 +46,7 @@ public class SearchItemHandler(
         }
         var queryPaged = await itemRepository.PaginationPagingAsync(null, query, request.Page, request.PageSize);
 
-        var itemIds = query.Select(x => x.Id);
+        var itemIds = queryPaged.Queryable.Select(x => x.Id);
 
         var files = await fileRepository.GetPrimaryFilesAsync(itemIds);
 
