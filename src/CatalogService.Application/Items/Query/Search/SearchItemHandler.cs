@@ -52,7 +52,7 @@ public class SearchItemHandler(
 
         var response = new SearchItemResponse
         {
-            Items = mapper.Map<List<Item>, List<SearchItemModel>>(query.ToList()),
+            Items = mapper.Map<List<Item>, List<SearchItemModel>>(queryPaged.Queryable.ToList()),
             TotalCount = queryPaged.RowCount
         };
 
