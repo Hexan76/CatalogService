@@ -7,4 +7,7 @@ public class SearchItemRequest : PagedAndResultRequestFramework, IFrameworkReque
     public long? VendorId { get; set; }
     public string? SearchTerm { get; set; }
     public long? BusinessTypeId { get; set; }
+    public bool IsDisabled { get; set; } = false;
+
+
 }

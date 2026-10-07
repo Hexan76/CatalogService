@@ -31,7 +31,7 @@ public class SearchItemHandler(
             .ThenInclude(x => x.Customization)
             .ThenInclude(x => x.CustomizationGroup);
 
-        query = query.Where(x => x.Name.Contains(request.SearchTerm ?? "") && x.ParentId == null);
+        query = query.Where(x => x.Name.Contains(request.SearchTerm ?? "") && x.ParentId == null && x.IsDisabled == request.IsDisabled);
 
         if (request.BusinessTypeId.HasValue)
         {
