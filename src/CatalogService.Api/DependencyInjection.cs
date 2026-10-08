@@ -15,20 +15,10 @@ public static class DependencyInjection
         services.AddHealthChecks();
         services.AddControllers();
         services.AddFastEndpoints(c => c.IncludeAbstractValidators = true)
-            .FrameworkNSwagDocsPerModule(OpenApiDefinitions.GetOpenApiDefinitions());
+            .AddOpenApiDocuments(OpenApiDefinitions.GetOpenApiDefinitions());
 
         services.AddObservability(builder.Configuration, builder.Host);
-
-        services.AddCors(options =>
-        {
-            options.AddDefaultPolicy(policy =>
-            {
-                policy.SetIsOriginAllowed(IsAllowedOrigin)
-                    .AllowAnyHeader()
-                    .AllowAnyMethod()
-                    .AllowCredentials();
-            });
-        });
+        services.AddBuildingBlockCors(builder.Configuration, builder.Environment);
 
         return services;
     }
@@ -60,28 +50,5 @@ public static class DependencyInjection
         app.MapHealthChecks("/health");
 
         return app;
-    }
-
-    private static readonly HashSet<string> AllowedOrigins = new(StringComparer.OrdinalIgnoreCase)
-    {
-        "https://vendor.qased.info"
-    };
-
-    private static bool IsAllowedOrigin(string origin)
-    {
-        if (!Uri.TryCreate(origin, UriKind.Absolute, out var uri))
-        {
-            return false;
-        }
-
-        if (AllowedOrigins.Contains(uri.GetLeftPart(UriPartial.Authority)))
-        {
-            return true;
-        }
-
-        var isLocalHost = uri.Host is "localhost" or "127.0.0.1";
-        var isAllowedPort = uri.Port is >= 3000 and <= 3100;
-
-        return isLocalHost && isAllowedPort;
     }
 }
