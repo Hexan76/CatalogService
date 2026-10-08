@@ -125,6 +125,13 @@ public class ItemManager(
         return await itemRepository.UpdateAsync(item, true);
     }
 
+    public async Task<Item> SetDisabledAsync(long id, bool isDisabled)
+    {
+        var item = await itemRepository.GetAsync(id);
+        item.IsDisabled = isDisabled;
+        return await itemRepository.UpdateAsync(item, true);
+    }
+
     private void AppendAndMergeCustomizations(Item item)
     {
         MergeCustomizations(item, GetCustomizationIds(item));

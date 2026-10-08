@@ -31,7 +31,7 @@ public class SearchItemHandler(
             .ThenInclude(x => x.Customization)
             .ThenInclude(x => x.CustomizationGroup);
 
-        query = query.Where(x => x.Name.Contains(request.SearchTerm ?? "") && x.ParentId == null);
+        query = query.Where(x => x.Name.Contains(request.SearchTerm ?? "") && x.ParentId == null && x.IsDisabled == request.IsDisabled);
 
         if (request.BusinessTypeId.HasValue)
         {
@@ -43,6 +43,10 @@ public class SearchItemHandler(
         if (request.VendorId.HasValue)
         {
             query = query.Where(x => x.VendorId == request.VendorId);
+        }
+        if (request.MenuId.HasValue)
+        {
+            query = query.Where(x => x.MenuItems.Any(menuItem => menuItem.MenuId == request.MenuId.Value));
         }
         var queryPaged = await itemRepository.PaginationPagingAsync(null, query, request.Page, request.PageSize);
 

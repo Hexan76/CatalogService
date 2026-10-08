@@ -32,6 +32,8 @@ public class ItemModel : EntityDto<long>
     public ICollection<ItemModel> Variants { get; set; } = [];
     public ICollection<CategoryModel> Categories { get; set; } = [];
     public ICollection<CustomizationGroupModel> CustomizationGroups { get; set; } = [];
+    public long MenuId { get; set; }
+    public string? MenuTitle { get; set; }
     public virtual long VendorId { get; set; }
 
 }

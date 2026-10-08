@@ -11,11 +11,13 @@ public class ItemsRoute : BaseRoutes
         MenuItemList = $"{Default}/menu-items";
         Search = $"{Default}/search";
         GetCustomizations = $"{Default}/{{ItemId}}/customizations";
+        SetDisabled = $"{Default}/{{Id}}/disabled";
     }
     public readonly string List;
     public readonly string GetItemsByIds;
     public readonly string MenuItemList;
     public readonly string Search;
     public readonly string GetCustomizations;
+    public readonly string SetDisabled;
 
 }
