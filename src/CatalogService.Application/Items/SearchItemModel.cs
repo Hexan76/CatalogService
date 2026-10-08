@@ -23,5 +23,6 @@ public class SearchItemModel : EntityDto<long>
 
     public ICollection<ItemModel> Variants { get; set; } = [];
     public virtual long MenuId { get; set; }
+    public string? MenuTitle { get; set; }
     public virtual long VendorId { get; set; }
 }

@@ -75,4 +75,11 @@ public class CustomizationManager(
 
         return await customizationRepository.UpdateAsync(customization, true);
     }
+
+    public async Task<Customization> SetDisabledAsync(long id, bool isDisabled)
+    {
+        var customization = await customizationRepository.GetAsync(id);
+        customization.IsDisabled = isDisabled;
+        return await customizationRepository.UpdateAsync(customization, true);
+    }
 }

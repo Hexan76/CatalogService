@@ -15,9 +15,13 @@ public class ItemsProfile : Profile
             .ForMember(x => x.Rate, o => o.Ignore())
             .ForMember(x => x.CustomizationGroups,
                 o => o.MapFrom<ItemCustomizationGroupsResolver>())
-            .ForMember(x => x.Categories, o => o.MapFrom(src => MapCategories(src)));
+            .ForMember(x => x.Categories, o => o.MapFrom(src => MapCategories(src)))
+            .ForMember(x => x.MenuId, o => o.MapFrom(src => MapMenuId(src)))
+            .ForMember(x => x.MenuTitle, o => o.MapFrom(src => MapMenuTitle(src)));
 
         CreateMap<Item, SearchItemModel>(memberList: MemberList.None)
+            .ForMember(x => x.MenuId, o => o.MapFrom(src => MapMenuId(src)))
+            .ForMember(x => x.MenuTitle, o => o.MapFrom(src => MapMenuTitle(src)))
             ;
 
         //TODO : remove after handle template
@@ -36,6 +40,12 @@ public class ItemsProfile : Profile
             .IncludeMembers(x => x.Customization)
             ;
     }
+
+    private static long MapMenuId(Item item)
+        => item.MenuItems?.FirstOrDefault()?.MenuId ?? 0;
+
+    private static string? MapMenuTitle(Item item)
+        => item.MenuItems?.FirstOrDefault()?.Menu?.Name;
 
     private static List<Category> MapCategories(Item item)
         => (item.ItemCategories ?? [])

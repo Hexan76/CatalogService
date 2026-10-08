@@ -44,6 +44,10 @@ public class SearchItemHandler(
         {
             query = query.Where(x => x.VendorId == request.VendorId);
         }
+        if (request.MenuId.HasValue)
+        {
+            query = query.Where(x => x.MenuItems.Any(menuItem => menuItem.MenuId == request.MenuId.Value));
+        }
         var queryPaged = await itemRepository.PaginationPagingAsync(null, query, request.Page, request.PageSize);
 
         var itemIds = queryPaged.Queryable.Select(x => x.Id);

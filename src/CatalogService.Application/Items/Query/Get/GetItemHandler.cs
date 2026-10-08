@@ -4,6 +4,8 @@ using CatalogService.PricingService;
 
 using Framework.BuildingBlock.Application.Contracts;
 
+using Microsoft.EntityFrameworkCore;
+
 namespace CatalogService.Items;
 
 public class GetItemHandler(
@@ -13,7 +15,13 @@ public class GetItemHandler(
 {
     public async Task<MessageContract<ItemModel>> Handle(GetItemRequest request, CancellationToken cancellationToken)
     {
-        var founded = await itemRepository.FindAsync(request.Id);
+        var founded = await itemRepository.GetQueryable()
+            .Include(x => x.MenuItems)
+                .ThenInclude(x => x.Menu)
+            .Include(x => x.Variants)
+                .ThenInclude(x => x.MenuItems)
+                .ThenInclude(x => x.Menu)
+            .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
         var response = mapper.Map<Item, ItemModel>(founded);
 

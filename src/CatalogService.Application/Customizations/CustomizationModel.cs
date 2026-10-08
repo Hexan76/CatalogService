@@ -12,5 +12,8 @@ public class CustomizationModel : EntityDto<long>
     public int MaxCountRequest { get; set; }
     public int SortOrder { get; set; }
     public bool IsDisabled { get; set; }
+    public long GroupId { get; set; }
+    public string? GroupTitle { get; set; }
+    public long VendorId { get; set; }
     public FileUrlModel Image { get; set; } 
 }
