@@ -18,7 +18,7 @@ public static class DependencyInjection
             .AddOpenApiDocuments(OpenApiDefinitions.GetOpenApiDefinitions());
 
         services.AddObservability(builder.Configuration, builder.Host);
-        services.AddBuildingBlockCors(builder.Configuration, builder.Environment);
+        services.AddBuildingBlockCors(builder.Configuration);
 
         return services;
     }
