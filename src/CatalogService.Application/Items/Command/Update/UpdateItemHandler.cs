@@ -21,7 +21,7 @@ public class UpdateItemHandler(
     {
 
         var requestItem = mapper.Map<UpdateItemRequest, Item>(request);
-        var result = await itemManager.UpdateAsync(requestItem);
+        var result = await itemManager.UpdateAsync(requestItem, request.CategoryId, request.MenuId);
 
         if (request.Price > 0)
         {

@@ -17,9 +17,11 @@ public class UpdateItemRequest : EntityDto<long>, IFrameworkRequest<ItemModel>
     public int SortOrder { get; set; }
     public long PreparingTime { get; set; }
 
-    [MaxLength(500)]
-    public string Ingredients { get; set; } = default!;
     public string[] IngredientsArray { get; set; } = default!;
+    public ICollection<UpdateItemRequest> Variants { get; set; } = [];
     public long[] CusomizationIds { get; set; } = [];
-    public ICollection<UpdateItemRequest> Variants { get; set; }
+    public long CategoryId { get; set; }
+    public long MenuId { get; set; }
+    public long VendorId { get; set; }
+
 }

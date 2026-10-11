@@ -15,6 +15,15 @@ public class ItemRepository : EfGenericRepository<CatalogServiceDbContext, Item,
     {
     }
 
+    public Task<Item?> FindWithDetailsAsync(long id, CancellationToken cancellationToken = default)
+        => GetQueryable()
+            .Include(x => x.ItemCategories)
+            .Include(x => x.MenuItems)
+            .Include(x => x.Customizations)
+            .Include(x => x.Variants)
+                .ThenInclude(x => x.Customizations)
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+
     public override async Task<PagedResult<Item>> PaginationPagingAsync(FilterGroup filterGroup, IQueryable<Item>? externalQuery, int page = 1, int pageSize = 10, string sort = "")
     {
         page = page <= 0 ? 1 : page;

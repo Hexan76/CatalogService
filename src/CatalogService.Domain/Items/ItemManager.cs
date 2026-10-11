@@ -2,6 +2,8 @@ using CatalogService.Customizations;
 using CatalogService.Localization;
 using CatalogService.Menus;
 
+using Framework.BuildingBlock.Data;
+
 using Volo.Abp;
 
 namespace CatalogService.Items;
@@ -33,9 +35,10 @@ public class ItemManager(
         return await itemRepository.InsertAsync(item, true);
     }
 
-    public async Task<Item> UpdateAsync(Item input)
+    public async Task<Item> UpdateAsync(Item input, long categoryId = 0, long menuId = 0)
     {
-        var item = await itemRepository.GetAsync(input.Id);
+        var item = await itemRepository.FindWithDetailsAsync(input.Id)
+            ?? throw new EntityNotFoundException(typeof(Item), input.Id);
 
         item.Name = input.Name;
         item.Description = input.Description;
@@ -45,10 +48,18 @@ public class ItemManager(
         item.Ingredients = input.Ingredients;
         item.PreparingTime = input.PreparingTime;
 
+        if (input.VendorId > 0)
+        {
+            item.VendorId = input.VendorId;
+        }
+
         if (input.Price > 0)
         {
             item.Price = input.Price;
         }
+
+        SetCategory(item, categoryId);
+        SetMenu(item, menuId);
 
         await EnsureCustomizationsExistAsync(CollectCustomizationIds(input));
         AppendCustomizations(item, GetCustomizationIds(input));
@@ -130,6 +141,52 @@ public class ItemManager(
         var item = await itemRepository.GetAsync(id);
         item.IsDisabled = isDisabled;
         return await itemRepository.UpdateAsync(item, true);
+    }
+
+    private static void SetCategory(Item item, long categoryId)
+    {
+        if (categoryId <= 0)
+        {
+            return;
+        }
+
+        item.ItemCategories ??= [];
+
+        if (item.ItemCategories.Count == 1 &&
+            item.ItemCategories.First().CategoryId == categoryId)
+        {
+            return;
+        }
+
+        item.ItemCategories.Clear();
+        item.ItemCategories.Add(new ItemCategory
+        {
+            ItemId = item.Id,
+            CategoryId = categoryId
+        });
+    }
+
+    private static void SetMenu(Item item, long menuId)
+    {
+        if (menuId <= 0)
+        {
+            return;
+        }
+
+        item.MenuItems ??= [];
+
+        if (item.MenuItems.Count == 1 &&
+            item.MenuItems.First().MenuId == menuId)
+        {
+            return;
+        }
+
+        item.MenuItems.Clear();
+        item.MenuItems.Add(new MenuItem
+        {
+            ItemId = item.Id,
+            MenuId = menuId
+        });
     }
 
     private void AppendAndMergeCustomizations(Item item)
