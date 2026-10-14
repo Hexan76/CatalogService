@@ -7,6 +7,9 @@
     "400005": "Duplicate priorities are not allowed.",
     "400006": "No files found.",
     "400007": "All files must belong to the same scope.",
-    "400008": "Customization was not found."
+    "400008": "Customization was not found.",
+    "400009": "Menu was not found.",
+    "400010": "Item was not found.",
+    "400011": "Sort order cannot be negative."
   }
 }

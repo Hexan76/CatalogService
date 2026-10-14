@@ -47,12 +47,15 @@ public class ListMenuItemHandler(
             .SelectMany(item => item.MenuItems
                 .Where(mi => !request.MenuId.HasValue || mi.MenuId == request.MenuId.Value)
                 .Select(mi => new { mi.MenuId, mi.Menu, Item = item }))
-            .GroupBy(x => new { x.MenuId, x.Menu.Name })
+            .GroupBy(x => new { x.MenuId, x.Menu.Name, x.Menu.SortOrder })
+            .OrderBy(g => g.Key.SortOrder)
+            .ThenBy(g => g.Key.MenuId)
             .Select(g => new MenuItemModel
             {
                 Id = g.Key.MenuId,
                 MenuTitle = g.Key.Name,
-                Items = mapper.Map<List<Item>, List<ItemModel>>(g.Select(x => x.Item).ToList())
+                Items = mapper.Map<List<Item>, List<ItemModel>>(
+                    g.OrderBy(x => x.Item.SortOrder).ThenBy(x => x.Item.Id).Select(x => x.Item).ToList())
             })
             .ToList();
 

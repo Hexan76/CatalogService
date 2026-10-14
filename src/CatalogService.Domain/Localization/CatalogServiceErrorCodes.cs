@@ -10,4 +10,7 @@ public static class CatalogServiceErrorCodes
     public const string NoFilesFound = "400006";
     public const string FilesMustBelongToSameScope = "400007";
     public const string CustomizationNotFound = "400008";
+    public const string MenuNotFound = "400009";
+    public const string ItemNotFound = "400010";
+    public const string SortOrderCannotBeNegative = "400011";
 }
